@@ -31,4 +31,19 @@ export const LESSONS: Lesson[] = [
     targetWords: ['dog', 'cat', 'rabbit'],
     games: ['listen-find', 'pick-word', 'letter-hunt'],
   },
+  {
+    id: 'nature-1',
+    title: '반짝반짝 밤하늘',
+    theme: 'nature',
+    story: [
+      { sceneImage: 'nat-dusk',   text: '해가 지고 깜깜한 밤이 되었어요.', targets: [] },
+      { sceneImage: 'nat-star',   text: '하늘에 반짝반짝 별이 떠올랐어요.', targets: ['star'] },
+      { sceneImage: 'nat-moon',   text: '둥근 달도 환하게 떠올랐어요.', targets: ['moon'] },
+      { sceneImage: 'nat-flower', text: '달빛 아래 예쁜 꽃이 살며시 피었어요.', targets: ['flower'] },
+      { sceneImage: 'nat-all',    text: '곰돌이는 별과 달과 꽃을 보며 방긋 웃었어요.', targets: ['star', 'moon', 'flower'] },
+      { sceneImage: 'nat-sleep',  text: '"잘 자, 별님 달님!" 곰돌이는 새근새근 꿈나라로 갔어요.', targets: [] },
+    ],
+    targetWords: ['star', 'moon', 'flower'],
+    games: ['listen-find', 'letter-hunt', 'memory'],
+  },
 ]

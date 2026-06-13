@@ -28,6 +28,9 @@ const C = {
   dog: '#e0b06a', dogLight: '#f6e3bf', dogDark: '#bd8742',
   cat: '#a9b2bd', catLight: '#e8ecf1', catDark: '#7f8a98', catPink: '#f3a6c0', whisker: '#6f7780',
   ball: '#ef6aa6', ballAlt: '#ffd24d',
+  nightTop: '#2b2c63', nightMid: '#4a4a8c', nightBot: '#7b6aa6',
+  moon: '#fdf3c4', moonShade: '#e7d9a8', moonGlow: '#fff6d8', starC: '#fff3c4',
+  nightHill: '#3f4f7a', nightHill2: '#586591', nightGrass: '#46617a', nightGrass2: '#374f63',
   eye: '#4a3526', cheek: '#f29bb0',
   shadow: 'rgba(90,60,30,0.13)',
   white: '#ffffff',
@@ -375,6 +378,32 @@ function grassDetail(spots) {
   return spots.map(([x, y]) => `<path d="M ${x} ${y} q -3 -10 0 -16 q 3 6 0 16 M ${x + 5} ${y} q -2 -8 1 -13 q 2 5 -1 13" stroke="${C.grassBlade}" stroke-width="2.4" fill="none" stroke-linecap="round"/>`).join('')
 }
 
+// ---- 밤하늘 부품 ----
+function star(cx, cy, s, color = C.starC, op = 1) {
+  return pth(`M ${cx} ${round2(cy - s)} L ${round2(cx + s * 0.26)} ${round2(cy - s * 0.26)} L ${round2(cx + s)} ${cy} L ${round2(cx + s * 0.26)} ${round2(cy + s * 0.26)} L ${cx} ${round2(cy + s)} L ${round2(cx - s * 0.26)} ${round2(cy + s * 0.26)} L ${round2(cx - s)} ${cy} L ${round2(cx - s * 0.26)} ${round2(cy - s * 0.26)} Z`, color, op < 1 ? `opacity="${op}"` : '')
+}
+function moon(cx, cy, r) {
+  return c(cx, cy, r * 1.55, C.moonGlow, 'opacity="0.3"')
+    + c(cx, cy, r, C.moon)
+    + c(cx - r * 0.32, cy - r * 0.18, r * 0.18, C.moonShade, 'opacity="0.6"')
+    + c(cx + r * 0.28, cy + r * 0.3, r * 0.13, C.moonShade, 'opacity="0.55"')
+    + c(cx + r * 0.12, cy - r * 0.42, r * 0.1, C.moonShade, 'opacity="0.5"')
+}
+const STAR_FIELD = [[40, 40, 4], [90, 80, 3], [150, 52, 5], [210, 92, 3], [300, 46, 4], [360, 86, 3], [430, 56, 5], [462, 112, 3], [120, 124, 3], [255, 40, 3], [402, 124, 4], [72, 150, 3]]
+function nightBackdrop({ moonX = 380, moonY = 90, moonR = 40 } = {}) {
+  const gy = 236
+  return [
+    `<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.nightTop}"/><stop offset="0.6" stop-color="${C.nightMid}"/><stop offset="1" stop-color="${C.nightBot}"/></linearGradient>`
+    + `<linearGradient id="grass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.nightGrass}"/><stop offset="1" stop-color="${C.nightGrass2}"/></linearGradient></defs>`,
+    rct(0, 0, W, H, 'url(#sky)'),
+    STAR_FIELD.map(([x, y, s]) => star(x, y, s)).join(''),
+    moon(moonX, moonY, moonR),
+    ell(110, gy + 60, 230, 130, C.nightHill),
+    ell(400, gy + 70, 240, 140, C.nightHill2),
+    pth(`M0 ${gy} Q240 ${gy - 24} 480 ${gy} L480 ${H} L0 ${H} Z`, 'url(#grass)'),
+  ].join('')
+}
+
 // ===========================================================================
 // 6장면 구성
 // ===========================================================================
@@ -544,6 +573,48 @@ scenes['an-bye'] = [
   cat(338, 234, 23, {}),
   rabbit(432, 236, 20, { armWave: true }),
   butterfly(180, 120, 10, '#ffc4a0'),
+]
+
+// ========================= 반짝반짝 밤하늘 (nature) =========================
+// nat-dusk — 해가 지고 밤이 되었어요
+scenes['nat-dusk'] = [
+  nightBackdrop({ moonX: 420, moonY: 78, moonR: 24 }),
+  bear(240, 240, 30, {}),
+  flower(70, 338, 8, '#b58bff'), flower(410, 342, 8, '#ff8fb3'),
+]
+// nat-star — 반짝반짝 별이 떠올랐어요
+scenes['nat-star'] = [
+  nightBackdrop({ moonX: 58, moonY: 70, moonR: 22 }),
+  star(150, 118, 12), star(300, 88, 14), star(360, 150, 10), star(110, 176, 8), star(248, 152, 8),
+  bear(240, 244, 28, { armWave: true }),
+  flower(64, 340, 8, '#ffd24d'), flower(420, 340, 8, '#b58bff'),
+]
+// nat-moon — 둥근 달이 환하게 떠올랐어요
+scenes['nat-moon'] = [
+  nightBackdrop({ moonX: 240, moonY: 112, moonR: 60 }),
+  bear(240, 252, 26, {}),
+  flower(70, 340, 8, '#ff8fb3'), flower(410, 342, 8, '#ffd24d'),
+]
+// nat-flower — 달빛 아래 예쁜 꽃이 피어 있었어요
+scenes['nat-flower'] = [
+  nightBackdrop({ moonX: 400, moonY: 82, moonR: 34 }),
+  bear(140, 248, 26, {}),
+  flower(278, 300, 15, '#ff8fb3'), flower(332, 320, 14, '#ffd24d'), flower(384, 304, 15, '#b58bff'), flower(248, 326, 13, '#ff8fb3'),
+  flower(60, 336, 8, '#b58bff'),
+]
+// nat-all — 별과 달과 꽃을 보며 행복했어요
+scenes['nat-all'] = [
+  nightBackdrop({ moonX: 378, moonY: 84, moonR: 44 }),
+  star(120, 110, 12), star(220, 78, 10), star(300, 142, 9),
+  bear(150, 248, 27, { armWave: true }),
+  flower(262, 312, 14, '#ff8fb3'), flower(312, 330, 13, '#ffd24d'), flower(362, 314, 14, '#b58bff'),
+  flower(60, 338, 8, '#ffd24d'), flower(430, 340, 8, '#ff8fb3'),
+]
+// nat-sleep — 잘 자, 별님 달님! 꿈나라로 갔어요
+scenes['nat-sleep'] = [
+  nightBackdrop({ moonX: 240, moonY: 98, moonR: 50 }),
+  bear(240, 252, 28, {}),
+  flower(70, 340, 8, '#b58bff'), flower(410, 342, 8, '#ff8fb3'),
 ]
 
 function svg(body) {
