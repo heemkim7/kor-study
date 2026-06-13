@@ -16,7 +16,7 @@ export interface Word {
 }
 
 export interface StoryScene {
-  sceneImage: string  // public/img/scene/<...>.png 의 <...>
+  sceneImage: string  // public/img/scene/<...>.svg 의 <...>
   text: string        // 자막 문장
   targets: string[]   // 이 장면에서 강조할 word id
 }

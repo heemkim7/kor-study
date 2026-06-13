@@ -6,10 +6,12 @@
 - 매핑은 `scripts/fetch-fluent-images.mjs` 의 `MAP` 참고 (예: apple ← "Red apple")
 - 출처: https://github.com/microsoft/fluentui-emoji (© Microsoft, MIT)
 
-## `scene/*.png` — 이야기 장면 (임시 placeholder)
-이야기 장면(orchard/monkey/squirrel)은 아직 **단색 placeholder** 입니다.
-장면은 단일 이모지가 아니라 배경 일러스트가 필요해서, 추후 일러스트로 교체 예정.
-- placeholder 재생성: `node scripts/gen-placeholder-images.mjs`
+## `scene/*.svg` — 이야기 장면 (벡터 그림책 일러스트)
+6장면(picnic/orchard/monkey/squirrel/share/bye)은 **손으로 만든 SVG 그림책 일러스트** 입니다.
+곰돌이·원숭이·다람쥐·토끼를 재사용 부품으로 정의해 전 장면에 일관되게 등장시켰고,
+앱 테마(코지 크림+따뜻한 톤)와 통일했습니다. 비용 0·오프라인·태블릿에서 선명.
+- 재생성/수정: `node scripts/gen-scene-art.mjs` (부품·장면 구성은 이 파일에서)
+- 더 회화적/3D 고화질로 바꾸려면(선택): `docs/assets/scene-image-prompts.md` 의 AI 프롬프트 팩 참고
 
 ## 새 단어 추가 시
 - 흔한 사물/동물/음식이면 `scripts/fetch-fluent-images.mjs` 의 `MAP` 에 `id: '<Fluent 폴더명>'` 추가 후 재실행

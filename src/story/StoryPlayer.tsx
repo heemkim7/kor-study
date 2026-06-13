@@ -20,15 +20,16 @@ export function StoryPlayer({ lesson, onDone }: { lesson: Lesson; onDone: () => 
   useEffect(() => { speak(scene.text) }, [i]) // 장면이 바뀔 때 자동 낭독
 
   return (
-    <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ flex: 1, position: 'relative', overflow: 'hidden' }}>
-        <img src={`/img/scene/${scene.sceneImage}.png`} alt=""
-          style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+    <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '14px 0 18px' }}>
+      <div style={{ position: 'relative', margin: '0 14px', borderRadius: 'var(--radius-lg)',
+        overflow: 'hidden', boxShadow: 'var(--shadow-card)', aspectRatio: '4 / 3' }}>
+        <img src={`/img/scene/${scene.sceneImage}.svg`} alt=""
+          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         <div style={{ position: 'absolute', top: 12, right: 14 }}>
           <SpeakerButton onClick={() => speak(scene.text)} />
         </div>
       </div>
-      <div style={{ background: 'rgba(255,255,255,.92)', margin: 14, borderRadius: 'var(--radius-md)',
+      <div style={{ background: 'rgba(255,255,255,.92)', margin: '14px 14px 0', borderRadius: 'var(--radius-md)',
         padding: '18px 20px', textAlign: 'center', boxShadow: 'var(--shadow-card)' }}>
         <p style={{ fontFamily: 'var(--font-warm)', fontSize: 26, lineHeight: 1.5 }}>
           {parts.map((p, idx) =>
@@ -40,7 +41,7 @@ export function StoryPlayer({ lesson, onDone }: { lesson: Lesson; onDone: () => 
           )}
         </p>
       </div>
-      <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 18 }}>
+      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 16 }}>
         <button onClick={() => (isLast ? onDone() : setI(i + 1))}
           style={{ fontFamily: 'var(--font-warm)', fontSize: 22, fontWeight: 800, color: '#fff',
             background: 'var(--c-accent)', border: 'none', borderRadius: 'var(--radius-md)',
