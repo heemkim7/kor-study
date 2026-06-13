@@ -31,8 +31,14 @@ export function BuildWord({ targetWords, pool, onCorrect, onDone }: {
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   useEffect(() => () => clearTimeout(timerRef.current), [])
+
+  // 라운드가 바뀌면 상태 초기화(렌더 중 — 이펙트에서 setState 지양)
+  const [prevRound, setPrevRound] = useState(round)
+  if (round !== prevRound) { setPrevRound(round); setPlaced([]); setUsedIdx([]); setSolved(false) }
+
+  // 라운드마다 정답 음성 재생
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { setPlaced([]); setUsedIdx([]); setSolved(false); speak(answer.text) }, [round])
+  useEffect(() => { speak(answer.text) }, [round])
 
   function tapTile(idx: number) {
     if (solved || usedIdx.includes(idx)) return

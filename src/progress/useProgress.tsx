@@ -27,6 +27,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
   return <ProgressContext.Provider value={value}>{children}</ProgressContext.Provider>
 }
 
+// 훅과 Provider를 같은 파일에 두기 위한 의도적 예외(런타임 무관, fast-refresh DX 룰).
+// eslint-disable-next-line react-refresh/only-export-components
 export function useProgress(): Ctx {
   const ctx = useContext(ProgressContext)
   if (!ctx) throw new Error('useProgress must be used within ProgressProvider')

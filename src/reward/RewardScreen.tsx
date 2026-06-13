@@ -3,6 +3,8 @@ import { useTts } from '../tts/useTts'
 
 export function RewardScreen({ onHome, awarded = true }: { onHome: () => void; awarded?: boolean }) {
   const { speak } = useTts()
+  // 보상 화면 진입 시 1회 축하 음성
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { speak(awarded ? '참 잘했어요! 스티커를 받았어요.' : '참 잘했어요!') }, [])
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',

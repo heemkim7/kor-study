@@ -21,7 +21,9 @@ export function PickWord({ targetWords, pool, onCorrect, onDone }: {
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   useEffect(() => () => clearTimeout(timerRef.current), [])
 
-  useEffect(() => { setSolved(false) }, [round])
+  // 라운드가 바뀌면 상태 초기화(렌더 중 — 이펙트에서 setState 지양)
+  const [prevRound, setPrevRound] = useState(round)
+  if (round !== prevRound) { setPrevRound(round); setSolved(false) }
 
   function pick(id: string) {
     if (solved) return

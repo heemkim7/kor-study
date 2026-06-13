@@ -17,7 +17,9 @@ export function StoryPlayer({ lesson, onDone }: { lesson: Lesson; onDone: () => 
   )
   const parts = useMemo(() => splitByTargets(scene.text, targetTexts), [scene.text, targetTexts])
 
-  useEffect(() => { speak(scene.text) }, [i]) // 장면이 바뀔 때 자동 낭독
+  // 장면이 바뀔 때 자동 낭독
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { speak(scene.text) }, [i])
 
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '14px 0 18px' }}>

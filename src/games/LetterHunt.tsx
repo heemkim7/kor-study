@@ -31,8 +31,14 @@ export function LetterHunt({ targetWords, pool, onCorrect, onDone }: {
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   useEffect(() => () => clearTimeout(timerRef.current), [])
+
+  // 라운드가 바뀌면 상태 초기화(렌더 중 — 이펙트에서 setState 지양)
+  const [prevRound, setPrevRound] = useState(round)
+  if (round !== prevRound) { setPrevRound(round); setFound([]); setSolved(false) }
+
+  // 라운드마다 찾을 글자 안내 음성
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { setFound([]); setSolved(false); speak(`${target} 글자를 찾아요`) }, [round])
+  useEffect(() => { speak(`${target} 글자를 찾아요`) }, [round])
 
   function tapCell(idx: number) {
     if (solved || found.includes(idx)) return
