@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { initialProgress, addStars, learnWords, completeLesson } from './progress'
+import { initialProgress, addStars, learnWords, completeLesson, setPrincessName } from './progress'
 
 describe('addStars', () => {
   it('별을 더함(원본 불변)', () => {
@@ -27,5 +27,13 @@ describe('completeLesson', () => {
     const twice = completeLesson(once, 'fruit-1')
     expect(twice.stickers).toBe(1)
     expect(twice.completedLessons).toEqual(['fruit-1'])
+  })
+})
+
+describe('setPrincessName', () => {
+  it('이름을 설정함(원본 불변)', () => {
+    const p = setPrincessName(initialProgress, '소피아')
+    expect(p.princessName).toBe('소피아')
+    expect(initialProgress.princessName).toBeNull()
   })
 })
