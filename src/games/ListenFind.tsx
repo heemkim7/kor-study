@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { getWord, getWordsByIds } from '../content/loader'
 import { useTts } from '../tts/useTts'
 import { WordImage } from '../ui/WordImage'
@@ -22,6 +22,9 @@ export function ListenFind({ targetWords, pool, onCorrect, onDone }: {
   )
   const choices = getWordsByIds(choiceIds)
 
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  useEffect(() => () => clearTimeout(timerRef.current), [])
+
   useEffect(() => { setSolved(false); speak(answer.text) }, [round])
 
   function pick(id: string) {
@@ -29,7 +32,7 @@ export function ListenFind({ targetWords, pool, onCorrect, onDone }: {
     if (id === answerId) {
       setSolved(true)
       onCorrect()
-      setTimeout(() => {
+      timerRef.current = setTimeout(() => {
         if (round === targetWords.length - 1) onDone()
         else setRound(round + 1)
       }, 900)
