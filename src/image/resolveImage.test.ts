@@ -11,4 +11,7 @@ describe('resolveImageSrc', () => {
   it('정보 부족이면 throw', () => {
     expect(() => resolveImageSrc({ type: 'fluent' })).toThrow()
   })
+  it('photo url 누락이면 throw', () => {
+    expect(() => resolveImageSrc({ type: 'photo' })).toThrow()
+  })
 })
