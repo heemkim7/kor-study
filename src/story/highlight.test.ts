@@ -13,4 +13,23 @@ describe('splitByTargets', () => {
   it('타겟이 없으면 통째로 비강조', () => {
     expect(splitByTargets('안녕', ['사과'])).toEqual([{ text: '안녕', target: false }])
   })
+  it('문장 맨 앞 타겟', () => {
+    expect(splitByTargets('사과가 좋아요', ['사과'])).toEqual([
+      { text: '사과', target: true },
+      { text: '가 좋아요', target: false },
+    ])
+  })
+  it('문장 맨 끝 타겟', () => {
+    expect(splitByTargets('나는 사과', ['사과'])).toEqual([
+      { text: '나는 ', target: false },
+      { text: '사과', target: true },
+    ])
+  })
+  it('여러 타겟이 번갈아 강조', () => {
+    expect(splitByTargets('사과와 포도', ['사과', '포도'])).toEqual([
+      { text: '사과', target: true },
+      { text: '와 ', target: false },
+      { text: '포도', target: true },
+    ])
+  })
 })
