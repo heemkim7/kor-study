@@ -7,6 +7,9 @@ import { StoryPlayer } from '../story/StoryPlayer'
 import { TodayWords } from '../story/TodayWords'
 import { ListenFind } from '../games/ListenFind'
 import { PickWord } from '../games/PickWord'
+import { BuildWord } from '../games/BuildWord'
+import { LetterHunt } from '../games/LetterHunt'
+import { MemoryGame } from '../games/MemoryGame'
 import { RewardScreen } from '../reward/RewardScreen'
 
 type Phase = { kind: 'story' } | { kind: 'words' } | { kind: 'game'; index: number } | { kind: 'reward' }
@@ -46,11 +49,14 @@ export function Adventure({ lessonId }: { lessonId: string }) {
     }
     if (gameId === 'listen-find') return <ListenFind {...common} />
     if (gameId === 'pick-word') return <PickWord {...common} />
-    // M1에서 미구현 게임은 안내 후 수동 진행 (fruit-1 정상 흐름에선 도달하지 않음 — 렌더 중 setState 방지)
+    if (gameId === 'build-word') return <BuildWord {...common} />
+    if (gameId === 'letter-hunt') return <LetterHunt {...common} />
+    if (gameId === 'memory') return <MemoryGame {...common} />
+    // 알 수 없는 게임 id는 건너뜀 (렌더 중 setState 방지 — 버튼으로 진행)
     return (
       <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
         justifyContent: 'center', gap: 16, padding: 24, textAlign: 'center' }}>
-        <p style={{ fontFamily: 'var(--font-warm)', fontSize: 22 }}>이 놀이는 다음 버전에서 추가돼요.</p>
+        <p style={{ fontFamily: 'var(--font-warm)', fontSize: 22 }}>다음 놀이로 넘어가요.</p>
         <button onClick={() => nextAfterGame(phase.index)}
           style={{ fontFamily: 'var(--font-warm)', fontSize: 20, fontWeight: 800, color: '#fff',
             background: 'var(--c-accent)', border: 'none', borderRadius: 'var(--radius-md)',

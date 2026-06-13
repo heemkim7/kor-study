@@ -14,6 +14,6 @@ export const LESSONS: Lesson[] = [
       { sceneImage: 'bye',      text: '"오늘 정말 즐거웠어. 내일 또 놀자!" 친구들은 손을 흔들었어요.', targets: [] },
     ],
     targetWords: ['apple', 'banana', 'grape'],
-    games: ['listen-find', 'pick-word'],
+    games: ['listen-find', 'build-word', 'memory'],
   },
 ]
