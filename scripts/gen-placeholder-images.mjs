@@ -37,11 +37,10 @@ function colorFor(i, total) {
   return [r+m, g+m, b+m]
 }
 
-const words = ['apple','banana','grape','dog','cat','rabbit','car','bus','star','moon','flower','ball']
-const scenes = ['orchard','monkey','squirrel']
+// 단어 그림은 이제 실제 이미지(scripts/fetch-fluent-images.mjs)를 쓰므로 여기서 만들지 않습니다.
+// 이 스크립트는 아직 일러스트가 없는 '이야기 장면'의 임시 placeholder만 생성합니다.
+const scenes = ['picnic', 'orchard', 'monkey', 'squirrel', 'share', 'bye']
 
-mkdirSync('public/img/fluent', { recursive: true })
 mkdirSync('public/img/scene', { recursive: true })
-words.forEach((name, i) => writeFileSync(`public/img/fluent/${name}.png`, solidPng(240, colorFor(i, words.length))))
 scenes.forEach((name, i) => writeFileSync(`public/img/scene/${name}.png`, solidPng(480, colorFor(i, scenes.length))))
-console.log('placeholder images generated')
+console.log(`scene placeholder images generated: ${scenes.join(', ')}`)

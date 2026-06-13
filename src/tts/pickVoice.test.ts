@@ -16,4 +16,11 @@ describe('pickKoreanVoice', () => {
     const voices = [v('SomeKorean', 'ko-KR')] as SpeechSynthesisVoice[]
     expect(pickKoreanVoice(voices)?.name).toBe('SomeKorean')
   })
+  it('자연스러운(Natural/Online) 음성을 최우선 선택', () => {
+    const voices = [
+      v('Microsoft Heami', 'ko-KR'),
+      v('Microsoft SunHi Online (Natural)', 'ko-KR'),
+    ] as SpeechSynthesisVoice[]
+    expect(pickKoreanVoice(voices)?.name).toBe('Microsoft SunHi Online (Natural)')
+  })
 })
