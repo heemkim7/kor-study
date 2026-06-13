@@ -32,6 +32,12 @@ describe('toJamo', () => {
   it('기본은 복합 자모 유지', () => {
     expect(toJamo('과')).toEqual(['ㄱ', 'ㅘ'])
   })
+  it('쌍자음(ㅆ)도 기본 자모로 분리', () => {
+    expect(toJamo('씨', { splitCompound: true })).toEqual(['ㅅ', 'ㅅ', 'ㅣ'])
+  })
+  it('한글이 아닌 글자는 그대로 통과', () => {
+    expect(toJamo('A사')).toEqual(['A', 'ㅅ', 'ㅏ'])
+  })
 })
 
 describe('getChoseong', () => {
