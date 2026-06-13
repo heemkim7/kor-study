@@ -45,6 +45,27 @@ const limb = (x1, y1, x2, y2, w, stroke) => `<line x1="${x1}" y1="${y1}" x2="${x
 const shadow = (cx, cy, rx) => ell(cx, cy, rx, rx * 0.3, C.shadow)
 const round2 = (n) => Math.round(n * 100) / 100
 
+// ---- 애니메이션 (SVG 내부 CSS — <img>로 불러도 재생됨, 비용0) ----
+// 캐릭터: 등장(enter) + 숨쉬기(bob) 중첩 / 소품: 살랑(sway)·나풀(flutter)·반짝(twinkle)·해 회전(spin)
+let _bob = 0, _tw = 0, _sw = 0
+const animChar = (inner) => `<g class="enter"><g class="${_bob++ % 2 ? 'bob2' : 'bob'}">${inner}</g></g>`
+const ANIM_STYLE = `<style>
+.enter{animation:bpEnter .7s cubic-bezier(.2,.9,.3,1.25) both}
+.bob{animation:bpBob 3s ease-in-out infinite}
+.bob2{animation:bpBob 3.7s ease-in-out infinite}
+.sway{animation:bpSway 4s ease-in-out infinite;transform-box:fill-box;transform-origin:bottom center}
+.flutter{animation:bpFlutter 3.2s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.twinkle{animation:bpTwinkle 2.4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.spin{animation:bpSpin 24s linear infinite;transform-box:fill-box;transform-origin:center}
+@keyframes bpEnter{0%{opacity:0;transform:translateY(28px)}100%{opacity:1;transform:translateY(0)}}
+@keyframes bpBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+@keyframes bpSway{0%,100%{transform:rotate(-3.5deg)}50%{transform:rotate(3.5deg)}}
+@keyframes bpFlutter{0%{transform:translate(0,0) rotate(-7deg)}50%{transform:translate(12px,-14px) rotate(7deg)}100%{transform:translate(0,0) rotate(-7deg)}}
+@keyframes bpTwinkle{0%,100%{opacity:.55;transform:scale(.8)}50%{opacity:1;transform:scale(1.18)}}
+@keyframes bpSpin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.enter,.bob,.bob2,.sway,.flutter,.twinkle,.spin{animation:none}}
+</style>`
+
 // ---- 얼굴 부품 ----
 function eyes(cx, cy, gap, r) {
   return c(cx - gap, cy, r, C.eye) + c(cx + gap, cy, r, C.eye)
@@ -92,7 +113,7 @@ function bear(cx, cy, s, { armWave = false, hold = null } = {}) {
   p.push(ell(cx, cy + s * 0.12, s * 0.13, s * 0.1, C.bearDark))
   p.push(smile(cx, cy + s * 0.34, s * 0.2))
   p.push(cheeks(cx, cy + s * 0.2, s * 0.58, s * 0.15))
-  return p.join('')
+  return animChar(p.join(''))
 }
 
 // ---- 캐릭터: 원숭이 ----
@@ -125,7 +146,7 @@ function monkey(cx, cy, s, { armDown = false, hold = null } = {}) {
   p.push(c(cx + s * 0.08, cy + s * 0.22, s * 0.05, C.monkeyDark))
   p.push(smile(cx, cy + s * 0.36, s * 0.2))
   p.push(cheeks(cx, cy + s * 0.16, s * 0.52, s * 0.13))
-  return p.join('')
+  return animChar(p.join(''))
 }
 
 // ---- 캐릭터: 다람쥐 ----
@@ -163,7 +184,7 @@ function squirrel(cx, cy, s, { hold = null } = {}) {
   p.push(ell(cx, cy + s * 0.16, s * 0.1, s * 0.08, C.squirrelDark))
   p.push(smile(cx, cy + s * 0.34, s * 0.16))
   p.push(cheeks(cx, cy + s * 0.18, s * 0.52, s * 0.13))
-  return p.join('')
+  return animChar(p.join(''))
 }
 
 // ---- 캐릭터: 토끼 ----
@@ -193,7 +214,7 @@ function rabbit(cx, cy, s, { armWave = false } = {}) {
   p.push(pth(`M ${round2(cx - s * 0.1)} ${round2(cy + s * 0.16)} L ${round2(cx + s * 0.1)} ${round2(cy + s * 0.16)} L ${cx} ${round2(cy + s * 0.3)} Z`, C.rabbitEar))
   p.push(smile(cx, cy + s * 0.36, s * 0.16))
   p.push(cheeks(cx, cy + s * 0.2, s * 0.54, s * 0.13))
-  return p.join('')
+  return animChar(p.join(''))
 }
 
 // ---- 캐릭터: 강아지 ----
@@ -222,7 +243,7 @@ function dog(cx, cy, s, { armWave = false } = {}) {
   p.push(ell(cx, cy + s * 0.18, s * 0.14, s * 0.11, C.eye))
   p.push(smile(cx, cy + s * 0.42, s * 0.18))
   p.push(cheeks(cx, cy + s * 0.24, s * 0.56, s * 0.14))
-  return p.join('')
+  return animChar(p.join(''))
 }
 
 // ---- 캐릭터: 고양이 ----
@@ -255,7 +276,7 @@ function cat(cx, cy, s, { armWave = false } = {}) {
     p.push(limb(cx + sgn * s * 0.2, cy + s * 0.27, cx + sgn * s * 0.85, cy + s * 0.32, s * 0.045, C.whisker))
   }
   p.push(cheeks(cx, cy + s * 0.2, s * 0.56, s * 0.14))
-  return p.join('')
+  return animChar(p.join(''))
 }
 
 // ---- 소품: 공 (비치볼) ----
@@ -305,7 +326,7 @@ function sun(cx, cy, r, color = C.sun, glow = C.sunGlow) {
     const x2 = cx + Math.cos(a) * r * 1.7, y2 = cy + Math.sin(a) * r * 1.7
     rays += `<line x1="${round2(x1)}" y1="${round2(y1)}" x2="${round2(x2)}" y2="${round2(y2)}" stroke="${glow}" stroke-width="5" stroke-linecap="round"/>`
   }
-  return c(cx, cy, r * 1.6, glow, 'opacity="0.45"') + rays + c(cx, cy, r, color)
+  return c(cx, cy, r * 1.6, glow, 'opacity="0.45"') + `<g class="spin">` + rays + `</g>` + c(cx, cy, r, color)
 }
 function cloud(cx, cy, s) {
   return ell(cx, cy + s * 0.4, s * 1.5, s * 0.55, C.cloud)
@@ -340,14 +361,14 @@ function flower(x, y, s, color = '#ff8fb3') {
     const a = (i / 5) * Math.PI * 2
     pet += c(x + Math.cos(a) * s, y + Math.sin(a) * s, s * 0.62, color)
   }
-  return `<g>${pet}${c(x, y, s * 0.55, '#ffe14d')}</g>`
+  return `<g class="sway" style="animation-delay:${round2((_sw++ % 5) * 0.3)}s">${pet}${c(x, y, s * 0.55, '#ffe14d')}</g>`
 }
 function butterfly(x, y, s, color = '#ff9ecb') {
-  return ell(x - s * 0.6, y - s * 0.3, s * 0.55, s * 0.7, color)
+  return `<g class="flutter">` + ell(x - s * 0.6, y - s * 0.3, s * 0.55, s * 0.7, color)
     + ell(x + s * 0.6, y - s * 0.3, s * 0.55, s * 0.7, color)
     + ell(x - s * 0.55, y + s * 0.55, s * 0.42, s * 0.5, color, 'opacity="0.85"')
     + ell(x + s * 0.55, y + s * 0.55, s * 0.42, s * 0.5, color, 'opacity="0.85"')
-    + rct(x - s * 0.08, y - s * 0.6, s * 0.16, s * 1.3, '#5b4632', s * 0.08)
+    + rct(x - s * 0.08, y - s * 0.6, s * 0.16, s * 1.3, '#5b4632', s * 0.08) + `</g>`
 }
 function blanket(cx, cy, rx, ry) {
   const p = [ell(cx, cy, rx, ry, '#f7e6c2')]
@@ -380,7 +401,9 @@ function grassDetail(spots) {
 
 // ---- 밤하늘 부품 ----
 function star(cx, cy, s, color = C.starC, op = 1) {
-  return pth(`M ${cx} ${round2(cy - s)} L ${round2(cx + s * 0.26)} ${round2(cy - s * 0.26)} L ${round2(cx + s)} ${cy} L ${round2(cx + s * 0.26)} ${round2(cy + s * 0.26)} L ${cx} ${round2(cy + s)} L ${round2(cx - s * 0.26)} ${round2(cy + s * 0.26)} L ${round2(cx - s)} ${cy} L ${round2(cx - s * 0.26)} ${round2(cy - s * 0.26)} Z`, color, op < 1 ? `opacity="${op}"` : '')
+  return `<g class="twinkle" style="animation-delay:${round2((_tw++ % 6) * 0.35)}s">`
+    + pth(`M ${cx} ${round2(cy - s)} L ${round2(cx + s * 0.26)} ${round2(cy - s * 0.26)} L ${round2(cx + s)} ${cy} L ${round2(cx + s * 0.26)} ${round2(cy + s * 0.26)} L ${cx} ${round2(cy + s)} L ${round2(cx - s * 0.26)} ${round2(cy + s * 0.26)} L ${round2(cx - s)} ${cy} L ${round2(cx - s * 0.26)} ${round2(cy - s * 0.26)} Z`, color, op < 1 ? `opacity="${op}"` : '')
+    + `</g>`
 }
 function moon(cx, cy, r) {
   return c(cx, cy, r * 1.55, C.moonGlow, 'opacity="0.3"')
@@ -618,7 +641,7 @@ scenes['nat-sleep'] = [
 ]
 
 function svg(body) {
-  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${body}</svg>`
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">${ANIM_STYLE}${body}</svg>`
 }
 
 mkdirSync('public/img/scene', { recursive: true })
