@@ -1,0 +1,15 @@
+@import 'pretendard/dist/web/static/pretendard.css';
+@import '@fontsource/gowun-dodum/400.css';
+@import './tokens.css';
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root { height: 100%; }
+body {
+  font-family: var(--font-base);
+  background: linear-gradient(170deg, var(--c-bg-1), var(--c-bg-2));
+  color: var(--c-ink);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  touch-action: manipulation;
+}
+button { font-family: inherit; cursor: pointer; }

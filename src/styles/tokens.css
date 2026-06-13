@@ -1,0 +1,16 @@
+:root {
+  --c-bg-1: #fff7ec;
+  --c-bg-2: #ffeede;
+  --c-card: #ffffff;
+  --c-accent: #f0a04b;
+  --c-accent-strong: #e8852b;
+  --c-correct: #22a06b;
+  --c-pink: #ef6aa6;
+  --c-ink: #5b4632;
+  --c-ink-soft: #a98a6a;
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --shadow-card: 0 8px 22px rgba(180,120,60,.14);
+  --font-base: 'Pretendard', system-ui, sans-serif;
+  --font-warm: 'Gowun Dodum', 'Pretendard', sans-serif;
+}
