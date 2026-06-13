@@ -25,6 +25,7 @@ export interface Lesson {
   id: string
   title: string
   theme: Theme
+  level: number          // 단계(1부터). 여정 순서 + 난이도 결정
   story: StoryScene[]
   targetWords: string[]  // word id
   games: GameId[]

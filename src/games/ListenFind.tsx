@@ -7,8 +7,8 @@ import { Sparkles } from '../ui/Sparkles'
 import { buildChoices } from './choices'
 
 /** targetWords 각각을 한 라운드씩 출제. 정답 시 onCorrect, 전부 끝나면 onDone */
-export function ListenFind({ targetWords, pool, onCorrect, onDone }: {
-  targetWords: string[]; pool: string[]; onCorrect: () => void; onDone: () => void
+export function ListenFind({ targetWords, pool, onCorrect, onDone, choiceCount = 3 }: {
+  targetWords: string[]; pool: string[]; onCorrect: () => void; onDone: () => void; choiceCount?: number
 }) {
   const { speak } = useTts()
   const [round, setRound] = useState(0)
@@ -17,8 +17,8 @@ export function ListenFind({ targetWords, pool, onCorrect, onDone }: {
   const answer = getWord(answerId)!
 
   const choiceIds = useMemo(
-    () => buildChoices(answerId, pool, 3),
-    [answerId, pool],
+    () => buildChoices(answerId, pool, choiceCount),
+    [answerId, pool, choiceCount],
   )
   const choices = getWordsByIds(choiceIds)
 

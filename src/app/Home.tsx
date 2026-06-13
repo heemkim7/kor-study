@@ -1,6 +1,8 @@
 import { useNavigation } from './Navigation'
 import { useProgress } from '../progress/useProgress'
 import { allLessons } from '../content/loader'
+import { buildJourney } from '../content/journey'
+import { difficultyStars } from '../content/difficulty'
 import type { Theme } from '../content/types'
 
 const THEME_EMOJI: Partial<Record<Theme, string>> = {
@@ -11,30 +13,57 @@ const THEME_EMOJI: Partial<Record<Theme, string>> = {
 export function Home() {
   const { go } = useNavigation()
   const { progress } = useProgress()
-  const lessons = allLessons()
+  const journey = buildJourney(allLessons(), progress.completedLessons)
 
   return (
-    <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column',
-      alignItems: 'center', justifyContent: 'center', gap: 16, padding: 24, textAlign: 'center' }}>
+    <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
+      gap: 14, padding: '24px 16px 32px', textAlign: 'center' }}>
       <div style={{ position: 'absolute', top: 16, right: 20, fontWeight: 800, color: 'var(--c-accent-strong)' }}>
         ⭐ {progress.stars} · 🏅 {progress.stickers}
       </div>
-      <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 34 }}>우리 딸 한글 놀이</h1>
-      <p style={{ color: 'var(--c-ink-soft)', marginTop: -10 }}>오늘은 어떤 이야기로 놀까요?</p>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, width: '100%', maxWidth: 360, marginTop: 4 }}>
-        {lessons.map((lesson) => {
-          const done = progress.completedLessons.includes(lesson.id)
-          return (
-            <button key={lesson.id}
-              onClick={() => go({ name: 'adventure', lessonId: lesson.id })}
-              style={{ fontFamily: 'var(--font-warm)', fontSize: 24, fontWeight: 800, color: '#fff',
-                background: 'var(--c-accent)', border: 'none', borderRadius: 'var(--radius-lg)',
-                padding: '20px 22px', boxShadow: '0 6px 0 #d98a3a', display: 'flex',
-                alignItems: 'center', justifyContent: 'center', gap: 10, cursor: 'pointer' }}>
-              <span style={{ fontSize: 30 }}>{THEME_EMOJI[lesson.theme] ?? '🎒'}</span>
-              <span>{lesson.title}</span>
-              {done && <span style={{ fontSize: 22 }} aria-label="완료">✓</span>}
+      <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 32 }}>우리 딸 한글 여정</h1>
+      <p style={{ color: 'var(--c-ink-soft)', marginTop: -8 }}>한 단계씩 올라가며 한글을 배워요</p>
+
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 14, width: '100%', maxWidth: 380, marginTop: 6 }}>
+        {journey.map(({ lesson, completed, unlocked, current }) => {
+          const emoji = THEME_EMOJI[lesson.theme] ?? '🎒'
+          const stars = difficultyStars(lesson.level)
+          const badge = completed ? '⭐' : unlocked ? String(lesson.level) : '🔒'
+          const state = completed ? ' · 완료!' : current ? ' · 지금 도전!' : !unlocked ? ' · 잠김' : ''
+          const baseStyle = {
+            display: 'flex', alignItems: 'center', gap: 14, width: '100%',
+            padding: '14px 16px', borderRadius: 'var(--radius-lg)', border: 'none',
+            background: 'var(--c-card)',
+            boxShadow: current ? '0 0 0 3px var(--c-accent), var(--shadow-card)' : 'var(--shadow-card)',
+            opacity: unlocked ? 1 : 0.6,
+          } as const
+          const inner = (
+            <>
+              <div style={{ width: 52, height: 52, flex: '0 0 auto', borderRadius: '50%',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: completed ? 26 : 22, fontWeight: 800, color: '#fff',
+                background: completed ? 'var(--c-correct)' : unlocked ? 'var(--c-accent)' : '#c9bba8' }}>
+                {badge}
+              </div>
+              <div style={{ flex: 1, textAlign: 'left' }}>
+                <div style={{ fontFamily: 'var(--font-warm)', fontSize: 21, fontWeight: 800, color: 'var(--c-ink)' }}>
+                  {emoji} {lesson.title}
+                </div>
+                <div style={{ fontSize: 14, color: 'var(--c-ink-soft)', marginTop: 2 }}>
+                  난이도 {'★'.repeat(stars)}{'☆'.repeat(3 - stars)}{state}
+                </div>
+              </div>
+            </>
+          )
+          return unlocked ? (
+            <button key={lesson.id} onClick={() => go({ name: 'adventure', lessonId: lesson.id })}
+              style={{ ...baseStyle, cursor: 'pointer' }}>
+              {inner}
             </button>
+          ) : (
+            <div key={lesson.id} style={baseStyle} aria-disabled="true">
+              {inner}
+            </div>
           )
         })}
       </div>

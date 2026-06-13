@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { getLesson } from '../content/loader'
 import { WORDS } from '../content/words'
+import { choiceCountForLevel } from '../content/difficulty'
 import { useProgress } from '../progress/useProgress'
 import { useNavigation } from './Navigation'
 import { StoryPlayer } from '../story/StoryPlayer'
@@ -46,6 +47,7 @@ export function Adventure({ lessonId }: { lessonId: string }) {
     const common = {
       targetWords: lesson.targetWords, pool, onCorrect,
       onDone: () => nextAfterGame(phase.index),
+      choiceCount: choiceCountForLevel(lesson.level),
     }
     if (gameId === 'listen-find') return <ListenFind {...common} />
     if (gameId === 'pick-word') return <PickWord {...common} />

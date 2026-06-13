@@ -5,6 +5,7 @@ export const LESSONS: Lesson[] = [
     id: 'fruit-1',
     title: '과일나라 이야기',
     theme: 'food',
+    level: 1,
     story: [
       { sceneImage: 'picnic',   text: '어느 맑은 날, 곰돌이는 친구들과 과일나라로 소풍을 갔어요.', targets: [] },
       { sceneImage: 'orchard',  text: '"우아, 빨간 사과가 주렁주렁!" 곰돌이가 사과를 콕 땄어요.', targets: ['apple'] },
@@ -20,6 +21,7 @@ export const LESSONS: Lesson[] = [
     id: 'animals-1',
     title: '동물 친구들',
     theme: 'animals',
+    level: 2,
     story: [
       { sceneImage: 'an-forest', text: '곰돌이가 숲속 길을 따라 살랑살랑 산책을 나갔어요.', targets: [] },
       { sceneImage: 'an-dog',    text: '"멍멍!" 강아지가 꼬리를 살랑살랑 흔들며 달려왔어요.', targets: ['dog'] },
@@ -35,6 +37,7 @@ export const LESSONS: Lesson[] = [
     id: 'nature-1',
     title: '반짝반짝 밤하늘',
     theme: 'nature',
+    level: 3,
     story: [
       { sceneImage: 'nat-dusk',   text: '해가 지고 깜깜한 밤이 되었어요.', targets: [] },
       { sceneImage: 'nat-star',   text: '하늘에 반짝반짝 별이 떠올랐어요.', targets: ['star'] },

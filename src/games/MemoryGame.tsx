@@ -7,7 +7,7 @@ import { buildMemoryDeck, isPair } from './memory'
 
 /** 그림카드와 글자카드를 뒤집어 같은 단어끼리 짝을 맞춘다. */
 export function MemoryGame({ targetWords, onCorrect, onDone }: {
-  targetWords: string[]; pool: string[]; onCorrect: () => void; onDone: () => void
+  targetWords: string[]; pool: string[]; onCorrect: () => void; onDone: () => void; choiceCount?: number
 }) {
   const { speak } = useTts()
   const deck = useMemo(() => buildMemoryDeck(targetWords), [targetWords])

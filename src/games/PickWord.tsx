@@ -6,8 +6,8 @@ import { Sparkles } from '../ui/Sparkles'
 import { buildChoices } from './choices'
 
 /** 그림을 보여주고 글자 보기 중 맞는 단어를 고르기 */
-export function PickWord({ targetWords, pool, onCorrect, onDone }: {
-  targetWords: string[]; pool: string[]; onCorrect: () => void; onDone: () => void
+export function PickWord({ targetWords, pool, onCorrect, onDone, choiceCount = 3 }: {
+  targetWords: string[]; pool: string[]; onCorrect: () => void; onDone: () => void; choiceCount?: number
 }) {
   const { speak } = useTts()
   const [round, setRound] = useState(0)
@@ -15,7 +15,7 @@ export function PickWord({ targetWords, pool, onCorrect, onDone }: {
   const answerId = targetWords[round]
   const answer = getWord(answerId)!
 
-  const choiceIds = useMemo(() => buildChoices(answerId, pool, 3), [answerId, pool])
+  const choiceIds = useMemo(() => buildChoices(answerId, pool, choiceCount), [answerId, pool, choiceCount])
   const choices = getWordsByIds(choiceIds)
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)

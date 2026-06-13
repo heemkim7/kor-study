@@ -8,8 +8,8 @@ import { Sparkles } from '../ui/Sparkles'
 import { buildSyllableTiles } from './wordTiles'
 
 /** 그림을 보고, 섞인 음절 타일을 순서대로 눌러 단어를 완성한다. */
-export function BuildWord({ targetWords, pool, onCorrect, onDone }: {
-  targetWords: string[]; pool: string[]; onCorrect: () => void; onDone: () => void
+export function BuildWord({ targetWords, pool, onCorrect, onDone, choiceCount = 3 }: {
+  targetWords: string[]; pool: string[]; onCorrect: () => void; onDone: () => void; choiceCount?: number
 }) {
   const { speak } = useTts()
   const [round, setRound] = useState(0)
@@ -24,9 +24,9 @@ export function BuildWord({ targetWords, pool, onCorrect, onDone }: {
     [pool],
   )
   const { answer: slots, tiles } = useMemo(
-    () => buildSyllableTiles(answer.text, distractorSyllables, 1),
+    () => buildSyllableTiles(answer.text, distractorSyllables, Math.max(1, choiceCount - 1)),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [answerId, distractorSyllables],
+    [answerId, distractorSyllables, choiceCount],
   )
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
