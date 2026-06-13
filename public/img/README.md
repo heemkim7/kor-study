@@ -7,10 +7,13 @@
 - 출처: https://github.com/microsoft/fluentui-emoji (© Microsoft, MIT)
 
 ## `scene/*.svg` — 이야기 장면 (벡터 그림책 일러스트)
-6장면(picnic/orchard/monkey/squirrel/share/bye)은 **손으로 만든 SVG 그림책 일러스트** 입니다.
-곰돌이·원숭이·다람쥐·토끼를 재사용 부품으로 정의해 전 장면에 일관되게 등장시켰고,
+모든 이야기 장면은 **손으로 만든 SVG 그림책 일러스트** 입니다.
+곰돌이·원숭이·다람쥐·토끼·강아지·고양이를 재사용 부품으로 정의해 일관되게 등장시켰고,
 앱 테마(코지 크림+따뜻한 톤)와 통일했습니다. 비용 0·오프라인·태블릿에서 선명.
+- 과일나라: `picnic/orchard/monkey/squirrel/share/bye`
+- 동물 친구들: `an-forest/an-dog/an-cat/an-rabbit/an-play/an-bye`
 - 재생성/수정: `node scripts/gen-scene-art.mjs` (부품·장면 구성은 이 파일에서)
+- 눈으로 확인(개발용): `node scripts/render-scenes.mjs` → `.preview/scenes/*.png` 로 PNG 렌더(@resvg/resvg-js)
 - 더 회화적/3D 고화질로 바꾸려면(선택): `docs/assets/scene-image-prompts.md` 의 AI 프롬프트 팩 참고
 
 ## 새 단어 추가 시

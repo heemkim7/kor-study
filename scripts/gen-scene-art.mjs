@@ -25,6 +25,9 @@ const C = {
   monkey: '#8d6443', monkeyFace: '#f0d6ae', monkeyDark: '#6e4d34',
   squirrel: '#df9249', squirrelLight: '#f2c690', squirrelDark: '#b8702f',
   rabbit: '#fff6ec', rabbitShade: '#efe1d0', rabbitEar: '#f6b9c6',
+  dog: '#e0b06a', dogLight: '#f6e3bf', dogDark: '#bd8742',
+  cat: '#a9b2bd', catLight: '#e8ecf1', catDark: '#7f8a98', catPink: '#f3a6c0', whisker: '#6f7780',
+  ball: '#ef6aa6', ballAlt: '#ffd24d',
   eye: '#4a3526', cheek: '#f29bb0',
   shadow: 'rgba(90,60,30,0.13)',
   white: '#ffffff',
@@ -188,6 +191,80 @@ function rabbit(cx, cy, s, { armWave = false } = {}) {
   p.push(smile(cx, cy + s * 0.36, s * 0.16))
   p.push(cheeks(cx, cy + s * 0.2, s * 0.54, s * 0.13))
   return p.join('')
+}
+
+// ---- 캐릭터: 강아지 ----
+function dog(cx, cy, s, { armWave = false } = {}) {
+  const by = cy + s * 1.5
+  const p = []
+  p.push(shadow(cx, by + s * 1.0, s * 1.2))
+  // 흔드는 꼬리
+  p.push(limb(cx - s * 0.85, by + s * 0.25, cx - s * 1.45, by - s * 0.4, s * 0.3, C.dog))
+  // 몸
+  p.push(ell(cx, by, s * 0.84, s * 0.98, C.dog))
+  p.push(ell(cx, by + s * 0.14, s * 0.5, s * 0.62, C.dogLight))
+  p.push(ell(cx - s * 0.4, by + s * 0.9, s * 0.28, s * 0.22, C.dogDark))
+  p.push(ell(cx + s * 0.4, by + s * 0.9, s * 0.28, s * 0.22, C.dogDark))
+  p.push(limb(cx - s * 0.72, by - s * 0.1, cx - s * 0.92, by + s * 0.45, s * 0.42, C.dog))
+  if (armWave) p.push(limb(cx + s * 0.68, by - s * 0.2, cx + s * 1.15, cy + s * 0.05, s * 0.42, C.dog))
+  else p.push(limb(cx + s * 0.72, by - s * 0.1, cx + s * 0.92, by + s * 0.45, s * 0.42, C.dog))
+  // 늘어진 귀
+  p.push(ell(cx - s * 0.86, cy + s * 0.12, s * 0.32, s * 0.6, C.dogDark, `transform="rotate(-14 ${round2(cx - s * 0.86)} ${cy})"`))
+  p.push(ell(cx + s * 0.86, cy + s * 0.12, s * 0.32, s * 0.6, C.dogDark, `transform="rotate(14 ${round2(cx + s * 0.86)} ${cy})"`))
+  // 머리
+  p.push(c(cx, cy, s, C.dog))
+  p.push(gloss(cx, cy, s))
+  p.push(ell(cx, cy + s * 0.34, s * 0.52, s * 0.42, C.dogLight))
+  p.push(eyes(cx, cy - s * 0.02, s * 0.32, s * 0.12))
+  p.push(ell(cx, cy + s * 0.18, s * 0.14, s * 0.11, C.eye))
+  p.push(smile(cx, cy + s * 0.42, s * 0.18))
+  p.push(cheeks(cx, cy + s * 0.24, s * 0.56, s * 0.14))
+  return p.join('')
+}
+
+// ---- 캐릭터: 고양이 ----
+function cat(cx, cy, s, { armWave = false } = {}) {
+  const by = cy + s * 1.5
+  const p = []
+  p.push(shadow(cx, by + s * 1.0, s * 1.2))
+  // 둥글게 말린 꼬리
+  p.push(pth(`M ${round2(cx + s * 0.8)} ${round2(by + s * 0.25)} q ${round2(s * 0.95)} ${round2(-s * 0.1)} ${round2(s * 0.8)} ${round2(-s * 0.95)} q ${round2(-s * 0.12)} ${round2(-s * 0.45)} ${round2(-s * 0.5)} ${round2(-s * 0.28)}`, 'none', `stroke="${C.cat}" stroke-width="${round2(s * 0.34)}" stroke-linecap="round"`))
+  p.push(ell(cx, by, s * 0.82, s * 0.96, C.cat))
+  p.push(ell(cx, by + s * 0.14, s * 0.48, s * 0.6, C.catLight))
+  p.push(ell(cx - s * 0.4, by + s * 0.9, s * 0.27, s * 0.22, C.catDark))
+  p.push(ell(cx + s * 0.4, by + s * 0.9, s * 0.27, s * 0.22, C.catDark))
+  p.push(limb(cx - s * 0.72, by - s * 0.1, cx - s * 0.92, by + s * 0.45, s * 0.4, C.cat))
+  if (armWave) p.push(limb(cx + s * 0.68, by - s * 0.2, cx + s * 1.12, cy + s * 0.05, s * 0.4, C.cat))
+  else p.push(limb(cx + s * 0.72, by - s * 0.1, cx + s * 0.92, by + s * 0.45, s * 0.4, C.cat))
+  // 뾰족 귀
+  for (const dx of [-0.58, 0.58]) {
+    p.push(pth(`M ${round2(cx + s * dx - s * 0.32)} ${round2(cy - s * 0.66)} L ${round2(cx + s * dx)} ${round2(cy - s * 1.32)} L ${round2(cx + s * dx + s * 0.32)} ${round2(cy - s * 0.66)} Z`, C.cat))
+    p.push(pth(`M ${round2(cx + s * dx - s * 0.16)} ${round2(cy - s * 0.74)} L ${round2(cx + s * dx)} ${round2(cy - s * 1.12)} L ${round2(cx + s * dx + s * 0.16)} ${round2(cy - s * 0.74)} Z`, C.catPink))
+  }
+  p.push(c(cx, cy, s, C.cat))
+  p.push(gloss(cx, cy, s))
+  p.push(eyes(cx, cy - s * 0.02, s * 0.34, s * 0.12))
+  p.push(pth(`M ${round2(cx - s * 0.09)} ${round2(cy + s * 0.16)} L ${round2(cx + s * 0.09)} ${round2(cy + s * 0.16)} L ${cx} ${round2(cy + s * 0.28)} Z`, C.catPink))
+  p.push(smile(cx, cy + s * 0.36, s * 0.16))
+  // 수염
+  for (const sgn of [-1, 1]) {
+    p.push(limb(cx + sgn * s * 0.2, cy + s * 0.2, cx + sgn * s * 0.85, cy + s * 0.12, s * 0.045, C.whisker))
+    p.push(limb(cx + sgn * s * 0.2, cy + s * 0.27, cx + sgn * s * 0.85, cy + s * 0.32, s * 0.045, C.whisker))
+  }
+  p.push(cheeks(cx, cy + s * 0.2, s * 0.56, s * 0.14))
+  return p.join('')
+}
+
+// ---- 소품: 공 (비치볼) ----
+function ball(cx, cy, s) {
+  const clip = `<clipPath id="ball${round2(cx)}_${round2(cy)}"><circle cx="${cx}" cy="${cy}" r="${s}"/></clipPath>`
+  const cid = `url(#ball${round2(cx)}_${round2(cy)})`
+  return clip + shadow(cx, cy + s * 1.0, s * 0.95)
+    + c(cx, cy, s, C.ball)
+    + ell(cx, cy, s * 0.34, s, C.ballAlt, `clip-path="${cid}"`)
+    + ell(cx - s * 0.5, cy, s * 0.18, s, '#fff', `opacity="0.5" clip-path="${cid}"`)
+    + ell(cx + s * 0.5, cy, s * 0.18, s, '#fff', `opacity="0.5" clip-path="${cid}"`)
+    + ell(cx - s * 0.32, cy - s * 0.34, s * 0.26, s * 0.18, '#fff', 'opacity="0.6"')
 }
 
 // ---- 과일 소품 ----
@@ -396,6 +473,76 @@ scenes.bye = [
   monkey(232, 224, 23, {}),
   squirrel(348, 236, 25, {}),
   rabbit(430, 236, 20, { armWave: true }),
+  butterfly(180, 120, 10, '#ffc4a0'),
+]
+
+// ========================= 동물 친구들 (animals) =========================
+// an-forest — 곰돌이가 숲속 길을 걸어가요
+scenes['an-forest'] = [
+  dayBackdrop({ sunX: 410, sunY: 58 }),
+  tree(60, 212, 30), tree(150, 196, 23), tree(420, 206, 30), tree(330, 194, 22),
+  pth(`M210 360 Q245 300 235 250 Q228 220 250 200 L280 200 Q262 224 270 252 Q282 305 300 360 Z`, C.path),
+  pth(`M210 360 Q245 300 235 250 Q228 220 250 200`, 'none', `stroke="${C.pathEdge}" stroke-width="3"`),
+  bear(250, 232, 30, {}),
+  flower(70, 336, 8), flower(420, 340, 8, '#ffd24d'), flower(150, 346, 7, '#b58bff'),
+  butterfly(180, 150, 11, '#ffb0d4'),
+  grassDetail([[40, 320], [360, 330], [300, 350]]),
+]
+// an-dog — 강아지가 꼬리를 흔들며 달려왔어요
+scenes['an-dog'] = [
+  dayBackdrop({ sunX: 64, sunY: 58 }),
+  tree(410, 236, 34),
+  bear(140, 240, 28, { armWave: true }),
+  dog(312, 238, 28, {}),
+  flower(70, 340, 8, '#ff8fb3'), flower(360, 342, 7, '#ffd24d'),
+  butterfly(220, 130, 11, '#c4a0ff'),
+  grassDetail([[40, 322], [250, 340], [440, 320]]),
+]
+// an-cat — 고양이가 살금살금 다가왔어요
+scenes['an-cat'] = [
+  dayBackdrop({ sunX: 410, sunY: 56 }),
+  tree(70, 240, 32),
+  bear(150, 244, 27, {}),
+  cat(330, 240, 27, {}),
+  flower(60, 342, 8, '#b58bff'), flower(300, 344, 7, '#ff8fb3'),
+  butterfly(380, 140, 11, '#ffb0d4'),
+  grassDetail([[110, 330], [430, 322], [250, 348]]),
+]
+// an-rabbit — 토끼도 폴짝 뛰어왔어요
+scenes['an-rabbit'] = [
+  dayBackdrop({ sunX: 66, sunY: 60 }),
+  tree(400, 238, 32),
+  bear(150, 244, 27, {}),
+  rabbit(330, 236, 24, {}),
+  flower(64, 344, 8, '#ffd24d'), flower(290, 344, 7, '#b58bff'),
+  butterfly(210, 130, 11, '#c4a0ff'),
+  grassDetail([[40, 326], [360, 330], [250, 350]]),
+]
+// an-play — 친구들이 모두 모여 신나게 놀았어요 (공놀이)
+scenes['an-play'] = [
+  dayBackdrop({ sunX: 240, sunY: 52 }),
+  ball(240, 300, 26),
+  bear(95, 220, 26, {}),
+  dog(195, 214, 22, {}),
+  cat(290, 214, 22, {}),
+  rabbit(385, 220, 21, {}),
+  flower(40, 330, 8, '#ff8fb3'), flower(450, 330, 8, '#ffd24d'),
+  butterfly(400, 120, 12, '#ffb0d4'),
+]
+// an-bye — 해가 져서 인사했어요 (노을)
+scenes['an-bye'] = [
+  `<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.sunsetTop}"/><stop offset="0.55" stop-color="${C.sunsetMid}"/><stop offset="1" stop-color="${C.sunsetBot}"/></linearGradient>`
+  + `<linearGradient id="grass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cf9f6a"/><stop offset="1" stop-color="#b9854f"/></linearGradient></defs>`,
+  rct(0, 0, W, H, 'url(#sky)'),
+  sun(240, 150, 46, C.sunset, '#ffd9a0'),
+  cloud(360, 80, 24), cloud(110, 64, 18),
+  ell(110, 300, 230, 130, '#d7a96f'),
+  ell(400, 310, 240, 140, '#caa063'),
+  pth(`M0 244 Q240 220 480 244 L480 360 L0 360 Z`, 'url(#grass)'),
+  bear(100, 232, 26, { armWave: true }),
+  dog(225, 230, 22, { armWave: true }),
+  cat(338, 234, 23, {}),
+  rabbit(432, 236, 20, { armWave: true }),
   butterfly(180, 120, 10, '#ffc4a0'),
 ]
 

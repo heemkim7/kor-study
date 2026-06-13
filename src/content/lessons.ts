@@ -16,4 +16,19 @@ export const LESSONS: Lesson[] = [
     targetWords: ['apple', 'banana', 'grape'],
     games: ['listen-find', 'build-word', 'memory'],
   },
+  {
+    id: 'animals-1',
+    title: '동물 친구들',
+    theme: 'animals',
+    story: [
+      { sceneImage: 'an-forest', text: '곰돌이가 숲속 길을 따라 살랑살랑 산책을 나갔어요.', targets: [] },
+      { sceneImage: 'an-dog',    text: '"멍멍!" 강아지가 꼬리를 살랑살랑 흔들며 달려왔어요.', targets: ['dog'] },
+      { sceneImage: 'an-cat',    text: '"야옹~" 고양이가 살금살금 다가와 인사했어요.', targets: ['cat'] },
+      { sceneImage: 'an-rabbit', text: '깡충깡충, 토끼도 폴짝폴짝 뛰어왔어요.', targets: ['rabbit'] },
+      { sceneImage: 'an-play',   text: '곰돌이랑 강아지랑 고양이랑 토끼! 다 같이 공을 차며 신나게 놀았어요.', targets: ['dog', 'cat', 'rabbit'] },
+      { sceneImage: 'an-bye',    text: '"오늘 정말 재밌었어. 안녕, 또 만나!" 친구들이 손을 흔들었어요.', targets: [] },
+    ],
+    targetWords: ['dog', 'cat', 'rabbit'],
+    games: ['listen-find', 'pick-word', 'letter-hunt'],
+  },
 ]
