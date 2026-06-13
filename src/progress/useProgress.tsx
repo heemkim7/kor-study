@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react'
-import { addStars, completeLesson, learnWords, setPrincessName, type Progress } from './progress'
+import { addStars, completeLesson, learnWords, setPrincessName, unlockItem, equipItem, type Progress } from './progress'
 import { loadProgress, saveProgress } from './storage'
 
 type Action =
@@ -7,6 +7,8 @@ type Action =
   | { type: 'learnWords'; ids: string[] }
   | { type: 'completeLesson'; lessonId: string }
   | { type: 'setPrincessName'; name: string }
+  | { type: 'unlockItem'; itemId: string; costOverride?: number }
+  | { type: 'equipItem'; itemId: string }
 
 function reducer(state: Progress, action: Action): Progress {
   switch (action.type) {
@@ -14,6 +16,8 @@ function reducer(state: Progress, action: Action): Progress {
     case 'learnWords': return learnWords(state, action.ids)
     case 'completeLesson': return completeLesson(state, action.lessonId)
     case 'setPrincessName': return setPrincessName(state, action.name)
+    case 'unlockItem': return unlockItem(state, action.itemId, action.costOverride)
+    case 'equipItem': return equipItem(state, action.itemId)
   }
 }
 

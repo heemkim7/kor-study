@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
-import { initialProgress, addStars, learnWords, completeLesson, setPrincessName } from './progress'
+import { initialProgress, addStars, learnWords, completeLesson, setPrincessName, unlockItem, equipItem } from './progress'
+import { GACHA_COST } from '../princess/economy'
 
 describe('addStars', () => {
   it('별을 더함(원본 불변)', () => {
@@ -35,5 +36,58 @@ describe('setPrincessName', () => {
     const p = setPrincessName(initialProgress, '소피아')
     expect(p.princessName).toBe('소피아')
     expect(initialProgress.princessName).toBeNull()
+  })
+})
+
+describe('초기 보유/옷차림', () => {
+  it('기본 아이템을 보유하고 기본 옷을 입고 있음', () => {
+    expect(initialProgress.ownedItems).toContain('dress-pink')
+    expect(initialProgress.ownedItems).toContain('hair-blonde')
+    expect(initialProgress.outfit.dress).toBe('dress-pink')
+  })
+})
+
+describe('unlockItem', () => {
+  it('별이 충분하면 차감하고 보유에 추가 후 장착', () => {
+    const rich = addStars(initialProgress, 10)
+    const p = unlockItem(rich, 'dress-blue') // 가격 5
+    expect(p.stars).toBe(5)
+    expect(p.ownedItems).toContain('dress-blue')
+    expect(p.outfit.dress).toBe('dress-blue')
+  })
+  it('별이 부족하면 변화 없음', () => {
+    const poor = addStars(initialProgress, 2)
+    const p = unlockItem(poor, 'dress-blue') // 가격 5
+    expect(p).toBe(poor)
+  })
+  it('이미 보유한 아이템은 장착만(별 차감 없음)', () => {
+    const rich = addStars(initialProgress, 10)
+    const once = unlockItem(rich, 'dress-blue')
+    const twice = unlockItem(once, 'dress-blue')
+    expect(twice.stars).toBe(once.stars)
+    expect(twice.outfit.dress).toBe('dress-blue')
+  })
+  it('알 수 없는 아이템 id는 변화 없음', () => {
+    const rich = addStars(initialProgress, 10)
+    expect(unlockItem(rich, 'no-such-item')).toBe(rich)
+  })
+  it('costOverride(뽑기 정액)를 적용', () => {
+    const rich = addStars(initialProgress, GACHA_COST)
+    const p = unlockItem(rich, 'acc-wings', GACHA_COST) // 정가 10이지만 정액으로
+    expect(p.stars).toBe(0)
+    expect(p.ownedItems).toContain('acc-wings')
+  })
+})
+
+describe('equipItem', () => {
+  it('보유한 아이템만 장착 가능', () => {
+    const rich = addStars(initialProgress, 10)
+    const owned = unlockItem(rich, 'crown-star')
+    const back = equipItem(owned, 'crown-gold') // 기본 보유
+    expect(back.outfit.crown).toBe('crown-gold')
+  })
+  it('보유하지 않은 아이템은 장착 안 됨', () => {
+    const p = equipItem(initialProgress, 'crown-star')
+    expect(p).toBe(initialProgress)
   })
 })

@@ -3,6 +3,7 @@ import { useProgress } from '../progress/useProgress'
 import { allLessons } from '../content/loader'
 import { buildJourney } from '../content/journey'
 import { difficultyStars } from '../content/difficulty'
+import { PrincessFigure } from '../princess/PrincessFigure'
 import type { Theme } from '../content/types'
 
 const THEME_EMOJI: Partial<Record<Theme, string>> = {
@@ -23,6 +24,25 @@ export function Home() {
       </div>
       <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 32 }}>우리 딸 한글 여정</h1>
       <p style={{ color: 'var(--c-ink-soft)', marginTop: -8 }}>한 단계씩 올라가며 한글을 배워요</p>
+
+      {/* 공주 꾸미기 입구 */}
+      <button onClick={() => go({ name: 'dressup' })}
+        style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', maxWidth: 380,
+          padding: '12px 18px', borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer',
+          background: 'linear-gradient(135deg,#ffe4f1,#fff0f8)', boxShadow: 'var(--shadow-card)' }}>
+        <div style={{ width: 56, height: 88, flex: '0 0 auto' }}>
+          <PrincessFigure outfit={progress.outfit} size={56} animate background={false} />
+        </div>
+        <div style={{ flex: 1, textAlign: 'left' }}>
+          <div style={{ fontFamily: 'var(--font-warm)', fontSize: 21, fontWeight: 800, color: 'var(--c-pink)' }}>
+            👗 공주 꾸미기
+          </div>
+          <div style={{ fontSize: 14, color: 'var(--c-ink-soft)', marginTop: 2 }}>
+            별 ⭐{progress.stars}개로 옷과 왕관을 모아요
+          </div>
+        </div>
+        <div style={{ fontSize: 24 }}>▶</div>
+      </button>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: 14, width: '100%', maxWidth: 380, marginTop: 6 }}>
         {journey.map(({ lesson, completed, unlocked, current }) => {

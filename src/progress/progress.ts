@@ -1,9 +1,13 @@
+import { DEFAULT_OUTFIT, DEFAULT_OWNED_IDS, getItem, type Outfit } from '../princess/catalog'
+
 export interface Progress {
   stars: number
   stickers: number
   learnedWords: string[]
   completedLessons: string[]
   princessName: string | null
+  ownedItems: string[]   // 보유한 꾸미기 아이템 id(기본 포함)
+  outfit: Outfit         // 현재 입은 옷차림
 }
 
 export const initialProgress: Progress = {
@@ -12,6 +16,8 @@ export const initialProgress: Progress = {
   learnedWords: [],
   completedLessons: [],
   princessName: null,
+  ownedItems: [...DEFAULT_OWNED_IDS],
+  outfit: { ...DEFAULT_OUTFIT },
 }
 
 export function addStars(p: Progress, n: number): Progress {
@@ -33,4 +39,31 @@ export function completeLesson(p: Progress, lessonId: string): Progress {
 
 export function setPrincessName(p: Progress, name: string): Progress {
   return { ...p, princessName: name }
+}
+
+/** 아이템 장착(보유 중일 때만). 해당 카테고리 슬롯만 교체. */
+export function equipItem(p: Progress, itemId: string): Progress {
+  const item = getItem(itemId)
+  if (!item || !p.ownedItems.includes(itemId)) return p
+  // 카탈로그에 있는 id이므로 카테고리 슬롯에 안전하게 들어감.
+  return { ...p, outfit: { ...p.outfit, [item.category]: itemId } as Outfit }
+}
+
+/**
+ * 아이템 해금: 별을 cost만큼 차감하고 보유에 추가 후 바로 장착.
+ * costOverride로 뽑기 정액 가격을 적용할 수 있다.
+ * 이미 보유 중이면 장착만, 별이 부족하면 변화 없음.
+ */
+export function unlockItem(p: Progress, itemId: string, costOverride?: number): Progress {
+  const item = getItem(itemId)
+  if (!item) return p
+  if (p.ownedItems.includes(itemId)) return equipItem(p, itemId)
+  const cost = costOverride ?? item.cost
+  if (p.stars < cost) return p
+  return {
+    ...p,
+    stars: p.stars - cost,
+    ownedItems: [...p.ownedItems, itemId],
+    outfit: { ...p.outfit, [item.category]: itemId } as Outfit,
+  }
 }
