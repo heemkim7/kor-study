@@ -1070,7 +1070,7 @@ export function SpeakerButton({ onClick, size = 44 }: { onClick: () => void; siz
 
 Create `src/story/StoryPlayer.tsx`:
 ```tsx
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Lesson } from '../content/types'
 import { getWordsByIds } from '../content/loader'
 import { useTts } from '../tts/useTts'
@@ -1295,7 +1295,7 @@ export function Sparkles() {
 
 Create `src/games/ListenFind.tsx`:
 ```tsx
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { getWord, getWordsByIds } from '../content/loader'
 import { useTts } from '../tts/useTts'
 import { WordImage } from '../ui/WordImage'
@@ -1319,6 +1319,9 @@ export function ListenFind({ targetWords, pool, onCorrect, onDone }: {
   )
   const choices = getWordsByIds(choiceIds)
 
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  useEffect(() => () => clearTimeout(timerRef.current), [])
+
   useEffect(() => { setSolved(false); speak(answer.text) }, [round])
 
   function pick(id: string) {
@@ -1326,7 +1329,7 @@ export function ListenFind({ targetWords, pool, onCorrect, onDone }: {
     if (id === answerId) {
       setSolved(true)
       onCorrect()
-      setTimeout(() => {
+      timerRef.current = setTimeout(() => {
         if (round === targetWords.length - 1) onDone()
         else setRound(round + 1)
       }, 900)
@@ -1373,7 +1376,7 @@ git commit -m "feat: choice builder + listen-and-find game"
 
 Create `src/games/PickWord.tsx`:
 ```tsx
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { getWord, getWordsByIds } from '../content/loader'
 import { useTts } from '../tts/useTts'
 import { WordImage } from '../ui/WordImage'
@@ -1393,6 +1396,9 @@ export function PickWord({ targetWords, pool, onCorrect, onDone }: {
   const choiceIds = useMemo(() => buildChoices(answerId, pool, 3), [answerId, pool])
   const choices = getWordsByIds(choiceIds)
 
+  const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  useEffect(() => () => clearTimeout(timerRef.current), [])
+
   useEffect(() => { setSolved(false) }, [round])
 
   function pick(id: string) {
@@ -1401,7 +1407,7 @@ export function PickWord({ targetWords, pool, onCorrect, onDone }: {
       setSolved(true)
       speak(answer.text)
       onCorrect()
-      setTimeout(() => {
+      timerRef.current = setTimeout(() => {
         if (round === targetWords.length - 1) onDone()
         else setRound(round + 1)
       }, 900)
