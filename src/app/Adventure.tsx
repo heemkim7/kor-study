@@ -13,9 +13,10 @@ type Phase = { kind: 'story' } | { kind: 'words' } | { kind: 'game'; index: numb
 
 export function Adventure({ lessonId }: { lessonId: string }) {
   const lesson = getLesson(lessonId)!
-  const { dispatch } = useProgress()
+  const { progress, dispatch } = useProgress()
   const { go } = useNavigation()
   const [phase, setPhase] = useState<Phase>({ kind: 'story' })
+  const [awarded, setAwarded] = useState(true)
 
   const pool = useMemo(() => WORDS.map((w) => w.id), [])
   const onCorrect = () => dispatch({ type: 'addStars', n: 1 })
@@ -23,6 +24,8 @@ export function Adventure({ lessonId }: { lessonId: string }) {
   function nextAfterGame(index: number) {
     if (index < lesson.games.length - 1) setPhase({ kind: 'game', index: index + 1 })
     else {
+      // 처음 완료할 때만 스티커가 지급됨(completeLesson은 멱등) → 보상 화면 문구를 맞춤
+      setAwarded(!progress.completedLessons.includes(lesson.id))
       dispatch({ type: 'learnWords', ids: lesson.targetWords })
       dispatch({ type: 'completeLesson', lessonId: lesson.id })
       setPhase({ kind: 'reward' })
@@ -56,5 +59,5 @@ export function Adventure({ lessonId }: { lessonId: string }) {
     )
   }
 
-  return <RewardScreen onHome={() => go({ name: 'home' })} />
+  return <RewardScreen awarded={awarded} onHome={() => go({ name: 'home' })} />
 }
