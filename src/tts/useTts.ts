@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { pickKoreanVoice } from './pickVoice'
+import { resolveRecording } from './recordings'
 
 export interface SpeakOptions { rate?: number; onEnd?: () => void }
 
 export function useTts() {
   const voiceRef = useRef<SpeechSynthesisVoice | null>(null)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
@@ -19,7 +21,7 @@ export function useTts() {
     return () => synth.removeEventListener?.('voiceschanged', load)
   }, [])
 
-  const speak = useCallback((text: string, opts: SpeakOptions = {}) => {
+  const ttsSpeak = useCallback((text: string, opts: SpeakOptions = {}) => {
     const synth = window.speechSynthesis
     if (!synth) { opts.onEnd?.(); return }
     synth.cancel()
@@ -31,7 +33,28 @@ export function useTts() {
     synth.speak(u)
   }, [])
 
-  const cancel = useCallback(() => window.speechSynthesis?.cancel(), [])
+  const speak = useCallback((text: string, opts: SpeakOptions = {}) => {
+    // 직전 재생 정리
+    window.speechSynthesis?.cancel()
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null }
+
+    // 녹음이 있으면 부모 목소리로, 없으면 TTS
+    const rec = resolveRecording(text)
+    if (rec) {
+      const audio = new Audio(rec)
+      audioRef.current = audio
+      audio.onended = () => opts.onEnd?.()
+      audio.onerror = () => ttsSpeak(text, opts) // 파일 문제 시 TTS 폴백
+      audio.play().catch(() => ttsSpeak(text, opts))
+      return
+    }
+    ttsSpeak(text, opts)
+  }, [ttsSpeak])
+
+  const cancel = useCallback(() => {
+    window.speechSynthesis?.cancel()
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null }
+  }, [])
 
   return { speak, cancel, ready }
 }
