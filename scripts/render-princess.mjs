@@ -72,4 +72,31 @@ detail.forEach((cell, i) => {
 const dsheet = `<svg viewBox="0 0 ${DCOLS * DCW} ${DROWS * DCH}" xmlns="http://www.w3.org/2000/svg">${dparts.join('')}</svg>`
 writeFileSync('.preview/princess-detail.png', new Resvg(dsheet, { fitTo: { mode: 'width', value: DCOLS * DCW } }).render().asPng())
 
-console.log(`rendered ${cells.length} outfits → .preview/princess-sheet.png + princess-default.png + princess-detail.png`)
+// Phase B 신규 아이템 시트 (헤어스타일·배경·액세서리)
+const phaseB = [
+  { label: 'hair-twin', o: { hair: 'hair-twin' } },
+  { label: 'hair-bun', o: { hair: 'hair-bun', crown: 'crown-none' } },
+  { label: 'hair-bob', o: { hair: 'hair-bob' } },
+  { label: 'crown-none', o: { crown: 'crown-none' } },
+  { label: 'acc-glasses', o: { accessory: 'acc-glasses' } },
+  { label: 'acc-parasol', o: { accessory: 'acc-parasol' } },
+  { label: 'acc-pet', o: { accessory: 'acc-pet' } },
+  { label: 'bg-garden', o: { background: 'bg-garden' } },
+  { label: 'bg-castle', o: { background: 'bg-castle' } },
+  { label: 'bg-night', o: { background: 'bg-night' } },
+  { label: 'bg-rainbow', o: { background: 'bg-rainbow' } },
+  { label: 'COMBO-twin', o: { hair: 'hair-twin', dress: 'dress-mint', crown: 'crown-flower', background: 'bg-garden' } },
+]
+const BCOLS = 4, BCW = 240, BCH = 400, BSCALE = (BCW - 16) / 380
+const BROWS = Math.ceil(phaseB.length / BCOLS)
+const bparts = [`<rect width="${BCOLS * BCW}" height="${BROWS * BCH}" fill="#fbeef5"/>`]
+phaseB.forEach((cell, i) => {
+  const cx = (i % BCOLS) * BCW, cy = Math.floor(i / BCOLS) * BCH
+  const svg = buildPrincessSvg(cell.o, { idPrefix: `b${i}`, background: true, animate: false })
+  bparts.push(`<g transform="translate(${cx + 8} ${cy + 8}) scale(${BSCALE})">${inner(svg)}</g>`)
+  bparts.push(`<text x="${cx + BCW / 2}" y="${cy + BCH - 12}" font-family="monospace" font-size="16" fill="#5b4632" text-anchor="middle">${cell.label}</text>`)
+})
+const bsheet = `<svg viewBox="0 0 ${BCOLS * BCW} ${BROWS * BCH}" xmlns="http://www.w3.org/2000/svg">${bparts.join('')}</svg>`
+writeFileSync('.preview/princess-phaseB.png', new Resvg(bsheet, { fitTo: { mode: 'width', value: BCOLS * BCW } }).render().asPng())
+
+console.log(`rendered outfits → princess-sheet.png + princess-default.png + princess-detail.png + princess-phaseB.png`)

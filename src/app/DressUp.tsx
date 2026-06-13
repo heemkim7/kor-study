@@ -112,7 +112,7 @@ export function DressUp() {
                 cursor: 'pointer' }}>
               <div style={{ width: 64, height: 101, overflow: 'hidden', borderRadius: 10,
                 background: 'linear-gradient(170deg,#fff6fb,#ffeaf4)' }}>
-                <PrincessFigure outfit={previewOutfit} size={64} background={false} />
+                <PrincessFigure outfit={previewOutfit} size={64} background={tab === 'background'} />
               </div>
               <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--c-ink)', textAlign: 'center', lineHeight: 1.15 }}>
                 {item.name}
