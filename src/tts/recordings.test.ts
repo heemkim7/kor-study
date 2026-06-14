@@ -2,8 +2,7 @@ import { describe, it, expect } from 'vitest'
 import { resolveRecording } from './recordings'
 
 describe('resolveRecording', () => {
-  it('녹음이 없는 텍스트는 null (기본: 전부 TTS)', () => {
-    expect(resolveRecording('사과')).toBeNull()
-    expect(resolveRecording('아무 문장')).toBeNull()
+  it('매핑 없는 텍스트는 null (TTS 폴백)', () => {
+    expect(resolveRecording('이런 문장은 앱에 절대 없어요 zzz-12345')).toBeNull()
   })
 })

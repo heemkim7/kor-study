@@ -1,14 +1,13 @@
-// 부모 목소리 녹음으로 '전환'하기 위한 연결고리.
-// 텍스트 -> 오디오 파일 경로 매핑. 비어 있으면 모든 음성은 브라우저 TTS로 재생됩니다.
-// 녹음 파일을 public/audio/ 에 넣고 아래에 한 줄씩 추가하면, 그 텍스트는 녹음으로 재생돼요.
-// (코드 변경 없이 콘텐츠 추가만으로 전환됨)
-export const RECORDINGS: Record<string, string> = {
-  // 예시(파일을 추가하면 주석 해제):
-  // '사과': '/audio/words/apple.mp3',
-  // '어느 맑은 날, 곰돌이는 친구들과 과일나라로 소풍을 갔어요.': '/audio/story/fruit-1-0.mp3',
-}
+// 텍스트 -> 오디오 파일 경로 매핑.
+//  - GENERATED_RECORDINGS: 로컬 TTS로 미리 만든 mp3(scripts/gen-tts.mjs).
+//  - RECORDINGS(수동): 부모 목소리 녹음 등으로 특정 문장을 덮어쓰고 싶을 때.
+// 매핑이 없으면 브라우저 TTS로 폴백합니다.
+import { GENERATED_RECORDINGS } from './recordings.generated'
 
-/** 주어진 텍스트에 대한 녹음 파일 경로(없으면 null). */
+// 수동 오버라이드(있으면 생성본보다 우선). 예: '사과': '/audio/parent/apple.mp3'
+export const RECORDINGS: Record<string, string> = {}
+
+/** 주어진 텍스트에 대한 녹음 파일 경로(없으면 null). 수동 > 생성본 우선. */
 export function resolveRecording(text: string): string | null {
-  return RECORDINGS[text] ?? null
+  return RECORDINGS[text] ?? GENERATED_RECORDINGS[text] ?? null
 }
