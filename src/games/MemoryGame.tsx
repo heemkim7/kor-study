@@ -58,16 +58,16 @@ export function MemoryGame({ targetWords, onCorrect, onDone }: {
 
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
-      gap: 18, padding: 24, position: 'relative' }}>
+      gap: 18, padding: '20px 16px', position: 'relative' }}>
       {celebrate && <Sparkles />}
       <h2 style={{ fontFamily: 'var(--font-warm)', fontSize: 24 }}>같은 짝을 찾아요</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 100px)', gap: 14 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, width: '100%', maxWidth: 320 }}>
         {deck.map((card, idx) => {
           const revealed = flipped.includes(idx) || matched.includes(card.wordId)
           const word = getWord(card.wordId)!
           return (
             <button key={card.cardId} onClick={() => tap(idx)} disabled={revealed}
-              style={{ width: 100, height: 100, borderRadius: 'var(--radius-md)', border: 'none',
+              style={{ width: '100%', aspectRatio: '1', borderRadius: 'var(--radius-md)', border: 'none',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: revealed ? 'var(--c-card)' : 'var(--c-accent)',
                 boxShadow: revealed ? 'var(--shadow-card)' : '0 5px 0 #d98a3a',

@@ -30,11 +30,13 @@ export function BuildWord({ targetWords, pool, onCorrect, onDone, choiceCount = 
   )
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-  useEffect(() => () => clearTimeout(timerRef.current), [])
+  const shakeRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const [wrongIdx, setWrongIdx] = useState<number | null>(null)
+  useEffect(() => () => { clearTimeout(timerRef.current); clearTimeout(shakeRef.current) }, [])
 
   // 라운드가 바뀌면 상태 초기화(렌더 중 — 이펙트에서 setState 지양)
   const [prevRound, setPrevRound] = useState(round)
-  if (round !== prevRound) { setPrevRound(round); setPlaced([]); setUsedIdx([]); setSolved(false) }
+  if (round !== prevRound) { setPrevRound(round); setPlaced([]); setUsedIdx([]); setSolved(false); setWrongIdx(null) }
 
   // 진입 안내(1회): 놀이 방법 → 첫 단어
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -60,6 +62,9 @@ export function BuildWord({ targetWords, pool, onCorrect, onDone, choiceCount = 
       }
     } else {
       speak('다시 해볼까?')
+      setWrongIdx(idx)
+      clearTimeout(shakeRef.current)
+      shakeRef.current = setTimeout(() => setWrongIdx(null), 450)
     }
   }
 
@@ -95,7 +100,7 @@ export function BuildWord({ targetWords, pool, onCorrect, onDone, choiceCount = 
         {tiles.map((t, idx) => {
           const used = usedIdx.includes(idx)
           return (
-            <button key={idx} onClick={() => tapTile(idx)} disabled={used}
+            <button key={idx} onClick={() => tapTile(idx)} disabled={used} className={wrongIdx === idx ? 'kp-shake' : undefined}
               style={{ width: 66, height: 66, borderRadius: 'var(--radius-md)', border: 'none',
                 fontFamily: 'var(--font-warm)', fontSize: 34, fontWeight: 800, color: 'var(--c-ink)',
                 background: used ? '#f3e7d6' : 'var(--c-card)',

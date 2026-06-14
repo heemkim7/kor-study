@@ -30,11 +30,13 @@ export function LetterHunt({ targetWords, pool, onCorrect, onDone }: {
   const targetTotal = useMemo(() => grid.filter((c) => c === target).length, [grid, target])
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-  useEffect(() => () => clearTimeout(timerRef.current), [])
+  const shakeRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const [wrongIdx, setWrongIdx] = useState<number | null>(null)
+  useEffect(() => () => { clearTimeout(timerRef.current); clearTimeout(shakeRef.current) }, [])
 
   // 라운드가 바뀌면 상태 초기화(렌더 중 — 이펙트에서 setState 지양)
   const [prevRound, setPrevRound] = useState(round)
-  if (round !== prevRound) { setPrevRound(round); setFound([]); setSolved(false) }
+  if (round !== prevRound) { setPrevRound(round); setFound([]); setSolved(false); setWrongIdx(null) }
 
   // 진입 안내(1회): 놀이 방법 → 첫 글자
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -59,6 +61,9 @@ export function LetterHunt({ targetWords, pool, onCorrect, onDone }: {
       }
     } else {
       speak('다시 찾아볼까?')
+      setWrongIdx(idx)
+      clearTimeout(shakeRef.current)
+      shakeRef.current = setTimeout(() => setWrongIdx(null), 450)
     }
   }
 
@@ -76,12 +81,12 @@ export function LetterHunt({ targetWords, pool, onCorrect, onDone }: {
         <SpeakerButton size={52} onClick={() => speak(`${target} 글자를 찾아요`)} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 84px)', gap: 12, marginTop: 4 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 4, width: '100%', maxWidth: 300 }}>
         {grid.map((cell, idx) => {
           const hit = found.includes(idx)
           return (
-            <button key={idx} onClick={() => tapCell(idx)} disabled={hit}
-              style={{ width: 84, height: 84, borderRadius: 'var(--radius-md)', border: 'none',
+            <button key={idx} onClick={() => tapCell(idx)} disabled={hit} className={wrongIdx === idx ? 'kp-shake' : undefined}
+              style={{ width: '100%', aspectRatio: '1', borderRadius: 'var(--radius-md)', border: 'none',
                 fontFamily: 'var(--font-warm)', fontSize: 38, fontWeight: 800,
                 color: hit ? '#fff' : 'var(--c-ink)',
                 background: hit ? 'var(--c-correct)' : 'var(--c-card)',

@@ -12,11 +12,12 @@ import { gachaPick, unownedItems, GACHA_COST } from '../princess/economy'
 
 const overlayStyle: React.CSSProperties = {
   position: 'fixed', inset: 0, background: 'rgba(70,40,60,0.5)', zIndex: 30,
-  display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 22,
+  display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 22, overflowY: 'auto',
 }
 const cardStyle: React.CSSProperties = {
   position: 'relative', background: 'var(--c-card)', borderRadius: 'var(--radius-lg)',
-  padding: '22px 22px 20px', textAlign: 'center', maxWidth: 320, width: '100%', boxShadow: 'var(--shadow-card)',
+  padding: '22px 22px 20px', textAlign: 'center', maxWidth: 320, width: '100%',
+  maxHeight: 'calc(100dvh - 44px)', overflowY: 'auto', boxShadow: 'var(--shadow-card)',
 }
 const yesBtn: React.CSSProperties = {
   flex: 1, border: 'none', borderRadius: 'var(--radius-md)', padding: '14px 0', minHeight: 52,
@@ -38,6 +39,7 @@ export function DressUp() {
   const [gachaState, setGachaState] = useState<'confirm' | 'spinning' | null>(null)
   const [reveal, setReveal] = useState<DressUpItem | null>(null)
   const gachaTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const resolving = useRef(false) // 뽑기 연타 이중 차감 방지
 
   // 별 변화 피드백(-N 떠오름 + 카운터 강조)
   const [starDelta, setStarDelta] = useState<number | null>(null)
@@ -82,12 +84,15 @@ export function DressUp() {
     setGachaState('confirm'); speak('뽑기 할까요?')
   }
   function confirmGacha() {
+    if (resolving.current) return // 같은 프레임 연타 시 2번째 무시(이중 차감 방지)
+    resolving.current = true
     const pick = gachaPick(progress.ownedItems, Math.random())
-    if (!pick) { setGachaState(null); return }
+    if (!pick) { resolving.current = false; setGachaState(null); return }
     dispatch({ type: 'unlockItem', itemId: pick, costOverride: GACHA_COST })
     const item = getItem(pick)!
     setGachaState('spinning'); speak('두구두구')
     gachaTimer.current = setTimeout(() => {
+      resolving.current = false
       setGachaState(null); setTab(item.category); setReveal(item); speak(item.name)
     }, 1300)
   }
@@ -272,6 +277,9 @@ export function DressUp() {
             </div>
             <div style={{ fontFamily: 'var(--font-warm)', fontSize: 22, fontWeight: 800, marginTop: 8 }}>
               {reveal.name} 획득! 🎉
+            </div>
+            <div style={{ fontSize: 15, color: 'var(--c-ink-soft)', marginTop: 4, fontWeight: 800 }}>
+              남은 별 ⭐{progress.stars}
             </div>
             <button onClick={() => setReveal(null)}
               style={{ marginTop: 14, border: 'none', borderRadius: 'var(--radius-md)', padding: '12px 30px', minHeight: 50,

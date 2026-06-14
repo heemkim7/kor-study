@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { useNavigation } from './Navigation'
 import { useProgress } from '../progress/useProgress'
 import { useTts } from '../tts/useTts'
@@ -17,6 +18,12 @@ export function Home() {
   const { progress } = useProgress()
   const { speak } = useTts()
   const journey = buildJourney(allLessons(), progress.completedLessons)
+  const currentRef = useRef<HTMLButtonElement>(null)
+  const currentIdx = journey.findIndex((n) => n.current)
+
+  // 진행이 쌓인 복귀 사용자는 '지금 도전!' 카드로 자동 스크롤(앞쪽이면 그대로 둠)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (currentIdx > 3) currentRef.current?.scrollIntoView({ block: 'center' }) }, [])
 
   // 주차/단원(unit)별로 묶기(순서 유지)
   const groups: { unit: string; nodes: JourneyNode[] }[] = []
@@ -58,7 +65,8 @@ export function Home() {
       </>
     )
     return unlocked ? (
-      <button key={lesson.id} onClick={() => go({ name: 'adventure', lessonId: lesson.id })}
+      <button key={lesson.id} ref={current ? currentRef : undefined}
+        onClick={() => go({ name: 'adventure', lessonId: lesson.id })}
         style={{ ...baseStyle, cursor: 'pointer' }}>{inner}</button>
     ) : (
       <button key={lesson.id} onClick={() => speak('먼저 앞 단계를 끝내요')}

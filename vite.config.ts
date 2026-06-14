@@ -17,7 +17,7 @@ export default defineConfig({
           options: {
             cacheName: 'tts-audio',
             expiration: { maxEntries: 600, maxAgeSeconds: 60 * 60 * 24 * 60 },
-            cacheableResponse: { statuses: [0, 200] },
+            cacheableResponse: { statuses: [200] },
           },
         }],
       },

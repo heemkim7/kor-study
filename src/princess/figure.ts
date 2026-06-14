@@ -486,14 +486,13 @@ function parasol(): string {
   return (
     ln(hx, hy, cx, cy, 4, '#caa9d8') +
     pth(`M ${cx - 56} ${cy} A 56 56 0 0 1 ${cx + 56} ${cy} Z`, '#f4b8da') +
-    pth(`M ${cx - 56} ${cy} A 56 56 0 0 1 ${cx + 56} ${cy}`, '#ffffff', 'opacity="0"') +
     stroke(`M ${cx} ${cy - 56} L ${cx} ${cy}`, '#dd83ba', 1.6, 'opacity="0.6"') +
     stroke(`M ${cx - 30} ${cy - 47} L ${cx - 16} ${cy}`, '#dd83ba', 1.4, 'opacity="0.5"') +
     stroke(`M ${cx + 30} ${cy - 47} L ${cx + 16} ${cy}`, '#dd83ba', 1.4, 'opacity="0.5"') +
     // 레이스 스캘럽 가장자리
     [-48, -32, -16, 0, 16, 32, 48].map((dx) => c(cx + dx, cy, 8, '#ffd6ec')).join('') +
     pth(`M ${cx - 56} ${cy} A 56 56 0 0 1 ${cx + 56} ${cy} L ${cx + 56} ${cy} L ${cx - 56} ${cy} Z`, 'none', `stroke="#dd83ba" stroke-width="1.5"`) +
-    c(cx, cy - 56, 4, GOLD) + c(hx, hy + 60, 0, 'none')
+    c(cx, cy - 56, 4, GOLD)
   )
 }
 

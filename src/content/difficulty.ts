@@ -5,7 +5,9 @@ export function choiceCountForLevel(level: number): number {
   return Math.min(2 + Math.max(0, level - 1), 4)
 }
 
-/** 난이도 별 개수(표시용). 1~3 */
+/** 난이도 별 개수(표시용). 레벨 구간으로 1~3 분산해 긴 커리큘럼에서도 진행감을 준다. */
 export function difficultyStars(level: number): number {
-  return Math.min(Math.max(1, level), 3)
+  if (level <= 4) return 1
+  if (level <= 12) return 2
+  return 3
 }

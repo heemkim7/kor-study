@@ -56,5 +56,8 @@ export function useTts() {
     if (audioRef.current) { audioRef.current.pause(); audioRef.current = null }
   }, [])
 
+  // 언마운트 시 재생 정리(화면 전환 때 이전 화면 음성이 새는 것 방지)
+  useEffect(() => cancel, [cancel])
+
   return { speak, cancel, ready }
 }

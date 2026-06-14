@@ -11,9 +11,11 @@ describe('choiceCountForLevel', () => {
 })
 
 describe('difficultyStars', () => {
-  it('1~3 사이', () => {
+  it('레벨 구간에 따라 1~3으로 분산', () => {
     expect(difficultyStars(1)).toBe(1)
-    expect(difficultyStars(3)).toBe(3)
-    expect(difficultyStars(7)).toBe(3)
+    expect(difficultyStars(4)).toBe(1)
+    expect(difficultyStars(8)).toBe(2)
+    expect(difficultyStars(12)).toBe(2)
+    expect(difficultyStars(20)).toBe(3)
   })
 })
