@@ -29,6 +29,13 @@ describe('completeLesson', () => {
     expect(twice.stickers).toBe(1)
     expect(twice.completedLessons).toEqual(['fruit-1'])
   })
+  it('완료할 때마다 스티커북에 한 장씩 모음(순서대로)', () => {
+    const a = completeLesson(initialProgress, 'fruit-1')
+    const b = completeLesson(a, 'animals-1')
+    expect(a.collectedStickers).toHaveLength(1)
+    expect(b.collectedStickers).toHaveLength(2)
+    expect(b.collectedStickers[0]).not.toBe(b.collectedStickers[1]) // 서로 다른 스티커
+  })
 })
 
 describe('setPrincessName', () => {

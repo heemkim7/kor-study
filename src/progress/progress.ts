@@ -1,4 +1,5 @@
 import { DEFAULT_OUTFIT, DEFAULT_OWNED_IDS, getItem, type Outfit } from '../princess/catalog'
+import { STICKERS } from '../reward/stickers'
 
 export interface Progress {
   stars: number
@@ -6,8 +7,9 @@ export interface Progress {
   learnedWords: string[]
   completedLessons: string[]
   princessName: string | null
-  ownedItems: string[]   // 보유한 꾸미기 아이템 id(기본 포함)
-  outfit: Outfit         // 현재 입은 옷차림
+  ownedItems: string[]      // 보유한 꾸미기 아이템 id(기본 포함)
+  outfit: Outfit            // 현재 입은 옷차림
+  collectedStickers: string[] // 모은 스티커 id(스티커북)
 }
 
 export const initialProgress: Progress = {
@@ -18,6 +20,7 @@ export const initialProgress: Progress = {
   princessName: null,
   ownedItems: [...DEFAULT_OWNED_IDS],
   outfit: { ...DEFAULT_OUTFIT },
+  collectedStickers: [],
 }
 
 export function addStars(p: Progress, n: number): Progress {
@@ -30,10 +33,16 @@ export function learnWords(p: Progress, ids: string[]): Progress {
 
 export function completeLesson(p: Progress, lessonId: string): Progress {
   if (p.completedLessons.includes(lessonId)) return p
+  // 완료 순서대로 스티커를 한 장씩 모은다(레슨 수보다 많아지면 순환).
+  const sticker = STICKERS[p.completedLessons.length % STICKERS.length]
+  const collectedStickers = p.collectedStickers.includes(sticker.id)
+    ? p.collectedStickers
+    : [...p.collectedStickers, sticker.id]
   return {
     ...p,
     completedLessons: [...p.completedLessons, lessonId],
     stickers: p.stickers + 1,
+    collectedStickers,
   }
 }
 

@@ -4,7 +4,7 @@ import { useTts } from '../tts/useTts'
 import { WordImage } from '../ui/WordImage'
 import { SpeakerButton } from '../ui/SpeakerButton'
 import { Sparkles } from '../ui/Sparkles'
-import { buildChoices } from './choices'
+import { buildSmartChoices } from './choices'
 
 /** targetWords 각각을 한 라운드씩 출제. 정답 시 onCorrect, 전부 끝나면 onDone */
 export function ListenFind({ targetWords, pool, onCorrect, onDone, choiceCount = 3 }: {
@@ -17,9 +17,10 @@ export function ListenFind({ targetWords, pool, onCorrect, onDone, choiceCount =
   const answerId = targetWords[round]
   const answer = getWord(answerId)!
 
+  // 그림 퀴즈: 같은 테마(비슷하게 생긴 그림)를 오답으로 우선 → 생뚱맞은 보기 방지
   const choiceIds = useMemo(
-    () => buildChoices(answerId, pool, choiceCount),
-    [answerId, pool, choiceCount],
+    () => buildSmartChoices(answerId, pool, choiceCount, [(id) => getWord(id)?.theme === answer.theme]),
+    [answerId, pool, choiceCount, answer.theme],
   )
   const choices = getWordsByIds(choiceIds)
 

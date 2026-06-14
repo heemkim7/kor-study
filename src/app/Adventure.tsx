@@ -12,6 +12,7 @@ import { BuildWord } from '../games/BuildWord'
 import { LetterHunt } from '../games/LetterHunt'
 import { MemoryGame } from '../games/MemoryGame'
 import { RewardScreen } from '../reward/RewardScreen'
+import { playCorrect } from '../audio/sound'
 
 type Phase = { kind: 'story' } | { kind: 'words' } | { kind: 'game'; index: number } | { kind: 'reward' }
 
@@ -24,7 +25,8 @@ export function Adventure({ lessonId }: { lessonId: string }) {
   const [awarded, setAwarded] = useState(true)
 
   const pool = useMemo(() => WORDS.map((w) => w.id), [])
-  const onCorrect = () => dispatch({ type: 'addStars', n: 1 })
+  // 정답을 맞히면 별 +1 과 함께 밝은 칭찬 효과음(이미지뿐 아니라 소리로도 보상)
+  const onCorrect = () => { playCorrect(); dispatch({ type: 'addStars', n: 1 }) }
 
   function nextAfterGame(index: number) {
     if (index < lesson.games.length - 1) setPhase({ kind: 'game', index: index + 1 })

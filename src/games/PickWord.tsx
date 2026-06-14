@@ -3,7 +3,7 @@ import { getWord, getWordsByIds } from '../content/loader'
 import { useTts } from '../tts/useTts'
 import { WordImage } from '../ui/WordImage'
 import { Sparkles } from '../ui/Sparkles'
-import { buildChoices } from './choices'
+import { buildSmartChoices } from './choices'
 
 /** 그림을 보여주고 글자 보기 중 맞는 단어를 고르기 */
 export function PickWord({ targetWords, pool, onCorrect, onDone, choiceCount = 3 }: {
@@ -16,7 +16,14 @@ export function PickWord({ targetWords, pool, onCorrect, onDone, choiceCount = 3
   const answerId = targetWords[round]
   const answer = getWord(answerId)!
 
-  const choiceIds = useMemo(() => buildChoices(answerId, pool, choiceCount), [answerId, pool, choiceCount])
+  // 단어 퀴즈: 같은 글자수(+가능하면 같은 테마)를 오답으로 우선 → 글자수가 같아 더 헷갈리고 덜 쉬움
+  const choiceIds = useMemo(
+    () => buildSmartChoices(answerId, pool, choiceCount, [
+      (id) => { const w = getWord(id); return !!w && w.text.length === answer.text.length && w.theme === answer.theme },
+      (id) => getWord(id)?.text.length === answer.text.length,
+    ]),
+    [answerId, pool, choiceCount, answer.text.length, answer.theme],
+  )
   const choices = getWordsByIds(choiceIds)
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)

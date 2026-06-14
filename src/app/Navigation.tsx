@@ -1,6 +1,11 @@
 import { createContext, useContext, useMemo, useState, type ReactNode } from 'react'
 
-export type Screen = { name: 'home' } | { name: 'adventure'; lessonId: string } | { name: 'dressup' }
+export type Screen =
+  | { name: 'home' }
+  | { name: 'adventure'; lessonId: string }
+  | { name: 'dressup' }
+  | { name: 'stickers' }
+  | { name: 'draw' }
 
 interface Nav { screen: Screen; go: (s: Screen) => void }
 const NavContext = createContext<Nav | null>(null)

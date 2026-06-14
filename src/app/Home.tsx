@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigation } from './Navigation'
 import { useProgress } from '../progress/useProgress'
 import { useTts } from '../tts/useTts'
@@ -6,6 +6,8 @@ import { allLessons } from '../content/loader'
 import { buildJourney, type JourneyNode } from '../content/journey'
 import { difficultyStars } from '../content/difficulty'
 import { PrincessFigure } from '../princess/PrincessFigure'
+import { STICKERS } from '../reward/stickers'
+import { isBgmEnabled, toggleBgm, resumeAudio } from '../audio/sound'
 import type { Theme } from '../content/types'
 
 const THEME_EMOJI: Partial<Record<Theme, string>> = {
@@ -20,6 +22,7 @@ export function Home() {
   const journey = buildJourney(allLessons(), progress.completedLessons)
   const currentRef = useRef<HTMLButtonElement>(null)
   const currentIdx = journey.findIndex((n) => n.current)
+  const [bgmOn, setBgmOn] = useState(isBgmEnabled())
 
   // 진행이 쌓인 복귀 사용자는 '지금 도전!' 카드로 자동 스크롤(앞쪽이면 그대로 둠)
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -77,8 +80,17 @@ export function Home() {
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
       gap: 12, padding: 'max(20px, env(safe-area-inset-top)) 16px 32px', textAlign: 'center' }}>
-      <div style={{ alignSelf: 'flex-end', fontWeight: 800, color: 'var(--c-accent-strong)' }}>
-        ⭐ {progress.stars} · 🏅 {progress.stickers}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        width: '100%', maxWidth: 380 }}>
+        <button onClick={() => { resumeAudio(); setBgmOn(toggleBgm()) }}
+          aria-label={bgmOn ? '배경음악 끄기' : '배경음악 켜기'}
+          style={{ width: 40, height: 40, borderRadius: 999, border: 'none', background: 'var(--c-card)',
+            fontSize: 18, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>
+          {bgmOn ? '🔊' : '🔇'}
+        </button>
+        <div style={{ fontWeight: 800, color: 'var(--c-accent-strong)' }}>
+          ⭐ {progress.stars} · 🏅 {progress.stickers}
+        </div>
       </div>
       <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 32, marginTop: -4 }}>우리 딸 한글 여정</h1>
       <p style={{ color: 'var(--c-ink-soft)', marginTop: -8 }}>한 단계씩 올라가며 한글을 배워요</p>
@@ -101,6 +113,32 @@ export function Home() {
         </div>
         <div style={{ fontSize: 24 }}>▶</div>
       </button>
+
+      {/* 스티커 책 · 그림 그리기 입구 */}
+      <div style={{ display: 'flex', gap: 10, width: '100%', maxWidth: 380 }}>
+        <button onClick={() => go({ name: 'stickers' })}
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
+            padding: '12px 8px', borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer',
+            background: 'linear-gradient(135deg,#fff3d6,#fffaf0)', boxShadow: 'var(--shadow-card)' }}>
+          <div style={{ fontSize: 30 }}>🏅</div>
+          <div style={{ fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800, color: 'var(--c-accent-strong)' }}>
+            스티커 책
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>
+            {progress.collectedStickers.length} / {STICKERS.length}장
+          </div>
+        </button>
+        <button onClick={() => go({ name: 'draw' })}
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2,
+            padding: '12px 8px', borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer',
+            background: 'linear-gradient(135deg,#d9f2ff,#f0fbff)', boxShadow: 'var(--shadow-card)' }}>
+          <div style={{ fontSize: 30 }}>🎨</div>
+          <div style={{ fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800, color: '#3aa0d0' }}>
+            그림 그리기
+          </div>
+          <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>색칠하고 그려요</div>
+        </button>
+      </div>
 
       {/* 주차별 여정 */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', maxWidth: 380, marginTop: 4 }}>
