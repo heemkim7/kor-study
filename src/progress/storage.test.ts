@@ -39,6 +39,13 @@ describe('storage', () => {
     expect(loaded.streak).toBe(0)
   })
 
+  it('알 수 없는 학습 단어 id는 걸러냄', () => {
+    localStorage.setItem('hangeul-play:progress:v1', JSON.stringify({
+      learnedWords: ['apple', 'no-such-word', 'dog'],
+    }))
+    expect(loadProgress().learnedWords).toEqual(['apple', 'dog'])
+  })
+
   it('정상 스트릭 필드는 유지', () => {
     localStorage.setItem('hangeul-play:progress:v1', JSON.stringify({
       lastPlayedDate: '2026-06-15', streak: 4,

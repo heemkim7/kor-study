@@ -1,6 +1,7 @@
 import { initialProgress, type Progress } from './progress'
 import { isKnownItem, getItem, DEFAULT_OWNED_IDS, type ItemCategory, type Outfit } from '../princess/catalog'
 import { getSticker } from '../reward/stickers'
+import { getWord } from '../content/loader'
 
 const KEY = 'hangeul-play:progress:v1'
 
@@ -36,7 +37,9 @@ export function loadProgress(): Progress {
     const lastPlayedDate = isValidDateStr(parsed.lastPlayedDate) ? parsed.lastPlayedDate : null
     const streak = typeof parsed.streak === 'number' && Number.isInteger(parsed.streak) && parsed.streak >= 0
       ? parsed.streak : 0
-    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers, lastPlayedDate, streak }
+    // 배운 단어도 실제 존재하는 단어만 인정(손상/구버전·삭제된 단어 id 방어)
+    const learnedWords = (parsed.learnedWords ?? []).filter((id) => getWord(id) !== undefined)
+    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers, lastPlayedDate, streak, learnedWords }
   } catch {
     return initialProgress
   }

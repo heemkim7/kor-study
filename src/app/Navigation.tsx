@@ -4,9 +4,11 @@ export type Screen =
   | { name: 'home' }
   | { name: 'adventure'; lessonId: string }
   | { name: 'letter'; lessonId: string }
+  | { name: 'number'; lessonId: string }
   | { name: 'dressup' }
   | { name: 'stickers' }
   | { name: 'draw' }
+  | { name: 'parent' }
 
 interface Nav { screen: Screen; go: (s: Screen) => void }
 const NavContext = createContext<Nav | null>(null)

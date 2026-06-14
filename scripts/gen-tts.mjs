@@ -9,6 +9,7 @@ import { LESSONS } from '../src/content/lessons.ts'
 import { CATALOG } from '../src/princess/catalog.ts'
 import { STICKERS } from '../src/reward/stickers.ts'
 import { LETTER_LESSONS, glyphSound } from '../src/content/letters.ts'
+import { NUMBER_LESSONS, numberName } from '../src/content/numbers.ts'
 import { toSyllables } from '../src/hangul/decompose.ts'
 
 const TTS_URL = 'http://localhost:8001/generate/'
@@ -31,8 +32,10 @@ for (const w of WORDS) add(w.text)
 for (const l of LESSONS) for (const sc of l.story) add(sc.text)
 for (const it of CATALOG) add(it.name)
 for (const s of STICKERS) add(s.name)
-// 글자 트랙: 자모/음절 음가(모음은 '아', 음절은 '가')
+// 글자 트랙: 자모/음절 음가(모음은 '아', 음절은 '가'). 받침 음절(강·산·밤…)도 포함.
 for (const l of LETTER_LESSONS) for (const g of l.glyphs) add(glyphSound(g))
+// 수개념 트랙: 수사(하나~열)
+for (const l of NUMBER_LESSONS) for (const n of l.numbers) add(numberName(n))
 const syl = new Set()
 for (const l of LESSONS) for (const id of l.targetWords) {
   const w = WORDS.find((x) => x.id === id)
@@ -53,6 +56,8 @@ for (const t of [
   '스티커 책이에요. 모은 스티커를 눌러 보세요', '자유롭게 그려 보세요',
   // 글자 게임 안내
   '글자를 들어 보세요', '잘 듣고 같은 글자를 찾아요', '자음과 모음을 골라 글자를 만들어요', '먼저 앞 글자를 배워요',
+  // 수개념 게임 안내
+  '숫자를 세어 보세요', '몇 개일까요? 세어 보세요', '다시 세어 볼까?', '어느 쪽이 더 많을까요?', '많아요!', '다시 볼까?', '먼저 앞 숫자를 배워요',
 ]) add(t)
 
 const phrases = [...set]

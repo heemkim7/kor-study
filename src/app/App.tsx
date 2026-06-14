@@ -4,18 +4,22 @@ import { NavigationProvider, useNavigation } from './Navigation'
 import { Home } from './Home'
 import { Adventure } from './Adventure'
 import { LetterAdventure } from './LetterAdventure'
+import { NumberAdventure } from './NumberAdventure'
 import { DressUp } from './DressUp'
 import { StickerBook } from '../reward/StickerBook'
 import { DrawBoard } from '../draw/DrawBoard'
+import { ParentReport } from './ParentReport'
 import { resumeAudio, startBgm } from '../audio/sound'
 
 function Router() {
   const { screen } = useNavigation()
   if (screen.name === 'adventure') return <Adventure lessonId={screen.lessonId} />
   if (screen.name === 'letter') return <LetterAdventure lessonId={screen.lessonId} />
+  if (screen.name === 'number') return <NumberAdventure lessonId={screen.lessonId} />
   if (screen.name === 'dressup') return <DressUp />
   if (screen.name === 'stickers') return <StickerBook />
   if (screen.name === 'draw') return <DrawBoard />
+  if (screen.name === 'parent') return <ParentReport />
   return <Home />
 }
 

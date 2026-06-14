@@ -31,6 +31,8 @@ export function isVowel(glyph: string): boolean {
 // 글자 만들기용 보기 자모 풀(쉬운 것 위주)
 export const BASIC_CONSONANTS = ['ㄱ', 'ㄴ', 'ㄷ', 'ㅁ', 'ㅂ', 'ㅅ', 'ㅈ', 'ㅇ']
 export const BASIC_VOWELS = ['ㅏ', 'ㅓ', 'ㅗ', 'ㅜ', 'ㅡ', 'ㅣ']
+// 받침(종성) 보기 풀 — 대표받침 위주
+export const BASIC_JONG = ['ㄱ', 'ㄴ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅇ']
 
 export const LETTER_LESSONS: LetterLesson[] = [
   // 1주 · 모음 먼저(가장 명료한 소리)
@@ -42,6 +44,11 @@ export const LETTER_LESSONS: LetterLesson[] = [
   { id: 's-m', title: '마 모 미', unit: '글자나라 2주 · 글자 만들기', glyphs: ['마', '모', '미'], games: ['make-syllable', 'find-letter'] },
   { id: 's-s', title: '사 소 시', unit: '글자나라 3주 · 글자 만들기', glyphs: ['사', '소', '시'], games: ['make-syllable', 'find-letter'] },
   { id: 's-o', title: '아 오 이', unit: '글자나라 3주 · 글자 만들기', glyphs: ['아', '오', '이'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
+  // 4~5주 · 받침(종성) — 자음+모음+받침. composeSyllable이 종성 합성을 지원.
+  { id: 'b-ng', title: '받침 ㅇ · 강 공 방', unit: '글자나라 4주 · 받침', glyphs: ['강', '공', '방'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
+  { id: 'b-n', title: '받침 ㄴ · 산 손 문', unit: '글자나라 4주 · 받침', glyphs: ['산', '손', '문'], games: ['make-syllable', 'find-letter'] },
+  { id: 'b-m', title: '받침 ㅁ · 밤 곰 봄', unit: '글자나라 5주 · 받침', glyphs: ['밤', '곰', '봄'], games: ['make-syllable', 'find-letter'] },
+  { id: 'b-l', title: '받침 ㄹ · 물 발 달', unit: '글자나라 5주 · 받침', glyphs: ['물', '발', '달'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
 ]
 
 export function getLetterLesson(id: string): LetterLesson | undefined {

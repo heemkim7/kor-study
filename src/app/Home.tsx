@@ -8,6 +8,7 @@ import { difficultyStars } from '../content/difficulty'
 import { PrincessFigure } from '../princess/PrincessFigure'
 import { STICKERS } from '../reward/stickers'
 import { buildLetterJourney, type LetterNode } from '../content/letters'
+import { buildNumberJourney, type NumNode } from '../content/numbers'
 import { todayStr } from '../progress/progress'
 import { isBgmEnabled, toggleBgm, resumeAudio } from '../audio/sound'
 import type { Theme } from '../content/types'
@@ -48,6 +49,42 @@ export function Home() {
     const last = letterGroups[letterGroups.length - 1]
     if (last && last.unit === unit) last.nodes.push(node)
     else letterGroups.push({ unit, nodes: [node] })
+  }
+
+  // 숫자 배우기(수개념) 트랙
+  const numberJourney = buildNumberJourney(progress.completedLessons)
+  const numberGroups: { unit: string; nodes: NumNode[] }[] = []
+  for (const node of numberJourney) {
+    const unit = node.lesson.unit
+    const last = numberGroups[numberGroups.length - 1]
+    if (last && last.unit === unit) last.nodes.push(node)
+    else numberGroups.push({ unit, nodes: [node] })
+  }
+
+  const renderNumberNode = ({ lesson, completed, unlocked, current }: NumNode) => {
+    const badge = completed ? '⭐' : unlocked ? String(lesson.numbers[0]) : '🔒'
+    const state = completed ? ' · 완료!' : current ? ' · 지금 배워요!' : !unlocked ? ' · 잠김' : ''
+    return (
+      <button key={lesson.id} aria-disabled={!unlocked}
+        onClick={() => (unlocked ? go({ name: 'number', lessonId: lesson.id }) : speak('먼저 앞 숫자를 배워요'))}
+        style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '13px 16px',
+          borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer', background: 'var(--c-card)',
+          boxShadow: current ? '0 0 0 3px #7fd0a0, var(--shadow-card)' : 'var(--shadow-card)', opacity: unlocked ? 1 : 0.6 }}>
+        <div style={{ width: 48, height: 48, flex: '0 0 auto', borderRadius: '50%', display: 'flex',
+          alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-warm)', fontSize: 24,
+          fontWeight: 800, color: '#fff', background: completed ? 'var(--c-correct)' : unlocked ? '#3ec46d' : '#c9bba8' }}>
+          {badge}
+        </div>
+        <div style={{ flex: 1, textAlign: 'left' }}>
+          <div style={{ fontFamily: 'var(--font-warm)', fontSize: 20, fontWeight: 800, color: 'var(--c-ink)' }}>
+            🔢 {lesson.title}
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--c-ink-soft)', marginTop: 2 }}>
+            세고 비교해요{state}
+          </div>
+        </div>
+      </button>
+    )
   }
 
   const renderLetterNode = ({ lesson, completed, unlocked, current }: LetterNode) => {
@@ -208,6 +245,26 @@ export function Home() {
         ))}
       </div>
 
+      {/* 숫자 배우기(수개념) 트랙 */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', maxWidth: 380, marginTop: 8 }}>
+        <div style={{ fontFamily: 'var(--font-warm)', fontSize: 19, fontWeight: 800, color: '#2a9d6e',
+          textAlign: 'left', margin: '4px 4px 0' }}>🔢 숫자 배우기</div>
+        <p style={{ fontSize: 12.5, color: 'var(--c-ink-soft)', textAlign: 'left', margin: '0 4px 2px' }}>
+          수를 세고 많고 적음을 익혀요
+        </p>
+        {numberGroups.map((g) => (
+          <div key={g.unit} style={{ width: '100%' }}>
+            <div style={{ fontFamily: 'var(--font-warm)', fontSize: 15, fontWeight: 800,
+              color: '#3ec46d', textAlign: 'left', margin: '10px 4px 6px' }}>
+              {g.unit}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {g.nodes.map(renderNumberNode)}
+            </div>
+          </div>
+        ))}
+      </div>
+
       {/* 단어 익히기(통글자) 트랙 */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', maxWidth: 380, marginTop: 8 }}>
         <div style={{ fontFamily: 'var(--font-warm)', fontSize: 19, fontWeight: 800, color: 'var(--c-accent-strong)',
@@ -227,6 +284,13 @@ export function Home() {
           </div>
         ))}
       </div>
+
+      {/* 보호자 입구(작게) */}
+      <button onClick={() => go({ name: 'parent' })}
+        style={{ marginTop: 18, background: 'none', border: 'none', color: 'var(--c-ink-soft)',
+          fontSize: 13, fontWeight: 800, textDecoration: 'underline', cursor: 'pointer' }}>
+        📊 보호자 · 학습 리포트
+      </button>
     </div>
   )
 }
