@@ -15,4 +15,15 @@ body {
   user-select: none;
   touch-action: manipulation;
 }
-button { font-family: inherit; cursor: pointer; }
+/* 모든 버튼에 즉각적 누름 피드백(유아가 '눌렸다'를 형태로 인지) */
+button { font-family: inherit; cursor: pointer; transition: transform .06s ease, filter .06s ease; }
+button:active:not(:disabled) { transform: translateY(2px); filter: brightness(0.97); }
+
+/* 모션 민감 사용자 배려 — 전역으로 애니메이션 사실상 정지 */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+}

@@ -1,5 +1,5 @@
 import { initialProgress, type Progress } from './progress'
-import { isKnownItem, DEFAULT_OWNED_IDS } from '../princess/catalog'
+import { isKnownItem, getItem, DEFAULT_OWNED_IDS, type ItemCategory, type Outfit } from '../princess/catalog'
 
 const KEY = 'hangeul-play:progress:v1'
 
@@ -12,12 +12,16 @@ export function loadProgress(): Progress {
     const ownedItems = Array.from(
       new Set([...DEFAULT_OWNED_IDS, ...(parsed.ownedItems ?? [])]),
     ).filter(isKnownItem)
-    return {
-      ...initialProgress,
-      ...parsed,
-      ownedItems,
-      outfit: { ...initialProgress.outfit, ...(parsed.outfit ?? {}) },
+    // outfit의 각 슬롯은 '해당 카테고리의 보유 아이템'일 때만 인정(아니면 기본으로 폴백).
+    // 손상/구버전 저장에서 미보유 슬롯이 '입는 중'으로 보여 재과금되는 버그 방지.
+    const merged = { ...initialProgress.outfit, ...(parsed.outfit ?? {}) }
+    const outfit: Record<ItemCategory, string> = { ...initialProgress.outfit }
+    for (const k of Object.keys(initialProgress.outfit) as ItemCategory[]) {
+      const id = merged[k]
+      const item = getItem(id)
+      if (item && item.category === k && ownedItems.includes(id)) outfit[k] = id
     }
+    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit }
   } catch {
     return initialProgress
   }

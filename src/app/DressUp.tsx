@@ -69,7 +69,8 @@ export function DressUp() {
       {/* 상단 바 */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', maxWidth: 420 }}>
         <button onClick={() => go({ name: 'home' })}
-          style={{ border: 'none', background: 'var(--c-card)', borderRadius: 999, padding: '8px 14px',
+          style={{ border: 'none', background: 'var(--c-card)', borderRadius: 999, padding: '10px 18px',
+            minHeight: 44, display: 'inline-flex', alignItems: 'center',
             fontWeight: 800, color: 'var(--c-ink)', boxShadow: 'var(--shadow-card)' }}>
           ← 집으로
         </button>
@@ -86,9 +87,10 @@ export function DressUp() {
 
       {/* 뽑기 */}
       <button onClick={doGacha} disabled={!canGacha}
-        style={{ border: 'none', borderRadius: 'var(--radius-md)', padding: '12px 22px',
-          fontFamily: 'var(--font-warm)', fontSize: 19, fontWeight: 800, color: '#fff',
-          background: canGacha ? 'linear-gradient(135deg, var(--c-pink), var(--c-accent))' : '#d8c9b6',
+        style={{ border: 'none', borderRadius: 'var(--radius-md)', padding: '12px 24px', minHeight: 48,
+          fontFamily: 'var(--font-warm)', fontSize: 19, fontWeight: 800,
+          color: canGacha ? '#fff' : '#7c6a4f',
+          background: canGacha ? 'linear-gradient(135deg, var(--c-pink), var(--c-accent))' : '#e7dcc9',
           boxShadow: canGacha ? '0 5px 0 #c4578f' : 'none', cursor: canGacha ? 'pointer' : 'default' }}>
         🎁 뽑기 (⭐{GACHA_COST})
         {remainingToCollect === 0 && ' · 다 모았어요!'}
@@ -97,13 +99,13 @@ export function DressUp() {
       {/* 랜덤 코디 / 기본 */}
       <div style={{ display: 'flex', gap: 8 }}>
         <button onClick={randomize}
-          style={{ border: 'none', borderRadius: 999, padding: '8px 18px', fontFamily: 'var(--font-warm)',
-            fontSize: 15, fontWeight: 800, color: 'var(--c-pink)', background: 'var(--c-card)', boxShadow: 'var(--shadow-card)' }}>
+          style={{ border: 'none', borderRadius: 999, padding: '10px 20px', minHeight: 44, fontFamily: 'var(--font-warm)',
+            fontSize: 16, fontWeight: 800, color: 'var(--c-pink)', background: 'var(--c-card)', boxShadow: 'var(--shadow-card)' }}>
           🎲 랜덤 코디
         </button>
         <button onClick={resetOutfit}
-          style={{ border: 'none', borderRadius: 999, padding: '8px 18px', fontFamily: 'var(--font-warm)',
-            fontSize: 15, fontWeight: 800, color: 'var(--c-ink-soft)', background: 'var(--c-card)', boxShadow: 'var(--shadow-card)' }}>
+          style={{ border: 'none', borderRadius: 999, padding: '10px 20px', minHeight: 44, fontFamily: 'var(--font-warm)',
+            fontSize: 16, fontWeight: 800, color: 'var(--c-ink-soft)', background: 'var(--c-card)', boxShadow: 'var(--shadow-card)' }}>
           ↺ 기본
         </button>
       </div>
@@ -112,7 +114,7 @@ export function DressUp() {
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', maxWidth: 420 }}>
         {CATEGORY_ORDER.map((cat) => (
           <button key={cat} onClick={() => setTab(cat)}
-            style={{ border: 'none', borderRadius: 999, padding: '8px 16px',
+            style={{ border: 'none', borderRadius: 999, padding: '10px 18px', minHeight: 44,
               fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800,
               color: tab === cat ? '#fff' : 'var(--c-ink)',
               background: tab === cat ? 'var(--c-accent)' : 'var(--c-card)',

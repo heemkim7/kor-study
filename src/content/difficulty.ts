@@ -5,11 +5,6 @@ export function choiceCountForLevel(level: number): number {
   return Math.min(2 + Math.max(0, level - 1), 4)
 }
 
-/** 글자 만들기 방해 타일 수. 보기 수 - 1 (L1=1 … 최대 3) */
-export function distractorsForLevel(level: number): number {
-  return Math.max(1, choiceCountForLevel(level) - 1)
-}
-
 /** 난이도 별 개수(표시용). 1~3 */
 export function difficultyStars(level: number): number {
   return Math.min(Math.max(1, level), 3)

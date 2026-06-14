@@ -36,17 +36,11 @@ export function Adventure({ lessonId }: { lessonId: string }) {
     }
   }
 
-  if (phase.kind === 'story')
-    return <StoryPlayer lesson={lesson} onDone={() => setPhase({ kind: 'words' })} />
-
-  if (phase.kind === 'words')
-    return <TodayWords lesson={lesson} onDone={() => setPhase({ kind: 'game', index: 0 })} />
-
-  if (phase.kind === 'game') {
-    const gameId = lesson.games[phase.index]
+  function renderGame(index: number) {
+    const gameId = lesson.games[index]
     const common = {
       targetWords: lesson.targetWords, pool, onCorrect,
-      onDone: () => nextAfterGame(phase.index),
+      onDone: () => nextAfterGame(index),
       choiceCount: choiceCountForLevel(lesson.level),
     }
     if (gameId === 'listen-find') return <ListenFind {...common} />
@@ -59,7 +53,7 @@ export function Adventure({ lessonId }: { lessonId: string }) {
       <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
         justifyContent: 'center', gap: 16, padding: 24, textAlign: 'center' }}>
         <p style={{ fontFamily: 'var(--font-warm)', fontSize: 22 }}>다음 놀이로 넘어가요.</p>
-        <button onClick={() => nextAfterGame(phase.index)}
+        <button onClick={() => nextAfterGame(index)}
           style={{ fontFamily: 'var(--font-warm)', fontSize: 20, fontWeight: 800, color: '#fff',
             background: 'var(--c-accent)', border: 'none', borderRadius: 'var(--radius-md)',
             padding: '12px 26px', boxShadow: '0 5px 0 #d98a3a' }}>다음 ▶</button>
@@ -67,5 +61,24 @@ export function Adventure({ lessonId }: { lessonId: string }) {
     )
   }
 
-  return <RewardScreen awarded={awarded} onHome={() => go({ name: 'home' })} />
+  let content
+  if (phase.kind === 'story') content = <StoryPlayer lesson={lesson} onDone={() => setPhase({ kind: 'words' })} />
+  else if (phase.kind === 'words') content = <TodayWords lesson={lesson} onDone={() => setPhase({ kind: 'game', index: 0 })} />
+  else if (phase.kind === 'game') content = renderGame(phase.index)
+  else content = <RewardScreen awarded={awarded} onHome={() => go({ name: 'home' })} />
+
+  return (
+    <div style={{ position: 'relative', minHeight: '100%' }}>
+      {phase.kind !== 'reward' && (
+        // 어느 단계에서나 집으로 나갈 수 있는 탈출 경로(보상화면은 자체 버튼 보유)
+        <button onClick={() => go({ name: 'home' })} aria-label="집으로"
+          style={{ position: 'absolute', top: 'max(10px, env(safe-area-inset-top))', left: 10, zIndex: 10,
+            width: 44, height: 44, borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)',
+            fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>
+          🏠
+        </button>
+      )}
+      {content}
+    </div>
+  )
 }

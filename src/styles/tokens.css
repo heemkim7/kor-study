@@ -7,7 +7,7 @@
   --c-correct: #22a06b;
   --c-pink: #ef6aa6;
   --c-ink: #5b4632;
-  --c-ink-soft: #a98a6a;
+  --c-ink-soft: #8a6c4d; /* 흰 카드 위 대비 4.5:1↑ (보조 텍스트 가독성) */
   --radius-lg: 22px;
   --radius-md: 16px;
   --shadow-card: 0 8px 22px rgba(180,120,60,.14);

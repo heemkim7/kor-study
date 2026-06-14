@@ -29,4 +29,16 @@ describe('storage', () => {
     expect(loaded.stickers).toBe(0)
     expect(loaded.completedLessons).toEqual([])
   })
+
+  it('보유하지 않은 outfit 슬롯은 기본값으로 되돌림(손상/구버전 재과금 방지)', () => {
+    localStorage.setItem('hangeul-play:progress:v1', JSON.stringify({
+      stars: 10,
+      ownedItems: ['dress-pink', 'hair-blonde', 'crown-gold', 'acc-none', 'bg-pink'],
+      // dress-red는 보유하지 않았는데 입은 것으로 저장됨(손상)
+      outfit: { dress: 'dress-red', hair: 'hair-blonde', crown: 'crown-gold', accessory: 'acc-none', background: 'bg-pink' },
+    }))
+    const loaded = loadProgress()
+    expect(loaded.outfit.dress).toBe('dress-pink') // 미보유 → 기본 복귀
+    expect(loaded.outfit.hair).toBe('hair-blonde') // 보유 → 유지
+  })
 })

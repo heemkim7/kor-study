@@ -1,21 +1,9 @@
-// 공주 꾸미기 경제 로직 — 순수 함수(난수는 주입). 별(⭐)로 아이템을 해금/장착.
-import { CATALOG, type DressUpItem, type Outfit } from './catalog'
+// 공주 꾸미기 뽑기 로직 — 순수 함수(난수는 주입).
+// 보유/가격 판정과 장착은 progress.ts(equipItem/unlockItem)로 일원화.
+import { CATALOG, type DressUpItem } from './catalog'
 
 /** 뽑기 1회 가격(아이템 개별 가격과 무관한 정액). */
 export const GACHA_COST = 6
-
-export function isOwned(ownedIds: string[], id: string): boolean {
-  return ownedIds.includes(id)
-}
-
-export function canAfford(stars: number, cost: number): boolean {
-  return stars >= cost
-}
-
-/** 아이템을 입은 새 outfit(원본 불변). category 슬롯만 교체. */
-export function equip(outfit: Outfit, item: DressUpItem): Outfit {
-  return { ...outfit, [item.category]: item.id } as Outfit
-}
 
 /** 아직 보유하지 않은(유료) 아이템 목록 — 뽑기 후보. */
 export function unownedItems(ownedIds: string[]): DressUpItem[] {

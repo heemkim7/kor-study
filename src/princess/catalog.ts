@@ -58,7 +58,7 @@ export const CATALOG: DressUpItem[] = [
   { id: 'hair-bun', name: '올림 머리', category: 'hair', cost: 8 },
   { id: 'hair-bob', name: '단발 머리', category: 'hair', cost: 7 },
   // 왕관
-  { id: 'crown-gold', name: '황금 티아라', category: 'crown', cost: 0 },
+  { id: 'crown-gold', name: '황금 왕관', category: 'crown', cost: 0 },
   { id: 'crown-none', name: '왕관 없음', category: 'crown', cost: 0 },
   { id: 'crown-flower', name: '꽃 화관', category: 'crown', cost: 6 },
   { id: 'crown-star', name: '별 왕관', category: 'crown', cost: 8 },

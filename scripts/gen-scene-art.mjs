@@ -542,7 +542,7 @@ scenes.picnic = [
   pth(`M210 360 Q250 300 235 250 Q225 215 250 196`, 'none', `stroke="${C.pathEdge}" stroke-width="3"`),
   // 바구니 (곰이 든)
   // 주인공들
-  bear(232, 226, 30, { hold: (rct(286, 250, 34, 26, '#c98a4a', 6) + rct(286, 250, 34, 26, 'none', 6, `stroke="#a86f34" stroke-width="2.5"`) + pth('M288 252 Q303 238 318 252', 'none', 'stroke="#a86f34" stroke-width="3"') + apple(296, 248, 6) + apple(310, 250, 6)) }),
+  bear(232, 226, 30, { hold: (rct(236, 250, 34, 26, '#c98a4a', 6) + rct(236, 250, 34, 26, 'none', 6, `stroke="#a86f34" stroke-width="2.5"`) + pth('M238 252 Q253 238 268 252', 'none', 'stroke="#a86f34" stroke-width="3"') + apple(246, 248, 6) + apple(260, 250, 6)) }),
   rabbit(330, 250, 22, {}),
   flower(60, 330, 8), flower(120, 345, 7, '#ffd24d'), flower(420, 338, 8, '#b58bff'), flower(460, 320, 7),
   butterfly(150, 150, 11, '#ffb0d4'),
@@ -584,8 +584,8 @@ scenes.squirrel = [
   tree(400, 250, 40),
   // 버섯 악센트
   ell(112, 300, 26, 18, '#e8615f'), c(98, 296, 5, '#fff'), c(122, 290, 4, '#fff'), rct(104, 300, 16, 26, '#fff2dc', 6),
-  // 다람쥐 (포도 한 송이 안고 폴짝)
-  squirrel(220, 214, 30, { hold: grapes(222, 250, 13) }),
+  // 다람쥐 (포도 한 송이 안고 폴짝) — 가슴 위로 올리고 옅은 후광으로 배 위 실루엣 분리
+  squirrel(220, 214, 30, { hold: ell(221, 240, 19, 22, '#ffffff', 'opacity="0.28"') + grapes(221, 238, 12) }),
   // 곰돌이
   bear(360, 250, 26, {}),
   flower(60, 344, 8, '#ffd24d'), flower(300, 344, 7, '#ff8fb3'),
@@ -819,6 +819,8 @@ scenes['col-intro'] = [
   dayBackdrop({ sunX: 410, sunY: 56 }),
   balloon(140, 118, 26, '#e8483f'), balloon(238, 98, 26, '#5b8def'), balloon(336, 122, 26, '#ffcf4d'),
   bear(240, 250, 30, { armWave: true }),
+  // 곰의 든 손(≈276,251)에서 풍선 다발로 이어지는 끈 — '들고 왔어요' 의미 보강
+  pth('M 276 250 Q 258 196 244 132', 'none', 'stroke="#b58b6a" stroke-width="1.8" stroke-linecap="round"'),
   flower(64, 342, 8), flower(424, 344, 8, '#b58bff'),
 ]
 // col-red — 빨강 풍선이에요

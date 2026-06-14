@@ -1,5 +1,6 @@
 import { useNavigation } from './Navigation'
 import { useProgress } from '../progress/useProgress'
+import { useTts } from '../tts/useTts'
 import { allLessons } from '../content/loader'
 import { buildJourney } from '../content/journey'
 import { difficultyStars } from '../content/difficulty'
@@ -14,15 +15,17 @@ const THEME_EMOJI: Partial<Record<Theme, string>> = {
 export function Home() {
   const { go } = useNavigation()
   const { progress } = useProgress()
+  const { speak } = useTts()
   const journey = buildJourney(allLessons(), progress.completedLessons)
 
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
-      gap: 14, padding: '24px 16px 32px', textAlign: 'center' }}>
-      <div style={{ position: 'absolute', top: 16, right: 20, fontWeight: 800, color: 'var(--c-accent-strong)' }}>
+      gap: 14, padding: 'max(20px, env(safe-area-inset-top)) 16px 32px', textAlign: 'center' }}>
+      {/* 별·스티커 카운터 — 흐름 안 오른쪽 정렬(절대배치 제거: 제목 겹침·노치 잘림 방지) */}
+      <div style={{ alignSelf: 'flex-end', fontWeight: 800, color: 'var(--c-accent-strong)' }}>
         ⭐ {progress.stars} · 🏅 {progress.stickers}
       </div>
-      <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 32 }}>우리 딸 한글 여정</h1>
+      <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 32, marginTop: -4 }}>우리 딸 한글 여정</h1>
       <p style={{ color: 'var(--c-ink-soft)', marginTop: -8 }}>한 단계씩 올라가며 한글을 배워요</p>
 
       {/* 공주 꾸미기 입구 */}
@@ -81,9 +84,11 @@ export function Home() {
               {inner}
             </button>
           ) : (
-            <div key={lesson.id} style={baseStyle} aria-disabled="true">
+            // 잠긴 단계도 탭하면 이유를 음성으로 안내(무반응 방지 — 글 못 읽는 유아 배려)
+            <button key={lesson.id} onClick={() => speak('먼저 앞 단계를 끝내요')}
+              style={{ ...baseStyle, cursor: 'pointer' }} aria-disabled="true">
               {inner}
-            </div>
+            </button>
           )
         })}
       </div>
