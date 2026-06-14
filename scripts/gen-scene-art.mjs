@@ -85,7 +85,7 @@ function gloss(cx, cy, s) {
 
 // ---- 캐릭터: 곰돌이 ----
 // (cx, cy)=머리 중심, s=머리 반지름. armWave/armUp 으로 손 들기.
-function bear(cx, cy, s, { armWave = false, hold = null } = {}) {
+function bear(cx, cy, s, { armWave = false, hold = null, deco = null } = {}) {
   const by = cy + s * 1.55
   const p = []
   p.push(shadow(cx, by + s * 1.05, s * 1.35))
@@ -113,7 +113,35 @@ function bear(cx, cy, s, { armWave = false, hold = null } = {}) {
   p.push(ell(cx, cy + s * 0.12, s * 0.13, s * 0.1, C.bearDark))
   p.push(smile(cx, cy + s * 0.34, s * 0.2))
   p.push(cheeks(cx, cy + s * 0.2, s * 0.58, s * 0.15))
+  if (deco) p.push(deco)
   return animChar(p.join(''))
+}
+
+// ---- 가족 곰: 장식 부품 ----
+function bow(cx, cy, s, color = '#ef6aa6') {
+  return pth(`M ${cx} ${cy} l ${-s} ${-s * 0.7} l 0 ${s * 1.4} Z`, color)
+    + pth(`M ${cx} ${cy} l ${s} ${-s * 0.7} l 0 ${s * 1.4} Z`, color)
+    + c(cx, cy, s * 0.34, '#fff', 'opacity="0.85"')
+}
+function bowtie(cx, cy, s, color = '#5b8def') {
+  return pth(`M ${cx} ${cy} l ${-s * 0.9} ${-s * 0.6} l 0 ${s * 1.2} Z`, color)
+    + pth(`M ${cx} ${cy} l ${s * 0.9} ${-s * 0.6} l 0 ${s * 1.2} Z`, color)
+    + rct(cx - s * 0.18, cy - s * 0.28, s * 0.36, s * 0.56, '#3f63b0', s * 0.08)
+}
+function specs(cx, cy, s) {
+  return c(cx - s * 0.52, cy, s * 0.42, 'none', `stroke="#5b4632" stroke-width="${s * 0.12}"`)
+    + c(cx + s * 0.52, cy, s * 0.42, 'none', `stroke="#5b4632" stroke-width="${s * 0.12}"`)
+    + limb(cx - s * 0.1, cy, cx + s * 0.1, cy, s * 0.1, '#5b4632')
+}
+// 엄마곰: 머리에 리본 / 아빠곰: 나비넥타이+안경 / 아기곰: 작게+턱받이
+function momBear(cx, cy, s, opts = {}) {
+  return bear(cx, cy, s, { ...opts, deco: bow(cx + s * 0.7, cy - s * 0.82, s * 0.4, '#ff7fb0') })
+}
+function dadBear(cx, cy, s, opts = {}) {
+  return bear(cx, cy, s, { ...opts, deco: specs(cx, cy - s * 0.04, s * 0.7) + bowtie(cx, cy + s * 1.3, s * 0.5) })
+}
+function babyBear(cx, cy, s, opts = {}) {
+  return bear(cx, cy, s, { ...opts, deco: pth(`M ${cx - s * 0.5} ${cy + s * 1.05} Q ${cx} ${cy + s * 1.5} ${cx + s * 0.5} ${cy + s * 1.05} Z`, '#bfe6ff') + c(cx, cy - s * 0.95, s * 0.16, '#ffe14d') })
 }
 
 // ---- 캐릭터: 원숭이 ----
@@ -315,6 +343,77 @@ function grapes(cx, cy, s) {
     out.push(c(cx + dx * s * 0.78 - s * 0.16, cy + dy * s * 0.78 - s * 0.16, s * 0.12, C.white, 'opacity="0.5"'))
   }
   return out.join('')
+}
+
+// ---- 탈것 소품 ----
+function wheels(cx, w, baseY, r) {
+  return ell(cx - w, baseY, r, r, '#3a3a44') + c(cx - w, baseY, r * 0.45, '#9aa1ac')
+    + ell(cx + w, baseY, r, r, '#3a3a44') + c(cx + w, baseY, r * 0.45, '#9aa1ac')
+}
+function car(cx, cy, s, color = '#ef6aa6') {
+  const w = s * 2.6
+  return animChar(shadow(cx, cy + s * 1.1, s * 1.7)
+    + pth(`M ${round2(cx - s * 0.95)} ${round2(cy - s * 0.2)} Q ${round2(cx - s * 0.78)} ${round2(cy - s * 0.95)} ${round2(cx - s * 0.1)} ${round2(cy - s * 0.95)} L ${round2(cx + s * 0.62)} ${round2(cy - s * 0.95)} Q ${round2(cx + s * 0.98)} ${round2(cy - s * 0.92)} ${round2(cx + s * 1.04)} ${round2(cy - s * 0.2)} Z`, color)
+    + rct(cx - w / 2, cy - s * 0.25, w, s * 0.95, color, s * 0.45)
+    + rct(cx - s * 0.8, cy - s * 0.78, s * 0.66, s * 0.5, '#bfe6ff', s * 0.12)
+    + rct(cx + s * 0.02, cy - s * 0.78, s * 0.62, s * 0.5, '#bfe6ff', s * 0.12)
+    + ell(cx - s * 0.5, cy + s * 0.05, s * 0.45, s * 0.18, '#fff', 'opacity="0.4"')
+    + c(cx + w * 0.46, cy + s * 0.18, s * 0.13, '#fff3a0')
+    + wheels(cx, w * 0.3, cy + s * 0.78, s * 0.32))
+}
+function bus(cx, cy, s, color = '#ffcf4d') {
+  const w = s * 3.0, h = s * 1.7
+  let win = ''
+  for (let i = 0; i < 4; i++) win += rct(cx - w * 0.42 + i * (w * 0.225), cy - h * 0.34, w * 0.155, h * 0.36, '#bfe6ff', s * 0.1)
+  return animChar(shadow(cx, cy + h * 0.62, s * 2.0)
+    + rct(cx - w / 2, cy - h / 2, w, h, color, s * 0.5)
+    + win
+    + rct(cx - w / 2 + s * 0.1, cy + h * 0.04, w - s * 0.2, h * 0.14, '#e6a92f', s * 0.06)
+    + c(cx + w * 0.45, cy + h * 0.0, s * 0.12, '#fff3a0')
+    + ell(cx - w * 0.34, cy - h * 0.28, s * 0.5, s * 0.2, '#fff', 'opacity="0.35"')
+    + wheels(cx, w * 0.3, cy + h * 0.52, s * 0.34))
+}
+function train(cx, cy, s) {
+  const h = s * 1.4
+  return animChar(shadow(cx, cy + h * 0.7, s * 2.4)
+    // 객차(왼쪽)
+    + rct(cx - s * 2.5, cy - h * 0.35, s * 1.4, h * 0.85, C.leaf, s * 0.2)
+    + rct(cx - s * 2.25, cy - h * 0.22, s * 0.42, h * 0.42, '#eaf7ff', s * 0.06)
+    + rct(cx - s * 1.7, cy - h * 0.22, s * 0.42, h * 0.42, '#eaf7ff', s * 0.06)
+    + rct(cx - s * 1.15, cy + h * 0.05, s * 0.24, h * 0.18, '#6b4a2e', s * 0.04)
+    // 기관차(오른쪽)
+    + rct(cx - s * 0.95, cy - h * 0.55, s * 2.0, h * 1.05, '#e0533f', s * 0.22)
+    + rct(cx - s * 0.78, cy - h * 0.42, s * 0.78, h * 0.55, '#bfe6ff', s * 0.1)
+    + c(cx + s * 0.55, cy - h * 0.02, s * 0.36, '#ffd24d')
+    + c(cx + s * 0.55, cy - h * 0.02, s * 0.18, '#ffe89a')
+    // 굴뚝 + 연기
+    + rct(cx - s * 0.42, cy - h * 1.0, s * 0.36, h * 0.5, '#9a3f30', s * 0.06)
+    + ell(cx - s * 0.24, cy - h * 1.2, s * 0.55, s * 0.42, C.cloud)
+    + ell(cx - s * 0.7, cy - h * 1.45, s * 0.42, s * 0.34, C.cloud, 'opacity="0.85"')
+    // 바퀴
+    + wheels(cx - s * 1.8, s * 0.42, cy + h * 0.5, s * 0.3)
+    + ell(cx + s * 0.1, cy + h * 0.55, s * 0.36, s * 0.36, '#3a3a44') + c(cx + s * 0.1, cy + h * 0.55, s * 0.16, '#9aa1ac')
+    + ell(cx + s * 0.7, cy + h * 0.55, s * 0.36, s * 0.36, '#3a3a44') + c(cx + s * 0.7, cy + h * 0.55, s * 0.16, '#9aa1ac'))
+}
+function balloon(cx, cy, s, color = '#ef6aa6') {
+  return `<g class="sway" style="animation-delay:${round2((_sw++ % 5) * 0.3)}s">`
+    + ell(cx, cy, s * 0.85, s, color)
+    + pth(`M ${round2(cx - s * 0.16)} ${round2(cy + s * 0.96)} L ${round2(cx + s * 0.16)} ${round2(cy + s * 0.96)} L ${cx} ${round2(cy + s * 1.16)} Z`, color)
+    + ell(cx - s * 0.28, cy - s * 0.34, s * 0.2, s * 0.3, '#fff', 'opacity="0.45"')
+    + `<path d="M ${cx} ${round2(cy + s * 1.16)} q ${round2(s * 0.5)} ${round2(s * 0.9)} ${round2(-s * 0.2)} ${round2(s * 1.8)} q ${round2(-s * 0.5)} ${round2(s * 0.7)} ${round2(s * 0.3)} ${round2(s * 1.6)}" stroke="#b58b6a" stroke-width="1.6" fill="none"/>`
+    + `</g>`
+}
+function house(cx, cy, s) {
+  return shadow(cx, cy + s * 1.05, s * 1.5)
+    + rct(cx - s, cy - s * 0.2, s * 2, s * 1.3, '#ffe0b0', s * 0.1)
+    + pth(`M ${round2(cx - s * 1.2)} ${round2(cy - s * 0.2)} L ${cx} ${round2(cy - s * 1.15)} L ${round2(cx + s * 1.2)} ${round2(cy - s * 0.2)} Z`, '#e07a5a')
+    + rct(cx - s * 0.32, cy + s * 0.34, s * 0.64, s * 0.76, '#b07a4e', s * 0.08)
+    + c(cx + s * 0.2, cy + s * 0.74, s * 0.07, '#ffd24d')
+    + rct(cx - s * 0.78, cy + s * 0.1, s * 0.4, s * 0.4, '#bfe6ff', s * 0.06)
+    + rct(cx + s * 0.38, cy + s * 0.1, s * 0.4, s * 0.4, '#bfe6ff', s * 0.06)
+    + limb(cx - s * 0.58, cy + s * 0.1, cx - s * 0.58, cy + s * 0.5, 2, '#9a6840')
+    + limb(cx - s * 0.78, cy + s * 0.3, cx - s * 0.38, cy + s * 0.3, 2, '#9a6840')
+    + c(cx, cy - s * 0.62, s * 0.16, '#fff', 'opacity="0.7"')
 }
 
 // ---- 배경 부품 ----
@@ -638,6 +737,175 @@ scenes['nat-sleep'] = [
   nightBackdrop({ moonX: 240, moonY: 98, moonR: 50 }),
   bear(240, 252, 28, {}),
   flower(70, 340, 8, '#b58bff'), flower(410, 342, 8, '#ff8fb3'),
+]
+
+// ========================= 탈것 (vehicles) =========================
+function roadBand() {
+  return [
+    rct(0, 300, W, 60, '#8d96a3'),
+    rct(0, 300, W, 5, '#a7afba'),
+    ...[20, 120, 220, 320, 420].map((x) => rct(x, 326, 34, 7, '#f4e9c8', 3)),
+  ].join('')
+}
+function sunsetBackdrop() {
+  return [
+    `<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${C.sunsetTop}"/><stop offset="0.55" stop-color="${C.sunsetMid}"/><stop offset="1" stop-color="${C.sunsetBot}"/></linearGradient>`
+    + `<linearGradient id="grass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cf9f6a"/><stop offset="1" stop-color="#b9854f"/></linearGradient></defs>`,
+    rct(0, 0, W, H, 'url(#sky)'),
+    sun(240, 150, 46, C.sunset, '#ffd9a0'),
+    cloud(360, 80, 24), cloud(110, 64, 18),
+    ell(110, 300, 230, 130, '#d7a96f'),
+    ell(400, 310, 240, 140, '#caa063'),
+    pth(`M0 244 Q240 220 480 244 L480 360 L0 360 Z`, 'url(#grass)'),
+  ].join('')
+}
+
+// veh-road — 곰돌이가 길가에서 탈것을 기다려요
+scenes['veh-road'] = [
+  dayBackdrop({ sunX: 410, sunY: 58 }),
+  roadBand(),
+  house(74, 250, 30), tree(424, 234, 28),
+  bear(240, 232, 30, {}),
+  flower(150, 352, 7, '#ffd24d'), butterfly(180, 140, 11, '#ffb0d4'),
+]
+// veh-car — 빵빵! 자동차가 지나가요
+scenes['veh-car'] = [
+  dayBackdrop({ sunX: 64, sunY: 58 }),
+  roadBand(),
+  tree(56, 232, 26),
+  car(270, 318, 30, '#ef6aa6'),
+  bear(120, 244, 26, { armWave: true }),
+  flower(430, 352, 7, '#b58bff'), butterfly(380, 130, 11, '#c4a0ff'),
+]
+// veh-bus — 노란 버스가 왔어요
+scenes['veh-bus'] = [
+  dayBackdrop({ sunX: 410, sunY: 56 }),
+  roadBand(),
+  bus(268, 312, 28, '#ffcf4d'),
+  bear(96, 246, 24, { armWave: true }),
+  tree(440, 238, 24),
+  flower(50, 352, 7, '#ff8fb3'), butterfly(330, 120, 11, '#ffb0d4'),
+]
+// veh-train — 칙칙폭폭 기차가 달려요
+scenes['veh-train'] = [
+  dayBackdrop({ sunX: 70, sunY: 58 }),
+  roadBand(),
+  train(262, 310, 26),
+  bear(86, 250, 22, { armWave: true }),
+  flower(450, 352, 7, '#ffd24d'), butterfly(360, 130, 11, '#c4a0ff'),
+]
+// veh-ride — 자동차, 버스, 기차 모두 모였어요
+scenes['veh-ride'] = [
+  dayBackdrop({ sunX: 240, sunY: 50 }),
+  roadBand(),
+  car(96, 322, 20, '#7ec9f0'),
+  bus(248, 314, 22, '#ffcf4d'),
+  train(392, 322, 17),
+  bear(54, 252, 17, { armWave: true }),
+  butterfly(300, 108, 12, '#ffb0d4'),
+]
+// veh-bye — 잘 가, 또 보자! (노을)
+scenes['veh-bye'] = [
+  sunsetBackdrop(),
+  car(360, 300, 22, '#ef6aa6'),
+  bear(130, 232, 26, { armWave: true }),
+  rabbit(250, 240, 20, { armWave: true }),
+  butterfly(180, 120, 10, '#ffc4a0'),
+]
+
+// ========================= 색깔 (colorshape) =========================
+// col-intro — 곰돌이가 색깔 풍선을 들고 왔어요
+scenes['col-intro'] = [
+  dayBackdrop({ sunX: 410, sunY: 56 }),
+  balloon(140, 118, 26, '#e8483f'), balloon(238, 98, 26, '#5b8def'), balloon(336, 122, 26, '#ffcf4d'),
+  bear(240, 250, 30, { armWave: true }),
+  flower(64, 342, 8), flower(424, 344, 8, '#b58bff'),
+]
+// col-red — 빨강 풍선이에요
+scenes['col-red'] = [
+  dayBackdrop({ sunX: 64, sunY: 58 }),
+  balloon(300, 128, 40, '#e8483f'),
+  bear(168, 248, 28, { armWave: true }),
+  apple(116, 300, 16),
+  flower(60, 346, 8, '#ff8fb3'), butterfly(400, 120, 11, '#c4a0ff'),
+]
+// col-blue — 파랑 풍선이에요
+scenes['col-blue'] = [
+  dayBackdrop({ sunX: 410, sunY: 56 }),
+  balloon(300, 128, 40, '#5b8def'),
+  bear(168, 248, 28, {}),
+  flower(118, 318, 15, '#7ec9f0'),
+  flower(60, 346, 8, '#b58bff'), butterfly(380, 130, 11, '#7ec9f0'),
+]
+// col-yellow — 노랑 풍선이에요
+scenes['col-yellow'] = [
+  dayBackdrop({ sunX: 240, sunY: 58 }),
+  balloon(300, 128, 40, '#ffcf4d'),
+  bear(168, 248, 28, { armWave: true }),
+  flower(118, 318, 15, '#ffd24d'),
+  flower(60, 346, 8, '#ff8fb3'),
+]
+// col-all — 알록달록 색깔이 모두 모였어요
+scenes['col-all'] = [
+  dayBackdrop({ sunX: 240, sunY: 48 }),
+  balloon(118, 120, 25, '#e8483f'), balloon(198, 102, 25, '#5b8def'), balloon(282, 102, 25, '#ffcf4d'), balloon(362, 120, 25, '#7cc35e'),
+  bear(240, 252, 28, { armWave: true }),
+  flower(56, 342, 8, '#ff8fb3'), flower(430, 344, 8, '#b58bff'),
+]
+// col-bye — 알록달록 즐거웠어! (노을)
+scenes['col-bye'] = [
+  sunsetBackdrop(),
+  balloon(360, 120, 22, '#e8483f'), balloon(120, 110, 22, '#5b8def'),
+  bear(240, 234, 26, { armWave: true }),
+  butterfly(180, 130, 10, '#ffc4a0'),
+]
+
+// ========================= 가족 (family) =========================
+// fam-home — 우리 집, 가족이 함께 있어요
+scenes['fam-home'] = [
+  dayBackdrop({ sunX: 70, sunY: 56 }),
+  house(372, 224, 52),
+  momBear(110, 244, 25, {}), dadBear(206, 240, 27, {}),
+  flower(60, 346, 8), butterfly(150, 128, 11, '#ffb0d4'),
+  grassDetail([[40, 330], [300, 344]]),
+]
+// fam-mom — 엄마 곰이 방긋 웃어요
+scenes['fam-mom'] = [
+  dayBackdrop({ sunX: 64, sunY: 58 }),
+  tree(416, 238, 30),
+  momBear(220, 244, 32, { armWave: true }),
+  flower(70, 346, 8, '#ff8fb3'), butterfly(360, 128, 11, '#c4a0ff'),
+]
+// fam-dad — 아빠 곰이 손을 흔들어요
+scenes['fam-dad'] = [
+  dayBackdrop({ sunX: 410, sunY: 56 }),
+  tree(66, 238, 30),
+  dadBear(240, 244, 32, { armWave: true }),
+  flower(420, 346, 8, '#ffd24d'), butterfly(140, 128, 11, '#ffb0d4'),
+]
+// fam-baby — 아기 곰이 아장아장
+scenes['fam-baby'] = [
+  dayBackdrop({ sunX: 240, sunY: 56 }),
+  momBear(110, 244, 26, {}),
+  babyBear(256, 258, 22, {}),
+  ball(372, 300, 20),
+  flower(60, 342, 8, '#b58bff'), butterfly(190, 120, 11, '#ffb0d4'),
+]
+// fam-all — 온 가족이 다 모였어요
+scenes['fam-all'] = [
+  dayBackdrop({ sunX: 240, sunY: 48 }),
+  house(424, 250, 34),
+  dadBear(96, 234, 27, { armWave: true }),
+  momBear(206, 240, 25, {}),
+  babyBear(312, 256, 19, {}),
+  flower(48, 344, 8, '#ff8fb3'), butterfly(170, 118, 11, '#ffb0d4'),
+]
+// fam-bye — 잘 자요, 사랑해! (밤)
+scenes['fam-bye'] = [
+  nightBackdrop({ moonX: 392, moonY: 80, moonR: 38 }),
+  dadBear(116, 236, 25, { armWave: true }),
+  momBear(216, 240, 24, {}),
+  babyBear(316, 256, 18, {}),
 ]
 
 function svg(body) {

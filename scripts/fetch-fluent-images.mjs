@@ -16,6 +16,17 @@ const MAP = {
   moon: 'Crescent moon',
   flower: 'Cherry blossom',
   ball: 'Soccer ball',
+  // 탈것
+  train: 'Locomotive',
+  airplane: 'Airplane',
+  // 색깔
+  red: 'Red circle',
+  blue: 'Blue circle',
+  yellow: 'Yellow circle',
+  // 가족
+  mom: 'Woman',
+  dad: 'Man',
+  baby: 'Baby',
 }
 
 const PNG_MAGIC = [137, 80, 78, 71]
@@ -24,10 +35,14 @@ const file3d = (folder) => folder.toLowerCase().replace(/[ -]/g, '_') + '_3d.png
 function urls(folder) {
   const f = encodeURIComponent(folder)
   const name = file3d(folder)
-  return [
-    `https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/${f}/3D/${name}`,
-    `https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/${f}/3D/${name}`,
+  const base = folder.toLowerCase().replace(/[ -]/g, '_')
+  const nameDefault = base + '_3d_default.png' // 스킨톤 이모지는 Default 하위폴더
+  const paths = [`${f}/3D/${name}`, `${f}/Default/3D/${nameDefault}`]
+  const cdns = [
+    (p) => `https://cdn.jsdelivr.net/gh/microsoft/fluentui-emoji@main/assets/${p}`,
+    (p) => `https://raw.githubusercontent.com/microsoft/fluentui-emoji/main/assets/${p}`,
   ]
+  return paths.flatMap((p) => cdns.map((cdn) => cdn(p)))
 }
 
 async function tryDownload(folder) {
@@ -60,4 +75,4 @@ if (fails.length) {
   console.error('\n실패:', fails.join(', '))
   process.exit(1)
 }
-console.log('\n12개 단어 그림 모두 받음.')
+console.log(`\n${Object.keys(MAP).length}개 단어 그림 모두 받음.`)
