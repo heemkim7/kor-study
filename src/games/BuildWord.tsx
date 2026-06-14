@@ -36,9 +36,12 @@ export function BuildWord({ targetWords, pool, onCorrect, onDone, choiceCount = 
   const [prevRound, setPrevRound] = useState(round)
   if (round !== prevRound) { setPrevRound(round); setPlaced([]); setUsedIdx([]); setSolved(false) }
 
-  // 라운드마다 정답 음성 재생
+  // 진입 안내(1회): 놀이 방법 → 첫 단어
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { speak(answer.text) }, [round])
+  useEffect(() => { speak('글자 카드로 단어를 만들어요', { onEnd: () => speak(answer.text) }) }, [])
+  // 라운드가 바뀌면 정답 단어(첫 라운드는 위 안내가 처리)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (round > 0) speak(answer.text) }, [round])
 
   function tapTile(idx: number) {
     if (solved || usedIdx.includes(idx)) return

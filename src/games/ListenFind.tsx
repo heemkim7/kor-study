@@ -31,9 +31,12 @@ export function ListenFind({ targetWords, pool, onCorrect, onDone, choiceCount =
   const [prevRound, setPrevRound] = useState(round)
   if (round !== prevRound) { setPrevRound(round); setSolved(false); setWrongId(null) }
 
-  // 라운드마다 정답 음성 재생(부수효과는 이펙트에서)
+  // 진입 안내(1회): 놀이 방법 → 첫 단어
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { speak(answer.text) }, [round])
+  useEffect(() => { speak('잘 듣고 같은 그림을 찾아요', { onEnd: () => speak(answer.text) }) }, [])
+  // 라운드가 바뀌면 정답 단어(첫 라운드는 위 안내가 처리)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (round > 0) speak(answer.text) }, [round])
 
   function pick(id: string) {
     if (solved) return

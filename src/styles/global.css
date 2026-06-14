@@ -13,15 +13,30 @@ body {
   color: var(--c-ink);
   -webkit-font-smoothing: antialiased;
   user-select: none;
+  -webkit-user-select: none;
   touch-action: manipulation;
+  overscroll-behavior: none;
 }
-/* 모든 버튼에 즉각적 누름 피드백(유아가 '눌렸다'를 형태로 인지) */
-button { font-family: inherit; cursor: pointer; transition: transform .06s ease, filter .06s ease; }
+/* 유아가 누르는 즉시 반응하도록: 탭 지연/하이라이트 제거 + 탭 영역 보장 */
+* { -webkit-tap-highlight-color: transparent; }
+button {
+  font-family: inherit; cursor: pointer;
+  touch-action: manipulation; -webkit-user-select: none; user-select: none;
+  transition: transform .06s ease, filter .06s ease;
+}
 button:active:not(:disabled) { transform: translateY(2px); filter: brightness(0.97); }
 
 /* 오답 시 흔들림(소리 꺼져 있어도 '아니야'를 형태로 전달) */
 @keyframes kp-shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-7px)} 40%,80%{transform:translateX(7px)} }
 .kp-shake { animation: kp-shake .42s ease; }
+
+/* 뽑기 두구두구 + 별 카운터 강조 */
+@keyframes kp-wiggle { 0%,100%{transform:rotate(-9deg) scale(1)} 25%{transform:rotate(9deg) scale(1.1)} 50%{transform:rotate(-9deg) scale(1)} 75%{transform:rotate(9deg) scale(1.1)} }
+.kp-wiggle { animation: kp-wiggle .5s ease-in-out infinite; transform-origin: center; }
+@keyframes kp-pop { 0%{transform:scale(1)} 45%{transform:scale(1.35)} 100%{transform:scale(1)} }
+.kp-pop { animation: kp-pop .45s ease; }
+@keyframes kp-float { 0%{opacity:0;transform:translateY(0)} 20%{opacity:1} 100%{opacity:0;transform:translateY(-26px)} }
+.kp-float { animation: kp-float 1.3s ease forwards; }
 
 /* 모션 민감 사용자 배려 — 전역으로 애니메이션 사실상 정지 */
 @media (prefers-reduced-motion: reduce) {

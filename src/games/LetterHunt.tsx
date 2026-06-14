@@ -36,9 +36,12 @@ export function LetterHunt({ targetWords, pool, onCorrect, onDone }: {
   const [prevRound, setPrevRound] = useState(round)
   if (round !== prevRound) { setPrevRound(round); setFound([]); setSolved(false) }
 
-  // 라운드마다 찾을 글자 안내 음성
+  // 진입 안내(1회): 놀이 방법 → 첫 글자
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { speak(`${target} 글자를 찾아요`) }, [round])
+  useEffect(() => { speak('같은 글자를 모두 찾아요', { onEnd: () => speak(`${target} 글자를 찾아요`) }) }, [])
+  // 라운드가 바뀌면 찾을 글자(첫 라운드는 위 안내가 처리)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { if (round > 0) speak(`${target} 글자를 찾아요`) }, [round])
 
   function tapCell(idx: number) {
     if (solved || found.includes(idx)) return

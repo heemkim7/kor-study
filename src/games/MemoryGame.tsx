@@ -19,6 +19,10 @@ export function MemoryGame({ targetWords, onCorrect, onDone }: {
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   useEffect(() => () => clearTimeout(timerRef.current), [])
 
+  // 첫 진입에 놀이 방법 안내(1회)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { speak('같은 짝을 맞춰보세요') }, [])
+
   function tap(idx: number) {
     if (busy) return
     const card = deck[idx]

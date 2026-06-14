@@ -23,6 +23,10 @@ export function PickWord({ targetWords, pool, onCorrect, onDone, choiceCount = 3
   const shakeRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   useEffect(() => () => { clearTimeout(timerRef.current); clearTimeout(shakeRef.current) }, [])
 
+  // 첫 진입에 놀이 방법 안내(1회)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { speak('그림을 보고 맞는 글자를 골라요') }, [])
+
   // 라운드가 바뀌면 상태 초기화(렌더 중 — 이펙트에서 setState 지양)
   const [prevRound, setPrevRound] = useState(round)
   if (round !== prevRound) { setPrevRound(round); setSolved(false); setWrongId(null) }

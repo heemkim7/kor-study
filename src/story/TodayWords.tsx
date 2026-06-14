@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import type { Lesson } from '../content/types'
 import { getWordsByIds } from '../content/loader'
 import { useTts } from '../tts/useTts'
@@ -6,6 +7,10 @@ import { WordImage } from '../ui/WordImage'
 export function TodayWords({ lesson, onDone }: { lesson: Lesson; onDone: () => void }) {
   const { speak } = useTts()
   const words = getWordsByIds(lesson.targetWords)
+
+  // 진입 안내(1회)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { speak('오늘 배울 단어예요') }, [])
 
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column',
