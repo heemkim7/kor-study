@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { isHangulSyllable, decomposeSyllable, toSyllables, toJamo, getChoseong } from './decompose'
+import { isHangulSyllable, decomposeSyllable, composeSyllable, toSyllables, toJamo, getChoseong } from './decompose'
 
 describe('isHangulSyllable', () => {
   it('완성형 한글이면 true, 그 외 false', () => {
@@ -16,6 +16,24 @@ describe('decomposeSyllable', () => {
   })
   it('한글이 아니면 null', () => {
     expect(decomposeSyllable('x')).toBeNull()
+  })
+})
+
+describe('composeSyllable', () => {
+  it('초성+중성을 글자로 합침', () => {
+    expect(composeSyllable('ㅅ', 'ㅏ')).toBe('사')
+    expect(composeSyllable('ㄱ', 'ㅘ')).toBe('과')
+  })
+  it('받침 포함도 합침', () => {
+    expect(composeSyllable('ㄱ', 'ㅗ', 'ㅁ')).toBe('곰')
+  })
+  it('분해→조합 왕복', () => {
+    const d = decomposeSyllable('강')!
+    expect(composeSyllable(d.cho, d.jung, d.jong)).toBe('강')
+  })
+  it('잘못된 자모면 null', () => {
+    expect(composeSyllable('ㅏ', 'ㅅ')).toBeNull()
+    expect(composeSyllable('ㅅ', 'x')).toBeNull()
   })
 })
 

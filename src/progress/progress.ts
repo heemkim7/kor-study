@@ -10,6 +10,8 @@ export interface Progress {
   ownedItems: string[]      // 보유한 꾸미기 아이템 id(기본 포함)
   outfit: Outfit            // 현재 입은 옷차림
   collectedStickers: string[] // 모은 스티커 id(스티커북)
+  lastPlayedDate: string | null // 마지막으로 논 날(YYYY-MM-DD, 로컬)
+  streak: number            // 연속 놀이 일수
 }
 
 export const initialProgress: Progress = {
@@ -21,6 +23,34 @@ export const initialProgress: Progress = {
   ownedItems: [...DEFAULT_OWNED_IDS],
   outfit: { ...DEFAULT_OUTFIT },
   collectedStickers: [],
+  lastPlayedDate: null,
+  streak: 0,
+}
+
+/** 로컬 기준 오늘 날짜 YYYY-MM-DD. */
+export function todayStr(d: Date = new Date()): string {
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+function daysBetween(a: string, b: string): number {
+  const da = Date.parse(a + 'T00:00:00'), db = Date.parse(b + 'T00:00:00')
+  if (Number.isNaN(da) || Number.isNaN(db)) return Infinity
+  return Math.round((db - da) / 86400000)
+}
+
+/**
+ * '오늘 놀았음'을 기록하고 연속 일수 갱신.
+ * 4세 배려: 어제뿐 아니라 '하루 빠짐(프리즈)'까지 연속으로 인정, 그 이상 벌어지면 1로 새로 시작(처벌 메시지 없음).
+ */
+export function markPlayed(p: Progress, today: string): Progress {
+  if (p.lastPlayedDate === today) return p
+  let streak = 1
+  if (p.lastPlayedDate) {
+    const gap = daysBetween(p.lastPlayedDate, today)
+    if (gap >= 1 && gap <= 2) streak = p.streak + 1 // 어제 or 하루 빠짐 → 이어감
+    else if (gap <= 0) streak = p.streak || 1       // 시계 역행 등 방어
+  }
+  return { ...p, lastPlayedDate: today, streak }
 }
 
 export function addStars(p: Progress, n: number): Progress {

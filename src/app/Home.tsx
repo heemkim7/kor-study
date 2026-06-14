@@ -7,6 +7,8 @@ import { buildJourney, type JourneyNode } from '../content/journey'
 import { difficultyStars } from '../content/difficulty'
 import { PrincessFigure } from '../princess/PrincessFigure'
 import { STICKERS } from '../reward/stickers'
+import { buildLetterJourney, type LetterNode } from '../content/letters'
+import { todayStr } from '../progress/progress'
 import { isBgmEnabled, toggleBgm, resumeAudio } from '../audio/sound'
 import type { Theme } from '../content/types'
 
@@ -23,6 +25,7 @@ export function Home() {
   const currentRef = useRef<HTMLButtonElement>(null)
   const currentIdx = journey.findIndex((n) => n.current)
   const [bgmOn, setBgmOn] = useState(isBgmEnabled())
+  const playedToday = progress.lastPlayedDate === todayStr()
 
   // 진행이 쌓인 복귀 사용자는 '지금 도전!' 카드로 자동 스크롤(앞쪽이면 그대로 둠)
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -35,6 +38,42 @@ export function Home() {
     const last = groups[groups.length - 1]
     if (last && last.unit === unit) last.nodes.push(node)
     else groups.push({ unit, nodes: [node] })
+  }
+
+  // 글자 배우기(자모) 트랙 — 단원별 묶기
+  const letterJourney = buildLetterJourney(progress.completedLessons)
+  const letterGroups: { unit: string; nodes: LetterNode[] }[] = []
+  for (const node of letterJourney) {
+    const unit = node.lesson.unit
+    const last = letterGroups[letterGroups.length - 1]
+    if (last && last.unit === unit) last.nodes.push(node)
+    else letterGroups.push({ unit, nodes: [node] })
+  }
+
+  const renderLetterNode = ({ lesson, completed, unlocked, current }: LetterNode) => {
+    const badge = completed ? '⭐' : unlocked ? lesson.glyphs[0] : '🔒'
+    const state = completed ? ' · 완료!' : current ? ' · 지금 배워요!' : !unlocked ? ' · 잠김' : ''
+    return (
+      <button key={lesson.id} aria-disabled={!unlocked}
+        onClick={() => (unlocked ? go({ name: 'letter', lessonId: lesson.id }) : speak('먼저 앞 글자를 배워요'))}
+        style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '13px 16px',
+          borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer', background: 'var(--c-card)',
+          boxShadow: current ? '0 0 0 3px #b89be0, var(--shadow-card)' : 'var(--shadow-card)', opacity: unlocked ? 1 : 0.6 }}>
+        <div style={{ width: 48, height: 48, flex: '0 0 auto', borderRadius: '50%', display: 'flex',
+          alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-warm)', fontSize: completed ? 24 : 26,
+          fontWeight: 800, color: '#fff', background: completed ? 'var(--c-correct)' : unlocked ? '#9b6bff' : '#c9bba8' }}>
+          {badge}
+        </div>
+        <div style={{ flex: 1, textAlign: 'left' }}>
+          <div style={{ fontFamily: 'var(--font-warm)', fontSize: 20, fontWeight: 800, color: 'var(--c-ink)' }}>
+            📖 {lesson.title}
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--c-ink-soft)', marginTop: 2, letterSpacing: 2 }}>
+            {lesson.glyphs.join(' · ')}{state}
+          </div>
+        </div>
+      </button>
+    )
   }
 
   const renderNode = ({ lesson, completed, unlocked, current }: JourneyNode) => {
@@ -89,11 +128,20 @@ export function Home() {
           {bgmOn ? '🔊' : '🔇'}
         </button>
         <div style={{ fontWeight: 800, color: 'var(--c-accent-strong)' }}>
-          ⭐ {progress.stars} · 🏅 {progress.stickers}
+          {progress.streak > 0 && <>🔥 {progress.streak} · </>}⭐ {progress.stars} · 🏅 {progress.stickers}
         </div>
       </div>
       <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 32, marginTop: -4 }}>우리 딸 한글 여정</h1>
       <p style={{ color: 'var(--c-ink-soft)', marginTop: -8 }}>한 단계씩 올라가며 한글을 배워요</p>
+
+      {/* 오늘의 목표 — 4세 배려: 달성/미달성 모두 긍정 문구 */}
+      <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px',
+        borderRadius: 999, background: playedToday ? 'linear-gradient(135deg,#d6f5e0,#f0fff6)' : 'linear-gradient(135deg,#fff3d6,#fffaf0)',
+        boxShadow: 'var(--shadow-card)', fontWeight: 800, fontSize: 14, color: 'var(--c-ink)' }}>
+        {playedToday
+          ? <>🎉 오늘 목표 달성! {progress.streak > 1 && `🔥 ${progress.streak}일 연속`}</>
+          : <>🎯 오늘의 목표 · 놀이 1개 하기</>}
+      </div>
 
       {/* 공주 꾸미기 입구 */}
       <button onClick={() => go({ name: 'dressup' })}
@@ -140,8 +188,33 @@ export function Home() {
         </button>
       </div>
 
-      {/* 주차별 여정 */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', maxWidth: 380, marginTop: 4 }}>
+      {/* 글자 배우기(자모) 트랙 — 한글 깨치기의 시작 */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', maxWidth: 380, marginTop: 8 }}>
+        <div style={{ fontFamily: 'var(--font-warm)', fontSize: 19, fontWeight: 800, color: '#7a4fc0',
+          textAlign: 'left', margin: '4px 4px 0' }}>📖 글자 배우기</div>
+        <p style={{ fontSize: 12.5, color: 'var(--c-ink-soft)', textAlign: 'left', margin: '0 4px 2px' }}>
+          자음·모음부터 차근차근 한글을 깨쳐요
+        </p>
+        {letterGroups.map((g) => (
+          <div key={g.unit} style={{ width: '100%' }}>
+            <div style={{ fontFamily: 'var(--font-warm)', fontSize: 15, fontWeight: 800,
+              color: '#9b6bff', textAlign: 'left', margin: '10px 4px 6px' }}>
+              {g.unit}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {g.nodes.map(renderLetterNode)}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* 단어 익히기(통글자) 트랙 */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', maxWidth: 380, marginTop: 8 }}>
+        <div style={{ fontFamily: 'var(--font-warm)', fontSize: 19, fontWeight: 800, color: 'var(--c-accent-strong)',
+          textAlign: 'left', margin: '4px 4px 0' }}>🍓 단어 익히기</div>
+        <p style={{ fontSize: 12.5, color: 'var(--c-ink-soft)', textAlign: 'left', margin: '0 4px 2px' }}>
+          그림과 함께 통글자 단어를 익혀요
+        </p>
         {groups.map((g) => (
           <div key={g.unit} style={{ width: '100%' }}>
             <div style={{ fontFamily: 'var(--font-warm)', fontSize: 15, fontWeight: 800,

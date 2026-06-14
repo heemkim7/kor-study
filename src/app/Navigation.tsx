@@ -3,6 +3,7 @@ import { createContext, useContext, useMemo, useState, type ReactNode } from 're
 export type Screen =
   | { name: 'home' }
   | { name: 'adventure'; lessonId: string }
+  | { name: 'letter'; lessonId: string }
   | { name: 'dressup' }
   | { name: 'stickers' }
   | { name: 'draw' }

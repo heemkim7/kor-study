@@ -12,6 +12,7 @@ import { BuildWord } from '../games/BuildWord'
 import { LetterHunt } from '../games/LetterHunt'
 import { MemoryGame } from '../games/MemoryGame'
 import { RewardScreen } from '../reward/RewardScreen'
+import { todayStr } from '../progress/progress'
 import { playCorrect } from '../audio/sound'
 
 type Phase = { kind: 'story' } | { kind: 'words' } | { kind: 'game'; index: number } | { kind: 'reward' }
@@ -35,6 +36,7 @@ export function Adventure({ lessonId }: { lessonId: string }) {
       setAwarded(!progress.completedLessons.includes(lesson.id))
       dispatch({ type: 'learnWords', ids: lesson.targetWords })
       dispatch({ type: 'completeLesson', lessonId: lesson.id })
+      dispatch({ type: 'markPlayed', today: todayStr() })
       setPhase({ kind: 'reward' })
     }
   }

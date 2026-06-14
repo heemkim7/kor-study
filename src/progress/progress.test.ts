@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { initialProgress, addStars, learnWords, completeLesson, setPrincessName, unlockItem, equipItem } from './progress'
+import { initialProgress, addStars, learnWords, completeLesson, setPrincessName, unlockItem, equipItem, markPlayed } from './progress'
 import { GACHA_COST } from '../princess/economy'
 
 describe('addStars', () => {
@@ -35,6 +35,30 @@ describe('completeLesson', () => {
     expect(a.collectedStickers).toHaveLength(1)
     expect(b.collectedStickers).toHaveLength(2)
     expect(b.collectedStickers[0]).not.toBe(b.collectedStickers[1]) // 서로 다른 스티커
+  })
+})
+
+describe('markPlayed (스트릭)', () => {
+  it('처음 놀면 streak 1, 날짜 기록', () => {
+    const p = markPlayed(initialProgress, '2026-06-15')
+    expect(p.streak).toBe(1)
+    expect(p.lastPlayedDate).toBe('2026-06-15')
+  })
+  it('같은 날 다시 호출하면 변화 없음', () => {
+    const a = markPlayed(initialProgress, '2026-06-15')
+    expect(markPlayed(a, '2026-06-15')).toBe(a)
+  })
+  it('다음 날 이어가면 +1', () => {
+    const a = markPlayed(initialProgress, '2026-06-15')
+    expect(markPlayed(a, '2026-06-16').streak).toBe(2)
+  })
+  it('하루 빠짐(프리즈)도 연속 인정', () => {
+    const a = markPlayed(initialProgress, '2026-06-15')
+    expect(markPlayed(a, '2026-06-17').streak).toBe(2) // gap 2일 → 프리즈
+  })
+  it('이틀 이상 빠지면 1로 새로 시작', () => {
+    const a = markPlayed(initialProgress, '2026-06-15')
+    expect(markPlayed(a, '2026-06-19').streak).toBe(1) // gap 4일
   })
 })
 
