@@ -30,6 +30,24 @@ describe('storage', () => {
     expect(loaded.completedLessons).toEqual([])
   })
 
+  it('손상된 스트릭 필드(잘못된 날짜/음수)는 기본값으로 방어', () => {
+    localStorage.setItem('hangeul-play:progress:v1', JSON.stringify({
+      lastPlayedDate: '2026-06-99', streak: -3,
+    }))
+    const loaded = loadProgress()
+    expect(loaded.lastPlayedDate).toBeNull()
+    expect(loaded.streak).toBe(0)
+  })
+
+  it('정상 스트릭 필드는 유지', () => {
+    localStorage.setItem('hangeul-play:progress:v1', JSON.stringify({
+      lastPlayedDate: '2026-06-15', streak: 4,
+    }))
+    const loaded = loadProgress()
+    expect(loaded.lastPlayedDate).toBe('2026-06-15')
+    expect(loaded.streak).toBe(4)
+  })
+
   it('알 수 없는 스티커 id는 걸러내고 유효한 것만 유지', () => {
     localStorage.setItem('hangeul-play:progress:v1', JSON.stringify({
       collectedStickers: ['st-lion', 'no-such-sticker', 'st-star'],

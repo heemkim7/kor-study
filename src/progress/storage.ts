@@ -4,6 +4,14 @@ import { getSticker } from '../reward/stickers'
 
 const KEY = 'hangeul-play:progress:v1'
 
+/** YYYY-MM-DD 형식이면서 실제로 존재하는 날짜인지(2026-06-99 같은 값 거부). */
+function isValidDateStr(s: unknown): s is string {
+  if (typeof s !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(s)) return false
+  const [y, m, d] = s.split('-').map(Number)
+  const dt = new Date(y, m - 1, d)
+  return dt.getFullYear() === y && dt.getMonth() === m - 1 && dt.getDate() === d
+}
+
 export function loadProgress(): Progress {
   try {
     const raw = localStorage.getItem(KEY)
@@ -24,7 +32,11 @@ export function loadProgress(): Progress {
     }
     // 스티커도 카탈로그에 있는 id만 인정(손상/구버전 저장 방어)
     const collectedStickers = (parsed.collectedStickers ?? []).filter((id) => getSticker(id) !== undefined)
-    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers }
+    // 스트릭 필드도 형식 검증(손상값이 daysBetween을 오염시키지 않게)
+    const lastPlayedDate = isValidDateStr(parsed.lastPlayedDate) ? parsed.lastPlayedDate : null
+    const streak = typeof parsed.streak === 'number' && Number.isInteger(parsed.streak) && parsed.streak >= 0
+      ? parsed.streak : 0
+    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers, lastPlayedDate, streak }
   } catch {
     return initialProgress
   }

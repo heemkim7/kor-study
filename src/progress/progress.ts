@@ -32,9 +32,12 @@ export function todayStr(d: Date = new Date()): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
 }
 
+// YYYY-MM-DD를 로컬 자정 Date로 직접 구성해 일수 차를 계산(엔진별 타임존 해석 모호성 제거).
 function daysBetween(a: string, b: string): number {
-  const da = Date.parse(a + 'T00:00:00'), db = Date.parse(b + 'T00:00:00')
-  if (Number.isNaN(da) || Number.isNaN(db)) return Infinity
+  const pa = a.split('-').map(Number), pb = b.split('-').map(Number)
+  if (pa.length !== 3 || pb.length !== 3 || [...pa, ...pb].some((n) => !Number.isFinite(n))) return Infinity
+  const da = new Date(pa[0], pa[1] - 1, pa[2]).getTime()
+  const db = new Date(pb[0], pb[1] - 1, pb[2]).getTime()
   return Math.round((db - da) / 86400000)
 }
 
@@ -63,8 +66,8 @@ export function learnWords(p: Progress, ids: string[]): Progress {
 
 export function completeLesson(p: Progress, lessonId: string): Progress {
   if (p.completedLessons.includes(lessonId)) return p
-  // 완료 순서대로 스티커를 한 장씩 모은다(레슨 수보다 많아지면 순환).
-  const sticker = STICKERS[p.completedLessons.length % STICKERS.length]
+  // '모은 스티커 수'로 인덱싱 → 글자/단어 레슨이 섞여 완료돼도 어긋남 없이 다음 미보유 스티커를 순서대로 지급.
+  const sticker = STICKERS[p.collectedStickers.length % STICKERS.length]
   const collectedStickers = p.collectedStickers.includes(sticker.id)
     ? p.collectedStickers
     : [...p.collectedStickers, sticker.id]

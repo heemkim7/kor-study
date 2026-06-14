@@ -6,13 +6,17 @@ import { glyphSound } from '../content/letters'
 export function LetterIntro({ glyphs, onDone }: { glyphs: string[]; onDone: () => void }) {
   const { speak } = useTts()
 
-  // 진입(1회): 안내 → 글자를 하나씩 읽어줌(연쇄)
+  // 진입(1회): 안내 → 글자를 하나씩 읽어줌(연쇄). 언마운트 후 콜백이 이어지지 않게 cancelled 가드.
   useEffect(() => {
     let i = 0
+    let cancelled = false
     const readNext = () => {
-      if (i < glyphs.length) { const g = glyphs[i++]; speak(glyphSound(g), { onEnd: readNext }) }
+      if (cancelled || i >= glyphs.length) return
+      const g = glyphs[i++]
+      speak(glyphSound(g), { onEnd: readNext })
     }
     speak('글자를 들어 보세요', { onEnd: readNext })
+    return () => { cancelled = true }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
