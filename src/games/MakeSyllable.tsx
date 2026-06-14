@@ -4,7 +4,7 @@ import { SpeakerButton } from '../ui/SpeakerButton'
 import { Sparkles } from '../ui/Sparkles'
 import { decomposeSyllable, composeSyllable } from '../hangul/decompose'
 import { shuffle } from './choices'
-import { BASIC_CONSONANTS, BASIC_VOWELS } from '../content/letters'
+import { BASIC_CONSONANTS, BASIC_VOWELS, glyphSound } from '../content/letters'
 
 /** 글자 만들기 — 자음 + 모음을 골라 글자를 완성한다(한글 조합 원리). */
 export function MakeSyllable({ glyphs, onCorrect, onDone }: {
@@ -69,6 +69,8 @@ export function MakeSyllable({ glyphs, onCorrect, onDone }: {
     if (kind === 'cho') setCho(val)
     else setJung(val)
     if (c && v) check(c, v)
+    else if (kind === 'jung') speak(glyphSound(val)) // 모음을 누르면 소리(ㅏ→'아')를 들려줌
+
   }
 
   const slot = (filled: string | null, label: string) => (
