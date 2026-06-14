@@ -8,11 +8,11 @@ mkdirSync('.preview', { recursive: true })
 
 const looks = [
   { o: {}, label: '기본 공주' },
-  { o: { dress: 'dress-blue', crown: 'crown-star', accessory: 'acc-wand' }, label: '하늘 드레스 · 별 왕관 · 요술봉' },
-  { o: { dress: 'dress-purple', hair: 'hair-pink', crown: 'crown-heart', accessory: 'acc-wings' }, label: '보라 드레스 · 분홍 머리 · 하트 왕관 · 날개' },
-  { o: { dress: 'dress-mint', hair: 'hair-brown', crown: 'crown-flower', accessory: 'acc-necklace' }, label: '민트 드레스 · 꽃 화관 · 목걸이' },
-  { o: { dress: 'dress-red', hair: 'hair-black' }, label: '빨강 드레스 · 검정 머리' },
-  { o: { dress: 'dress-peach', hair: 'hair-blue', crown: 'crown-star' }, label: '복숭아 · 하늘 머리 · 별 왕관' },
+  { o: { dress: 'dress-blue', crown: 'crown-star', accessory: 'acc-wand', background: 'bg-castle' }, label: '하늘 드레스 · 별 왕관 · 요술봉 · 성' },
+  { o: { dress: 'dress-purple', hair: 'hair-twin', crown: 'crown-heart', accessory: 'acc-wings', background: 'bg-rainbow' }, label: '양갈래 · 하트 왕관 · 날개 · 무지개' },
+  { o: { dress: 'dress-mint', hair: 'hair-bun', crown: 'crown-flower', accessory: 'acc-pet', background: 'bg-garden' }, label: '올림머리 · 꽃 화관 · 아기고양이 · 정원' },
+  { o: { dress: 'dress-red', hair: 'hair-bob', accessory: 'acc-glasses' }, label: '단발 · 안경 · 빨강 드레스' },
+  { o: { dress: 'dress-peach', hair: 'hair-blue', accessory: 'acc-parasol', background: 'bg-night' }, label: '하늘 머리 · 양산 · 별밤' },
 ]
 
 // 1) 인라인 위젯 HTML (브라우저 렌더 → 한글·애니메이션 정상)
