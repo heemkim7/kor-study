@@ -91,6 +91,14 @@ const DRESS: Record<DressId, DressPal> = {
 
 const { FCX, FCY, FRX, FRY, SHY, WY, HEMY, W, H } = G
 
+// 치비 비율: 머리(헤어·얼굴·왕관)만 목을 기준으로 확대해 또렷하게 보이게 한다.
+// 몸/들고 있는 소품은 그대로라 "얼굴이 크고 몸이 짤막한" 유아 친화 비율이 된다.
+// (경로 수식은 손대지 않고 변환만 적용 — 안전. 값은 가장 큰 왕관도 화면 위로 안 잘리게 튜닝.)
+const HEAD_SCALE = 1.24
+const HEAD_PIVOT_Y = FCY + FRY - 12 // 목 부근
+const HEAD_DY = 16 // 살짝 내려 목을 짧게(치비)
+const HEAD_TRANSFORM = `translate(0 ${HEAD_DY}) translate(${FCX} ${HEAD_PIVOT_Y}) scale(${HEAD_SCALE}) translate(${-FCX} ${-HEAD_PIVOT_Y})`
+
 // ---- 배경 ----
 function background(id: BackgroundId, idPrefix: string): string {
   const sparkles = (col: string) =>
@@ -278,17 +286,80 @@ function frontHair(h: HairPal, style: HairStyle): string {
 }
 
 // ---- 몸/옷 ----
-function dressLayer(d: DressPal): string {
+// 치마 외곽 경로(무늬 클리핑·본체에 공용)
+const SKIRT_PATH = `M ${FCX - 28} ${WY} L ${FCX + 28} ${WY} L ${FCX + 122} ${HEMY - 2} Q ${FCX} ${HEMY + 14} ${FCX - 122} ${HEMY - 2} Z`
+
+// 작은 4각 반짝이
+const sparkle4 = (x: number, y: number, s: number, col: string, op: number) =>
+  pth(`M ${x} ${y - s} L ${x + s * 0.3} ${y - s * 0.3} L ${x + s} ${y} L ${x + s * 0.3} ${y + s * 0.3} L ${x} ${y + s} L ${x - s * 0.3} ${y + s * 0.3} L ${x - s} ${y} L ${x - s * 0.3} ${y - s * 0.3} Z`, col, `opacity="${op}"`)
+
+type Motif = 'dots' | 'stars' | 'hearts' | 'sparkle'
+/** 드레스마다 무늬를 다르게(id 해시로 결정) — 화려하게. */
+function dressMotif(id: string): Motif {
+  let h = 0
+  for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0
+  return (['dots', 'stars', 'hearts', 'sparkle'] as const)[h % 4]
+}
+
+/** 치마 위에 흩뿌리는 무늬(클립으로 치마 모양 안쪽만 남김). */
+function skirtMotifs(motif: Motif, d: DressPal): string {
+  const out: string[] = []
+  let r = 0
+  for (let y = WY + 50; y < HEMY - 6; y += 42, r++) {
+    const half = 28 + (122 - 28) * (y - WY) / (HEMY - WY)
+    const offset = r % 2 ? 19 : 0
+    for (let x = FCX - half + 16 + offset; x <= FCX + half - 16; x += 38) {
+      const white = (Math.round(x) + r) % 3 === 0
+      const col = white ? TRIM : d.hi
+      const op = white ? 0.65 : 0.55
+      if (motif === 'stars') out.push(star(x, y, 6.5, col, `opacity="${op}"`))
+      else if (motif === 'hearts') out.push(heart(x, y, 5.5, col, `opacity="${op}"`))
+      else if (motif === 'sparkle') out.push(sparkle4(x, y, 6, col, op))
+      else out.push(c(x, y, 5, col, `opacity="${op}"`))
+    }
+  }
+  return out.join('')
+}
+
+/** 허리 새시 리본 꼬리(치마에 드리움 — 상의 밑으로 살짝 보임). */
+function sashTails(d: DressPal): string {
+  const y = WY + 2
+  return pth(`M ${FCX - 3} ${y} q -15 24 -7 44 l 9 -7 q -4 -17 5 -33 Z`, d.hi, 'opacity="0.9"') +
+    pth(`M ${FCX + 3} ${y} q 15 24 7 44 l -9 -7 q 4 -17 -5 -33 Z`, d.hi, 'opacity="0.9"')
+}
+
+/** 밑단 레이스 프릴(흰 스캘럽이 치마 곡선을 따라). */
+function hemRuffle(): string {
+  const out: string[] = []
+  for (let x = FCX - 110; x <= FCX + 110; x += 20) {
+    const t = (x - FCX) / 122
+    const y = HEMY - 2 + 14 * (1 - t * t)
+    out.push(`<path d="M ${x - 11} ${y} a 11 8 0 0 0 22 0" fill="none" stroke="${TRIM}" stroke-width="5" opacity="0.85"/>`)
+  }
+  return out.join('')
+}
+
+function dressLayer(d: DressPal, idPrefix: string, motif: Motif): string {
   const p: string[] = []
+  const clipId = `${idPrefix}-skirt`
+  // 속치마
   p.push(pth(`M ${FCX - 30} ${WY} L ${FCX + 30} ${WY} L ${FCX + 150} ${HEMY} Q ${FCX} ${HEMY + 22} ${FCX - 150} ${HEMY} Z`, d.under))
   p.push(ell(FCX - 16, HEMY + 6, 12, 7, d.sh))
   p.push(ell(FCX + 16, HEMY + 6, 12, 7, d.sh))
   p.push(ell(FCX - 16, HEMY + 4, 10, 5, TRIM))
   p.push(ell(FCX + 16, HEMY + 4, 10, 5, TRIM))
-  p.push(pth(`M ${FCX - 28} ${WY} L ${FCX + 28} ${WY} L ${FCX + 122} ${HEMY - 2} Q ${FCX} ${HEMY + 14} ${FCX - 122} ${HEMY - 2} Z`, d.main))
-  p.push(pth(`M ${FCX + 6} ${WY} L ${FCX + 28} ${WY} L ${FCX + 122} ${HEMY - 2} Q ${FCX + 72} ${HEMY + 2} ${FCX + 42} ${HEMY - 2} Z`, d.sh, 'opacity="0.5"'))
-  p.push(stroke(`M ${FCX - 14} ${WY + 8} Q ${FCX - 54} ${HEMY - 90} ${FCX - 74} ${HEMY - 6}`, d.hi, 6, 'opacity="0.7"'))
-  p.push(stroke(`M ${FCX + 22} ${WY + 16} Q ${FCX + 16} ${HEMY - 80} ${FCX + 6} ${HEMY - 4}`, d.sh, 4, 'opacity="0.4"'))
+  // 겉치마 본체
+  p.push(pth(SKIRT_PATH, d.main))
+  // 무늬(치마 모양으로 클리핑)
+  p.push(`<clipPath id="${clipId}"><path d="${SKIRT_PATH}"/></clipPath>`)
+  p.push(`<g clip-path="url(#${clipId})">${skirtMotifs(motif, d)}</g>`)
+  // 음영·하이라이트(무늬 위로 은은하게)
+  p.push(pth(`M ${FCX + 6} ${WY} L ${FCX + 28} ${WY} L ${FCX + 122} ${HEMY - 2} Q ${FCX + 72} ${HEMY + 2} ${FCX + 42} ${HEMY - 2} Z`, d.sh, 'opacity="0.35"'))
+  p.push(stroke(`M ${FCX - 14} ${WY + 8} Q ${FCX - 54} ${HEMY - 90} ${FCX - 74} ${HEMY - 6}`, d.hi, 6, 'opacity="0.55"'))
+  // 허리 새시 리본 꼬리
+  p.push(sashTails(d))
+  // 밑단 프릴 + 흰 띠
+  p.push(hemRuffle())
   p.push(pth(`M ${FCX - 122} ${HEMY - 2} Q ${FCX} ${HEMY + 14} ${FCX + 122} ${HEMY - 2} L ${FCX + 117} ${HEMY + 8} Q ${FCX} ${HEMY + 24} ${FCX - 117} ${HEMY + 8} Z`, TRIM))
   return p.join('')
 }
@@ -587,38 +658,48 @@ export function buildPrincessSvg(outfit: Partial<Outfit> = {}, opts: FigureOpts 
   const animate = opts.animate === true
   const h = HAIR[o.hair] ?? HAIR['hair-blonde']
   const style = HAIR_STYLE[o.hair] ?? 'long'
-  const d = DRESS[o.dress] ?? DRESS['dress-pink']
+  // 알 수 없는 드레스 id는 분홍으로 폴백 — 팔레트와 무늬 모두 같은 해결 id 기준(폴백 동등성 보장).
+  const dressId = o.dress in DRESS ? o.dress : 'dress-pink'
+  const d = DRESS[dressId]
 
   const acc = o.accessory
-  const body: string[] = []
-  if (acc === 'acc-cape') body.push(cape())
-  if (acc === 'acc-wings') body.push(wings())
-  body.push(backHair(h, style))
-  body.push(dressLayer(d))
-  body.push(arms())
-  body.push(bodice(d))
-  body.push(neck())
-  if (acc === 'acc-necklace') body.push(necklacePendant())
-  if (acc === 'acc-bowtie') body.push(bowtieAcc())
-  body.push(face())
-  body.push(eyebrows(h))
-  if (acc === 'acc-glasses') body.push(glasses())
-  if (acc === 'acc-sunglasses') body.push(sunglasses())
-  body.push(frontHair(h, style))
-  if (acc === 'acc-earrings') body.push(earrings())
-  if (acc === 'acc-wand') body.push(wand())
-  if (acc === 'acc-parasol') body.push(parasol())
-  if (acc === 'acc-balloon') body.push(heldBalloon())
-  if (acc === 'acc-bouquet') body.push(bouquet())
-  if (acc === 'acc-teddy') body.push(heldTeddy())
-  if (acc === 'acc-starstaff') body.push(starStaff())
+  // 머리 요소(헤어/얼굴/왕관)는 HEAD_TRANSFORM으로 키운다. 몸/소품은 그대로.
+  const headWrap = (c: string) => `<g transform="${HEAD_TRANSFORM}">${c}</g>`
 
-  const crownSvg = crown(o.crown)
+  // 1) 뒤쪽: 망토·날개(몸) → 뒷머리(머리)
+  const behind: string[] = []
+  if (acc === 'acc-cape') behind.push(cape())
+  if (acc === 'acc-wings') behind.push(wings())
+  behind.push(headWrap(backHair(h, style)))
+
+  // 2) 몸통: 드레스·팔·상의·목·가슴 액세서리
+  const mid: string[] = [dressLayer(d, idPrefix, dressMotif(dressId)), arms(), bodice(d), neck()]
+  if (acc === 'acc-necklace') mid.push(necklacePendant())
+  if (acc === 'acc-bowtie') mid.push(bowtieAcc())
+
+  // 3) 얼굴층(머리): 얼굴·눈썹·안경·앞머리·귀걸이
+  const faceLayer: string[] = [face(), eyebrows(h)]
+  if (acc === 'acc-glasses') faceLayer.push(glasses())
+  if (acc === 'acc-sunglasses') faceLayer.push(sunglasses())
+  faceLayer.push(frontHair(h, style))
+  if (acc === 'acc-earrings') faceLayer.push(earrings())
+
+  // 4) 손에 든 소품(몸): 앞쪽에 그림
+  const held: string[] = []
+  if (acc === 'acc-wand') held.push(wand())
+  if (acc === 'acc-parasol') held.push(parasol())
+  if (acc === 'acc-balloon') held.push(heldBalloon())
+  if (acc === 'acc-bouquet') held.push(bouquet())
+  if (acc === 'acc-teddy') held.push(heldTeddy())
+  if (acc === 'acc-starstaff') held.push(starStaff())
+
+  const bodyContent = behind.join('') + mid.join('') + headWrap(faceLayer.join('')) + held.join('')
+  const crownSvg = headWrap(crown(o.crown))
   const petSvg = acc === 'acc-pet' ? pet() : ''
 
   const inner = animate
-    ? `${ANIM}<g class="pr-body">${body.join('')}</g><g class="pr-crown">${crownSvg}</g>${petSvg}`
-    : `<g>${body.join('')}</g>${crownSvg}${petSvg}`
+    ? `${ANIM}<g class="pr-body">${bodyContent}</g><g class="pr-crown">${crownSvg}</g>${petSvg}`
+    : `<g>${bodyContent}</g>${crownSvg}${petSvg}`
 
   const bg = showBg ? background(o.background, idPrefix) : ''
   return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:100%">${bg}${inner}</svg>`
