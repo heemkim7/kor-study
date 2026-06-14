@@ -7,6 +7,7 @@ import { execFileSync } from 'node:child_process'
 import { WORDS } from '../src/content/words.ts'
 import { LESSONS } from '../src/content/lessons.ts'
 import { CATALOG } from '../src/princess/catalog.ts'
+import { STICKERS } from '../src/reward/stickers.ts'
 import { toSyllables } from '../src/hangul/decompose.ts'
 
 const TTS_URL = 'http://localhost:8001/generate/'
@@ -28,6 +29,7 @@ const add = (t) => { const s = (t || '').trim(); if (s) set.add(s) }
 for (const w of WORDS) add(w.text)
 for (const l of LESSONS) for (const sc of l.story) add(sc.text)
 for (const it of CATALOG) add(it.name)
+for (const s of STICKERS) add(s.name)
 const syl = new Set()
 for (const l of LESSONS) for (const id of l.targetWords) {
   const w = WORDS.find((x) => x.id === id)
@@ -44,6 +46,8 @@ for (const t of [
   '같은 글자를 모두 찾아요', '같은 짝을 맞춰보세요', '오늘 배울 단어예요',
   // 꾸미기 구매/뽑기 안내
   '이걸 살까요?', '샀어요!', '뽑기 할까요?', '두구두구',
+  // 스티커북 · 그림판 안내
+  '스티커 책이에요. 모은 스티커를 눌러 보세요', '자유롭게 그려 보세요',
 ]) add(t)
 
 const phrases = [...set]
