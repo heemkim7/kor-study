@@ -13,6 +13,7 @@ const G = { W: 380, H: 600, FCX: 190, FCY: 116, FRX: 44, FRY: 52, SHY: 184, WY: 
 const c = (x: number, y: number, r: number, f: string, e = '') => `<circle cx="${x}" cy="${y}" r="${r}" fill="${f}" ${e}/>`
 const ell = (x: number, y: number, rx: number, ry: number, f: string, e = '') => `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${f}" ${e}/>`
 const pth = (d: string, f: string, e = '') => `<path d="${d}" fill="${f}" ${e}/>`
+const rct = (x: number, y: number, w: number, h: number, f: string, rx = 0, e = '') => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${rx}" fill="${f}" ${e}/>`
 const ln = (x1: number, y1: number, x2: number, y2: number, w: number, s: string) => `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${s}" stroke-width="${w}" stroke-linecap="round"/>`
 const stroke = (d: string, s: string, w: number, e = '') => `<path d="${d}" fill="none" stroke="${s}" stroke-width="${w}" stroke-linecap="round" ${e}/>`
 
@@ -48,6 +49,15 @@ const HAIR: Record<HairId, HairPal> = {
   'hair-twin': { base: '#ff9ecb', sh: '#f06aa6', hi: '#ffc9e3' },
   'hair-bun': { base: '#9c6b43', sh: '#7a5230', hi: '#c79a6e' },
   'hair-bob': { base: '#4a4a55', sh: '#33333b', hi: '#7b7b8a' },
+  'hair-red': { base: '#c4604a', sh: '#9c4030', hi: '#e0917e' },
+  'hair-orange': { base: '#e8954a', sh: '#c4702a', hi: '#f5bd86' },
+  'hair-white': { base: '#ededf2', sh: '#c8c8d4', hi: '#ffffff' },
+  'hair-lavender': { base: '#c4a8e8', sh: '#9f80d0', hi: '#e0ccf7' },
+  'hair-mint': { base: '#8fd8bc', sh: '#5fb898', hi: '#c2f0de' },
+  'hair-purple': { base: '#b083d6', sh: '#8a5cb8', hi: '#d2b0ee' },
+  'hair-teal': { base: '#6cc2c2', sh: '#4a9e9e', hi: '#b8eeee' },
+  'hair-gray': { base: '#b2b2be', sh: '#8c8c9a', hi: '#d6d6de' },
+  'hair-rose': { base: '#e89ab2', sh: '#c86e8c', hi: '#ffc2d8' },
 }
 type HairStyle = 'long' | 'twin' | 'bun' | 'bob'
 const HAIR_STYLE: Record<HairId, HairStyle> = {
@@ -63,6 +73,20 @@ const DRESS: Record<DressId, DressPal> = {
   'dress-mint': { main: '#9fe0c4', sh: '#6fc4a0', hi: '#d2ffee', under: '#f0fff8' },
   'dress-peach': { main: '#ffc6a0', sh: '#f0a06f', hi: '#ffe6d2', under: '#fff4ec' },
   'dress-red': { main: '#f08a8a', sh: '#d86a6a', hi: '#ffd2d2', under: '#fff0f0' },
+  'dress-coral': { main: '#ff9e8a', sh: '#e87a66', hi: '#ffd2c6', under: '#fff0ec' },
+  'dress-lemon': { main: '#ffe07a', sh: '#ecc44a', hi: '#fff4c0', under: '#fffce8' },
+  'dress-lime': { main: '#b8e06a', sh: '#94c44a', hi: '#e0f5b8', under: '#f4ffe8' },
+  'dress-rose': { main: '#f2a0b8', sh: '#d87a96', hi: '#ffd2e0', under: '#fff0f4' },
+  'dress-lavender': { main: '#cbb3ee', sh: '#a98fd6', hi: '#e8daff', under: '#f7f2ff' },
+  'dress-emerald': { main: '#6fcfa0', sh: '#4aab7e', hi: '#c2f2db', under: '#ecfff6' },
+  'dress-ivory': { main: '#f3e8cf', sh: '#ddccaa', hi: '#fff8e8', under: '#fffdf6' },
+  'dress-gold': { main: '#f1cf63', sh: '#d4ad3e', hi: '#ffeeb0', under: '#fffae5' },
+  'dress-beige': { main: '#e2c6a4', sh: '#c4a47e', hi: '#f5e6d2', under: '#fff8f0' },
+  'dress-orange': { main: '#ffb060', sh: '#ec8f40', hi: '#ffdcb6', under: '#fff4ea' },
+  'dress-magenta': { main: '#e87ac4', sh: '#c44f9e', hi: '#ffc2ec', under: '#fff0fa' },
+  'dress-aqua': { main: '#7fd8d0', sh: '#4fb4ac', hi: '#c6f2ee', under: '#effdfb' },
+  'dress-navy': { main: '#8090d4', sh: '#5f6fb4', hi: '#c4d0fa', under: '#eef2ff' },
+  'dress-cocoa': { main: '#c08f6a', sh: '#a06f4a', hi: '#e8cdb4', under: '#fbf2ea' },
 }
 
 const { FCX, FCY, FRX, FRY, SHY, WY, HEMY, W, H } = G
@@ -72,6 +96,64 @@ function background(id: BackgroundId, idPrefix: string): string {
   const sparkles = (col: string) =>
     [[54, 84, 6], [322, 116, 7], [40, 300, 5], [338, 330, 6], [58, 470, 5], [330, 500, 5]]
       .map(([x, y, r]) => pth(`M ${x} ${y - r} L ${x + r * 0.28} ${y - r * 0.28} L ${x + r} ${y} L ${x + r * 0.28} ${y + r * 0.28} L ${x} ${y + r} L ${x - r * 0.28} ${y + r * 0.28} L ${x - r} ${y} L ${x - r * 0.28} ${y - r * 0.28} Z`, col)).join('')
+  const grad = (a: string, b: string) =>
+    `<defs><linearGradient id="${idPrefix}-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="${W}" height="${H}" fill="url(#${idPrefix}-bg)"/>`
+
+  if (id === 'bg-beach') {
+    return grad('#aee4ff', '#eaf7ff') + c(302, 84, 28, '#fff3b0') + c(302, 84, 28, '#ffe98a', 'opacity="0.5"') +
+      ell(70, 120, 30, 14, '#ffffff', 'opacity="0.8"') +
+      rct(0, 392, W, 74, '#7fc4e8') + pth(`M 0 396 q 95 12 190 0 q 95 -12 190 0 L ${W} 466 L 0 466 Z`, '#9fd6ee') +
+      `<rect x="0" y="460" width="${W}" height="${H - 460}" fill="#f3e3bb"/>` +
+      star(116, 542, 9, '#ff9ecb', `stroke="#e87aaa" stroke-width="1"`) + ell(286, 558, 11, 7, '#ffd0b0') + ell(60, 572, 9, 6, '#ffd0b0')
+  }
+  if (id === 'bg-snow') {
+    return grad('#dbeeff', '#f4faff') +
+      pth(`M 0 472 Q ${FCX} 442 ${W} 472 L ${W} ${H} L 0 ${H} Z`, '#ffffff') +
+      [[60, 90], [150, 140], [320, 100], [44, 300], [340, 260], [80, 430], [330, 410], [200, 70]]
+        .map(([x, y]) => c(x, y, 3.2, '#ffffff') + [0, 1, 2].map((k) => ln(x - 5, y + (k - 1) * 5, x + 5, y + (k - 1) * 5, 1, '#cfe6ff')).join('')).join('') +
+      c(110, 520, 5, '#ffffff') + c(300, 540, 5, '#ffffff')
+  }
+  if (id === 'bg-space') {
+    return grad('#15163a', '#3a2a5e') +
+      [[40, 70], [120, 130], [300, 60], [340, 180], [60, 250], [330, 320], [200, 50], [250, 420], [90, 460]]
+        .map(([x, y]) => star(x, y, 5, '#fff6c8', 'opacity="0.9"')).join('') +
+      c(300, 130, 30, '#ffb0d4') + ell(300, 130, 44, 12, 'none', `stroke="#ffd6e8" stroke-width="3" opacity="0.7" transform="rotate(-20 300 130)"`) +
+      c(70, 360, 16, '#9fd4ee') + c(64, 354, 4, '#cfeeff', 'opacity="0.7"')
+  }
+  if (id === 'bg-forest') {
+    const tree = (x: number, s: number) => `<rect x="${x - s * 0.16}" y="${480 - s * 0.2}" width="${s * 0.32}" height="${s + 20}" rx="4" fill="#b07a4e"/>` +
+      c(x, 470 - s, s * 0.9, '#5fae46') + c(x - s * 0.6, 470 - s * 0.6, s * 0.66, '#7cc35e') + c(x + s * 0.6, 470 - s * 0.55, s * 0.66, '#7cc35e') + c(x, 470 - s * 1.1, s * 0.7, '#7cc35e')
+    return grad('#cfeeff', '#eafbf0') + c(312, 86, 26, '#fff3b0') +
+      `<path d="M 0 490 Q ${FCX} 462 ${W} 490 L ${W} ${H} L 0 ${H} Z" fill="#bfe9c8"/>` +
+      tree(48, 40) + tree(340, 46) + tree(120, 30) +
+      flower(70, 540, 8, '#ff9ecb') + flower(320, 552, 8, '#ffd24d')
+  }
+  if (id === 'bg-flower') {
+    return grad('#eafaff', '#fff0f6') + c(312, 84, 26, '#fff3b0') +
+      `<path d="M 0 ${H - 96} Q ${FCX} ${H - 130} ${W} ${H - 96} L ${W} ${H} L 0 ${H} Z" fill="#bfe9c8"/>` +
+      [[40, H - 80, '#ff9ecb'], [110, H - 64, '#ffd24d'], [250, H - 70, '#b58bff'], [320, H - 84, '#ff86c0'], [180, H - 58, '#ffd24d'], [346, H - 56, '#ff9ecb']]
+        .map(([x, y, col]) => flower(x as number, y as number, 9, col as string)).join('')
+  }
+  if (id === 'bg-ballroom') {
+    return grad('#f6e3c8', '#fff3e2') +
+      `<rect x="22" y="120" width="40" height="${H - 120}" fill="#e8d4b0"/><rect x="${W - 62}" y="120" width="40" height="${H - 120}" fill="#e8d4b0"/>` +
+      `<rect x="0" y="${H - 90}" width="${W}" height="90" fill="#dcc39a"/>` +
+      `<line x1="${FCX}" y1="0" x2="${FCX}" y2="64" stroke="#d4ad3e" stroke-width="3"/>` +
+      ell(FCX, 78, 34, 16, GOLD) + [-22, 0, 22].map((dx) => c(FCX + dx, 92, 5, '#fff6c8') + ln(FCX + dx, 84, FCX + dx, 100, 2, GOLD)).join('') +
+      sparkles('#ffe9b8')
+  }
+  if (id === 'bg-sunset') {
+    return grad('#ffd6a0', '#ffc2dc') + c(FCX, 200, 56, '#ff9e5a', 'opacity="0.55"') + c(FCX, 200, 40, '#ffd24d') +
+      ell(80, 120, 30, 14, '#fff', 'opacity="0.7"') + ell(310, 150, 26, 12, '#fff', 'opacity="0.7"') +
+      pth(`M 0 ${H - 110} Q ${FCX} ${H - 150} ${W} ${H - 110} L ${W} ${H} L 0 ${H} Z`, '#caa063')
+  }
+  if (id === 'bg-room') {
+    return grad('#ffe8d8', '#fff4ec') +
+      `<rect x="0" y="${H - 120}" width="${W}" height="120" fill="#e8c9a8"/>` +
+      `<rect x="60" y="120" width="120" height="120" rx="8" fill="#bfe6ff"/><rect x="60" y="120" width="120" height="120" rx="8" fill="none" stroke="#e0c6a0" stroke-width="6"/>` +
+      `<line x1="120" y1="120" x2="120" y2="240" stroke="#e0c6a0" stroke-width="4"/><line x1="60" y1="180" x2="180" y2="180" stroke="#e0c6a0" stroke-width="4"/>` +
+      star(300, 150, 8, '#ffd24d') + star(330, 200, 6, '#ff9ecb') + star(280, 220, 6, '#7ec9f0')
+  }
 
   if (id === 'bg-garden') {
     return `<defs><linearGradient id="${idPrefix}-bg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dff1ff"/><stop offset="0.6" stop-color="#eafbf0"/><stop offset="1" stop-color="#d6f3df"/></linearGradient></defs>` +
@@ -300,37 +382,73 @@ function glasses(): string {
 function crown(id: CrownId): string {
   if (id === 'crown-none') return ''
   const ty = FCY - FRY + 2
-  if (id === 'crown-gold') {
-    return (
-      pth(`M ${FCX - 36} ${ty + 10} L ${FCX - 20} ${ty - 6} L ${FCX - 11} ${ty + 4} L ${FCX} ${ty - 16} L ${FCX + 11} ${ty + 4} L ${FCX + 20} ${ty - 6} L ${FCX + 36} ${ty + 10} Z`, GOLD) +
-      pth(`M ${FCX - 36} ${ty + 10} L ${FCX + 36} ${ty + 10} L ${FCX + 31} ${ty + 16} L ${FCX - 31} ${ty + 16} Z`, GOLD_SH) +
-      c(FCX, ty - 10, 4.5, GEM_PINK) + c(FCX - 20, ty - 6, 3, GEM) + c(FCX + 20, ty - 6, 3, GEM)
-    )
+  const band = (col = GOLD) => pth(`M ${FCX - 36} ${ty + 12} Q ${FCX} ${ty - 4} ${FCX + 36} ${ty + 12} L ${FCX + 31} ${ty + 18} Q ${FCX} ${ty + 4} ${FCX - 31} ${ty + 18} Z`, col)
+  switch (id) {
+    case 'crown-flower': {
+      const spots: [number, number, number, string][] = [
+        [FCX - 34, ty + 12, 7, '#ff9ecb'], [FCX - 17, ty + 4, 8, '#fff0f6'],
+        [FCX, ty, 8.5, '#ff86c0'], [FCX + 17, ty + 4, 8, '#fff0f6'], [FCX + 34, ty + 12, 7, '#ff9ecb'],
+      ]
+      return stroke(`M ${FCX - 38} ${ty + 14} Q ${FCX} ${ty - 6} ${FCX + 38} ${ty + 14}`, '#7ec98a', 4) +
+        spots.map(([x, y, s, col]) => flower(x, y, s, col)).join('')
+    }
+    case 'crown-star':
+      return band() +
+        star(FCX, ty - 11, 12, GOLD, `stroke="${GOLD_SH}" stroke-width="1.5"`) +
+        star(FCX - 25, ty + 1, 7.5, GOLD, `stroke="${GOLD_SH}" stroke-width="1"`) +
+        star(FCX + 25, ty + 1, 7.5, GOLD, `stroke="${GOLD_SH}" stroke-width="1"`) +
+        star(FCX, ty - 11, 5, '#fff6c8')
+    case 'crown-heart':
+      return band() + heart(FCX, ty - 13, 12, GEM_PINK) + heart(FCX - 26, ty + 1, 7, '#ffb3da') + heart(FCX + 26, ty + 1, 7, '#ffb3da')
+    case 'crown-bow': {
+      const by = ty - 4
+      return stroke(`M ${FCX - 36} ${ty + 14} Q ${FCX} ${ty} ${FCX + 36} ${ty + 14}`, '#ff86c0', 5) +
+        pth(`M ${FCX} ${by} C ${FCX - 26} ${by - 14} ${FCX - 26} ${by + 14} ${FCX} ${by} Z`, '#ff86c0') +
+        pth(`M ${FCX} ${by} C ${FCX + 26} ${by - 14} ${FCX + 26} ${by + 14} ${FCX} ${by} Z`, '#ff86c0') +
+        ell(FCX - 13, by, 7, 9, '#ffb3da', 'opacity="0.8"') + ell(FCX + 13, by, 7, 9, '#ffb3da', 'opacity="0.8"') +
+        c(FCX, by, 5, '#ff6aa6')
+    }
+    case 'crown-catears': {
+      const ear = (sgn: number) => {
+        const ex = FCX + sgn * 20
+        return pth(`M ${ex - 13} ${ty + 8} L ${ex} ${ty - 22} L ${ex + 13} ${ty + 8} Z`, '#3a3a44') +
+          pth(`M ${ex - 7} ${ty + 4} L ${ex} ${ty - 14} L ${ex + 7} ${ty + 4} Z`, '#ffb3da')
+      }
+      return stroke(`M ${FCX - 34} ${ty + 14} Q ${FCX} ${ty + 2} ${FCX + 34} ${ty + 14}`, '#3a3a44', 4) + ear(-1) + ear(1)
+    }
+    case 'crown-bunnyears': {
+      const ear = (sgn: number) => ell(FCX + sgn * 14, ty - 20, 9, 26, '#ffffff', `stroke="#f0d6e0" stroke-width="1.5" transform="rotate(${sgn * 10} ${FCX + sgn * 14} ${ty - 8})"`) +
+        ell(FCX + sgn * 14, ty - 20, 4.5, 18, '#ffc6da', `transform="rotate(${sgn * 10} ${FCX + sgn * 14} ${ty - 8})"`)
+      return ear(-1) + ear(1)
+    }
+    case 'crown-halo':
+      return ell(FCX, ty - 16, 28, 9, 'none', `stroke="#ffe89a" stroke-width="7" opacity="0.6"`) +
+        ell(FCX, ty - 16, 28, 9, 'none', `stroke="${GOLD}" stroke-width="4"`)
+    case 'crown-pearl':
+      return band(GOLD) + [-30, -20, -10, 0, 10, 20, 30].map((dx, i) => c(FCX + dx, ty + 6 - (i === 3 ? 4 : Math.abs(dx) < 15 ? 1 : 0), i === 3 ? 5 : 4, '#fbf2f6') + c(FCX + dx - 1, ty + 4, 1.5, '#ffffff', 'opacity="0.9"')).join('')
+    case 'crown-party': {
+      const apex = ty - 40
+      return pth(`M ${FCX - 22} ${ty + 14} L ${FCX} ${apex} L ${FCX + 22} ${ty + 14} Z`, '#ff86c0') +
+        pth(`M ${FCX - 8} ${ty - 6} L ${FCX + 2} ${apex + 14} L ${FCX + 10} ${ty - 2} Z`, '#fff0f6', 'opacity="0.6"') +
+        [ty + 6, ty - 6, ty - 18].map((yy, i) => c(FCX + (i - 1) * 4, yy, 3, ['#7ec9f0', '#ffe14d', '#9fe0c4'][i])).join('') +
+        c(FCX, apex, 6, '#fff6c8') + c(FCX, apex, 3.5, '#ffe14d')
+    }
+    case 'crown-snow': {
+      const cx = FCX, cy = ty - 8
+      let fl = ''
+      for (let i = 0; i < 6; i++) { const a = (i / 6) * Math.PI * 2; fl += ln(cx, cy, cx + Math.cos(a) * 13, cy + Math.sin(a) * 13, 2.4, '#cdeeff') }
+      return band('#bcd6f7') + fl + c(cx, cy, 3.5, '#ffffff') + c(FCX - 24, ty + 2, 2.5, '#eaf7ff') + c(FCX + 24, ty + 2, 2.5, '#eaf7ff')
+    }
+    case 'crown-moon':
+      return band() + pth(`M ${FCX - 2} ${ty - 18} A 11 11 0 1 0 ${FCX - 2} ${ty + 4} A 8 8 0 1 1 ${FCX - 2} ${ty - 18} Z`, '#fff3c4', `stroke="#e7d9a8" stroke-width="1"`) +
+        star(FCX - 22, ty + 2, 4, GOLD) + star(FCX + 22, ty + 2, 4, GOLD)
+    default: // crown-gold (및 알 수 없는 id)
+      return (
+        pth(`M ${FCX - 36} ${ty + 10} L ${FCX - 20} ${ty - 6} L ${FCX - 11} ${ty + 4} L ${FCX} ${ty - 16} L ${FCX + 11} ${ty + 4} L ${FCX + 20} ${ty - 6} L ${FCX + 36} ${ty + 10} Z`, GOLD) +
+        pth(`M ${FCX - 36} ${ty + 10} L ${FCX + 36} ${ty + 10} L ${FCX + 31} ${ty + 16} L ${FCX - 31} ${ty + 16} Z`, GOLD_SH) +
+        c(FCX, ty - 10, 4.5, GEM_PINK) + c(FCX - 20, ty - 6, 3, GEM) + c(FCX + 20, ty - 6, 3, GEM)
+      )
   }
-  if (id === 'crown-flower') {
-    const spots: [number, number, number, string][] = [
-      [FCX - 34, ty + 12, 7, '#ff9ecb'], [FCX - 17, ty + 4, 8, '#fff0f6'],
-      [FCX, ty, 8.5, '#ff86c0'], [FCX + 17, ty + 4, 8, '#fff0f6'], [FCX + 34, ty + 12, 7, '#ff9ecb'],
-    ]
-    return stroke(`M ${FCX - 38} ${ty + 14} Q ${FCX} ${ty - 6} ${FCX + 38} ${ty + 14}`, '#7ec98a', 4) +
-      spots.map(([x, y, s, col]) => flower(x, y, s, col)).join('')
-  }
-  if (id === 'crown-star') {
-    return (
-      pth(`M ${FCX - 36} ${ty + 12} Q ${FCX} ${ty - 4} ${FCX + 36} ${ty + 12} L ${FCX + 31} ${ty + 18} Q ${FCX} ${ty + 4} ${FCX - 31} ${ty + 18} Z`, GOLD) +
-      star(FCX, ty - 11, 12, GOLD, `stroke="${GOLD_SH}" stroke-width="1.5"`) +
-      star(FCX - 25, ty + 1, 7.5, GOLD, `stroke="${GOLD_SH}" stroke-width="1"`) +
-      star(FCX + 25, ty + 1, 7.5, GOLD, `stroke="${GOLD_SH}" stroke-width="1"`) +
-      star(FCX, ty - 11, 5, '#fff6c8')
-    )
-  }
-  // crown-heart
-  return (
-    pth(`M ${FCX - 36} ${ty + 12} Q ${FCX} ${ty - 4} ${FCX + 36} ${ty + 12} L ${FCX + 31} ${ty + 18} Q ${FCX} ${ty + 4} ${FCX - 31} ${ty + 18} Z`, GOLD) +
-    heart(FCX, ty - 13, 12, GEM_PINK) +
-    heart(FCX - 26, ty + 1, 7, '#ffb3da') +
-    heart(FCX + 26, ty + 1, 7, '#ffb3da')
-  )
 }
 
 function wings(): string {
@@ -399,6 +517,53 @@ function pet(): string {
   )
 }
 
+function sunglasses(): string {
+  const ey = FCY + FRY * 0.18, lx = FCX - FRX * 0.44, rx = FCX + FRX * 0.44, r = 12
+  return ell(lx, ey, r, r * 0.9, '#3a3a44') + ell(rx, ey, r, r * 0.9, '#3a3a44') +
+    ln(lx + r, ey, rx - r, ey, 3, '#3a3a44') +
+    ln(lx - r, ey - 1, FCX - FRX, ey - 3, 2.4, '#3a3a44') + ln(rx + r, ey - 1, FCX + FRX, ey - 3, 2.4, '#3a3a44') +
+    ell(lx - 3, ey - 3, 4, 2.5, '#ffffff', 'opacity="0.4"') + ell(rx - 3, ey - 3, 4, 2.5, '#ffffff', 'opacity="0.4"')
+}
+function earrings(): string {
+  const ey = FCY + FRY * 0.66
+  const one = (sgn: number) => {
+    const x = FCX + sgn * FRX * 0.96
+    return ln(x, ey - 4, x, ey, 1.5, GOLD) + c(x, ey + 3, 3.4, GEM_PINK) + c(x - 1, ey + 2, 1.2, WHITE, 'opacity="0.8"')
+  }
+  return one(-1) + one(1)
+}
+function bowtieAcc(): string {
+  const bx = FCX, by = SHY + 4
+  return pth(`M ${bx} ${by} l -13 -8 l 0 16 Z`, '#5b8def') + pth(`M ${bx} ${by} l 13 -8 l 0 16 Z`, '#5b8def') + c(bx, by, 4, '#3f63b0')
+}
+function cape(): string {
+  return pth(`M ${FCX - 34} ${SHY - 2} Q ${FCX} ${SHY + 8} ${FCX + 34} ${SHY - 2} L ${FCX + 70} ${HEMY - 30} Q ${FCX} ${HEMY + 6} ${FCX - 70} ${HEMY - 30} Z`, '#d6485a', 'opacity="0.92"') +
+    pth(`M ${FCX - 34} ${SHY - 2} Q ${FCX} ${SHY + 8} ${FCX + 34} ${SHY - 2} L ${FCX + 30} ${SHY + 8} Q ${FCX} ${SHY + 18} ${FCX - 30} ${SHY + 8} Z`, WHITE, 'opacity="0.85"')
+}
+function heldBalloon(): string {
+  const hx = FCX + 45, hy = WY - 4, bx = hx + 30, by = 150
+  return ln(hx, hy, bx, by + 30, 1.6, '#b58b6a') + ell(bx, by, 22, 26, '#ef6aa6') + ell(bx - 7, by - 9, 5, 7, WHITE, 'opacity="0.5"') + pth(`M ${bx - 4} ${by + 25} l 4 6 l 4 -6 Z`, '#ef6aa6')
+}
+function bouquet(): string {
+  const hx = FCX + 45, hy = WY - 4
+  return ln(hx, hy, hx + 4, hy - 28, 4, '#7cc35e') +
+    pth(`M ${hx - 8} ${hy - 28} L ${hx + 14} ${hy - 28} L ${hx + 8} ${hy + 2} L ${hx - 2} ${hy + 2} Z`, '#fff0f6', 'opacity="0.7"') +
+    flower(hx - 6, hy - 34, 7, '#ff86c0') + flower(hx + 10, hy - 36, 7, '#ffd24d') + flower(hx + 2, hy - 46, 7, '#b58bff')
+}
+function heldTeddy(): string {
+  const tx = FCX + 50, ty = WY + 8, s = 13
+  return ell(tx, ty + s * 0.5, s * 0.8, s, '#c79a6e') +
+    c(tx - s * 0.6, ty - s * 0.85, s * 0.32, '#c79a6e') + c(tx + s * 0.6, ty - s * 0.85, s * 0.32, '#c79a6e') +
+    c(tx, ty - s * 0.3, s * 0.72, '#c79a6e') + ell(tx, ty - s * 0.1, s * 0.4, s * 0.32, '#e8cdb4') +
+    c(tx - s * 0.26, ty - s * 0.4, 1.7, '#5b3b2a') + c(tx + s * 0.26, ty - s * 0.4, 1.7, '#5b3b2a') + c(tx, ty - s * 0.12, 2, '#7a5436')
+}
+function starStaff(): string {
+  const hx = FCX + 45, hy = WY - 4, tx = hx + 10, ty = hy - 90
+  return ln(hx, hy, tx, ty, 5, '#caa9d8') +
+    star(tx, ty, 16, '#b58bff', `stroke="#9060b8" stroke-width="2"`) + star(tx, ty, 8, '#e6d6ff') +
+    c(tx - 18, ty + 10, 2, '#e6d6ff', 'opacity="0.8"') + c(tx + 14, ty + 18, 1.6, '#e6d6ff', 'opacity="0.7"')
+}
+
 const ANIM = `<style>
 @keyframes pr-sway{0%,100%{transform:rotate(-1.2deg) translateY(0)}50%{transform:rotate(1.2deg) translateY(-4px)}}
 @keyframes pr-twinkle{0%,100%{opacity:.5;transform:scale(.9)}50%{opacity:1;transform:scale(1.12)}}
@@ -425,23 +590,32 @@ export function buildPrincessSvg(outfit: Partial<Outfit> = {}, opts: FigureOpts 
   const style = HAIR_STYLE[o.hair] ?? 'long'
   const d = DRESS[o.dress] ?? DRESS['dress-pink']
 
+  const acc = o.accessory
   const body: string[] = []
-  if (o.accessory === 'acc-wings') body.push(wings())
+  if (acc === 'acc-cape') body.push(cape())
+  if (acc === 'acc-wings') body.push(wings())
   body.push(backHair(h, style))
   body.push(dressLayer(d))
   body.push(arms())
   body.push(bodice(d))
   body.push(neck())
-  if (o.accessory === 'acc-necklace') body.push(necklacePendant())
+  if (acc === 'acc-necklace') body.push(necklacePendant())
+  if (acc === 'acc-bowtie') body.push(bowtieAcc())
   body.push(face())
   body.push(eyebrows(h))
-  if (o.accessory === 'acc-glasses') body.push(glasses())
+  if (acc === 'acc-glasses') body.push(glasses())
+  if (acc === 'acc-sunglasses') body.push(sunglasses())
   body.push(frontHair(h, style))
-  if (o.accessory === 'acc-wand') body.push(wand())
-  if (o.accessory === 'acc-parasol') body.push(parasol())
+  if (acc === 'acc-earrings') body.push(earrings())
+  if (acc === 'acc-wand') body.push(wand())
+  if (acc === 'acc-parasol') body.push(parasol())
+  if (acc === 'acc-balloon') body.push(heldBalloon())
+  if (acc === 'acc-bouquet') body.push(bouquet())
+  if (acc === 'acc-teddy') body.push(heldTeddy())
+  if (acc === 'acc-starstaff') body.push(starStaff())
 
   const crownSvg = crown(o.crown)
-  const petSvg = o.accessory === 'acc-pet' ? pet() : ''
+  const petSvg = acc === 'acc-pet' ? pet() : ''
 
   const inner = animate
     ? `${ANIM}<g class="pr-body">${body.join('')}</g><g class="pr-crown">${crownSvg}</g>${petSvg}`

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { buildPrincessSvg } from './figure'
-import { CATALOG, DEFAULT_OUTFIT, type Outfit } from './catalog'
+import { CATALOG, CATEGORY_ORDER, itemsByCategory, DEFAULT_OUTFIT, type Outfit } from './catalog'
 
 const wrap = (o?: Partial<Outfit>, opts = {}) => buildPrincessSvg(o, { idPrefix: 't', ...opts })
 
@@ -62,6 +62,14 @@ describe('buildPrincessSvg', () => {
     const long = wrap({ hair: 'hair-blonde' })
     for (const h of ['hair-twin', 'hair-bun', 'hair-bob'] as const) {
       expect(wrap({ hair: h })).not.toBe(long)
+    }
+  })
+
+  it('카테고리별 모든 아이템이 서로 다른 마크업(색/모양 폴백 누락 감지)', () => {
+    for (const cat of CATEGORY_ORDER) {
+      const items = itemsByCategory(cat)
+      const outs = items.map((it) => buildPrincessSvg({ [cat]: it.id } as Partial<Outfit>, { idPrefix: 't' }))
+      expect(new Set(outs).size, `${cat}: 동일 렌더 아이템 존재(팔레트/분기 누락 의심)`).toBe(items.length)
     }
   })
 })
