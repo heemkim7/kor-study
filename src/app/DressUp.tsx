@@ -5,7 +5,7 @@ import { useTts } from '../tts/useTts'
 import { PrincessFigure } from '../princess/PrincessFigure'
 import { Sparkles } from '../ui/Sparkles'
 import {
-  CATEGORY_ORDER, CATEGORY_LABEL, itemsByCategory, getItem,
+  CATEGORY_ORDER, CATEGORY_LABEL, itemsByCategory, getItem, DEFAULT_OUTFIT,
   type ItemCategory, type DressUpItem, type Outfit,
 } from '../princess/catalog'
 import { gachaPick, unownedItems, GACHA_COST } from '../princess/economy'
@@ -37,6 +37,19 @@ export function DressUp() {
     } else {
       speak('별이 조금 더 필요해요')
     }
+  }
+
+  function randomize() {
+    CATEGORY_ORDER.forEach((cat) => {
+      const owned = itemsByCategory(cat).filter((it) => progress.ownedItems.includes(it.id))
+      if (owned.length) dispatch({ type: 'equipItem', itemId: owned[Math.floor(Math.random() * owned.length)].id })
+    })
+    speak('짠! 새로운 공주님')
+  }
+
+  function resetOutfit() {
+    CATEGORY_ORDER.forEach((cat) => dispatch({ type: 'equipItem', itemId: DEFAULT_OUTFIT[cat] }))
+    speak('기본 공주님')
   }
 
   function doGacha() {
@@ -80,6 +93,20 @@ export function DressUp() {
         🎁 뽑기 (⭐{GACHA_COST})
         {remainingToCollect === 0 && ' · 다 모았어요!'}
       </button>
+
+      {/* 랜덤 코디 / 기본 */}
+      <div style={{ display: 'flex', gap: 8 }}>
+        <button onClick={randomize}
+          style={{ border: 'none', borderRadius: 999, padding: '8px 18px', fontFamily: 'var(--font-warm)',
+            fontSize: 15, fontWeight: 800, color: 'var(--c-pink)', background: 'var(--c-card)', boxShadow: 'var(--shadow-card)' }}>
+          🎲 랜덤 코디
+        </button>
+        <button onClick={resetOutfit}
+          style={{ border: 'none', borderRadius: 999, padding: '8px 18px', fontFamily: 'var(--font-warm)',
+            fontSize: 15, fontWeight: 800, color: 'var(--c-ink-soft)', background: 'var(--c-card)', boxShadow: 'var(--shadow-card)' }}>
+          ↺ 기본
+        </button>
+      </div>
 
       {/* 카테고리 탭 */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', maxWidth: 420 }}>
