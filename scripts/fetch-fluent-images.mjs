@@ -27,6 +27,68 @@ const MAP = {
   mom: 'Woman',
   dad: 'Man',
   baby: 'Baby',
+  // 동물 더
+  bear: 'Bear',
+  lion: 'Lion',
+  tiger: 'Tiger face',
+  elephant: 'Elephant',
+  monkey: 'Monkey face',
+  penguin: 'Penguin',
+  bird: 'Bird',
+  fish: 'Fish',
+  pig: 'Pig face',
+  frog: 'Frog',
+  // 과일 더
+  strawberry: 'Strawberry',
+  watermelon: 'Watermelon',
+  tangerine: 'Tangerine',
+  lemon: 'Lemon',
+  peach: 'Peach',
+  // 음식
+  rice: 'Cooked rice',
+  bread: 'Bread',
+  milk: 'Glass of milk',
+  candy: 'Candy',
+  cake: 'Shortcake',
+  egg: 'Egg',
+  icecream: 'Soft ice cream',
+  cookie: 'Cookie',
+  // 몸
+  hand: 'Hand with fingers splayed',
+  foot: 'Foot',
+  eye: 'Eye',
+  nose: 'Nose',
+  ear: 'Ear',
+  mouth: 'Mouth',
+  // 옷
+  hat: 'Billed cap',
+  shoes: 'Running shoe',
+  socks: 'Socks',
+  gloves: 'Gloves',
+  // 자연 더
+  sun: 'Sun',
+  cloud: 'Cloud',
+  rain: 'Cloud with rain',
+  tree: 'Deciduous tree',
+  mountain: 'Mountain',
+  rainbow: 'Rainbow',
+  // 탈것 더
+  boat: 'Sailboat',
+  bike: 'Bicycle',
+  rocket: 'Rocket',
+  truck: 'Delivery truck',
+  // 집·사물
+  house: 'House',
+  chair: 'Chair',
+  bed: 'Bed',
+  clock: 'Alarm clock',
+  book: 'Open book',
+  // 색깔 더
+  green: 'Green circle',
+  purple: 'Purple circle',
+  white: 'White circle',
+  black: 'Black circle',
+  brown: 'Brown circle',
 }
 
 const PNG_MAGIC = [137, 80, 78, 71]

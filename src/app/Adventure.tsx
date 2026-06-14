@@ -19,7 +19,8 @@ export function Adventure({ lessonId }: { lessonId: string }) {
   const lesson = getLesson(lessonId)!
   const { progress, dispatch } = useProgress()
   const { go } = useNavigation()
-  const [phase, setPhase] = useState<Phase>({ kind: 'story' })
+  // 스토리가 있으면 그림책부터, 없으면(연습 레슨) 바로 오늘의 단어로
+  const [phase, setPhase] = useState<Phase>(lesson.story.length ? { kind: 'story' } : { kind: 'words' })
   const [awarded, setAwarded] = useState(true)
 
   const pool = useMemo(() => WORDS.map((w) => w.id), [])

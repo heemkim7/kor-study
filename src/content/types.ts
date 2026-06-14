@@ -26,7 +26,8 @@ export interface Lesson {
   title: string
   theme: Theme
   level: number          // 단계(1부터). 여정 순서 + 난이도 결정
-  story: StoryScene[]
+  unit?: string          // 주차/단원 묶음(홈 그룹 표시). 예: '7주 · 동물원'
+  story: StoryScene[]    // 빈 배열이면 스토리 없이 단어→놀이(연습 레슨)
   targetWords: string[]  // word id
   games: GameId[]
 }
