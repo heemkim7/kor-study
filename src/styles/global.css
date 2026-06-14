@@ -1,4 +1,7 @@
-@import 'pretendard/dist/web/static/pretendard.css';
+/* 실제 쓰는 굵기만 로드(400·700·800) — 9종 전부(약 10MB) 대신 3종으로 PWA 캐시 축소 */
+@import 'pretendard/dist/web/static/Pretendard-Regular.css';
+@import 'pretendard/dist/web/static/Pretendard-Bold.css';
+@import 'pretendard/dist/web/static/Pretendard-ExtraBold.css';
 @import '@fontsource/gowun-dodum/400.css';
 @import './tokens.css';
 
