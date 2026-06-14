@@ -12,6 +12,7 @@ export function PickWord({ targetWords, pool, onCorrect, onDone, choiceCount = 3
   const { speak } = useTts()
   const [round, setRound] = useState(0)
   const [solved, setSolved] = useState(false)
+  const [wrongId, setWrongId] = useState<string | null>(null)
   const answerId = targetWords[round]
   const answer = getWord(answerId)!
 
@@ -19,11 +20,12 @@ export function PickWord({ targetWords, pool, onCorrect, onDone, choiceCount = 3
   const choices = getWordsByIds(choiceIds)
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-  useEffect(() => () => clearTimeout(timerRef.current), [])
+  const shakeRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  useEffect(() => () => { clearTimeout(timerRef.current); clearTimeout(shakeRef.current) }, [])
 
   // 라운드가 바뀌면 상태 초기화(렌더 중 — 이펙트에서 setState 지양)
   const [prevRound, setPrevRound] = useState(round)
-  if (round !== prevRound) { setPrevRound(round); setSolved(false) }
+  if (round !== prevRound) { setPrevRound(round); setSolved(false); setWrongId(null) }
 
   function pick(id: string) {
     if (solved) return
@@ -37,6 +39,9 @@ export function PickWord({ targetWords, pool, onCorrect, onDone, choiceCount = 3
       }, 900)
     } else {
       speak('다시 골라볼까?')
+      setWrongId(id) // 소리 꺼져 있어도 '오답'을 흔들림으로 표시
+      clearTimeout(shakeRef.current)
+      shakeRef.current = setTimeout(() => setWrongId(null), 450)
     }
   }
 
@@ -51,7 +56,7 @@ export function PickWord({ targetWords, pool, onCorrect, onDone, choiceCount = 3
       </div>
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 320 }}>
         {choices.map((w) => (
-          <button key={w.id} onClick={() => pick(w.id)}
+          <button key={w.id} onClick={() => pick(w.id)} className={wrongId === w.id ? 'kp-shake' : undefined}
             style={{ fontFamily: 'var(--font-warm)', fontSize: 26, fontWeight: 800, letterSpacing: 3,
               color: 'var(--c-ink)', background: 'var(--c-card)', border: 'none',
               borderRadius: 'var(--radius-md)', padding: '16px', boxShadow: '0 5px 0 #f1ddc6' }}>

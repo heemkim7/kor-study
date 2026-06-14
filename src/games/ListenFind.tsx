@@ -13,6 +13,7 @@ export function ListenFind({ targetWords, pool, onCorrect, onDone, choiceCount =
   const { speak } = useTts()
   const [round, setRound] = useState(0)
   const [solved, setSolved] = useState(false)
+  const [wrongId, setWrongId] = useState<string | null>(null)
   const answerId = targetWords[round]
   const answer = getWord(answerId)!
 
@@ -23,11 +24,12 @@ export function ListenFind({ targetWords, pool, onCorrect, onDone, choiceCount =
   const choices = getWordsByIds(choiceIds)
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-  useEffect(() => () => clearTimeout(timerRef.current), [])
+  const shakeRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  useEffect(() => () => { clearTimeout(timerRef.current); clearTimeout(shakeRef.current) }, [])
 
   // 라운드가 바뀌면 상태 초기화(렌더 중 — 이펙트에서 setState 지양)
   const [prevRound, setPrevRound] = useState(round)
-  if (round !== prevRound) { setPrevRound(round); setSolved(false) }
+  if (round !== prevRound) { setPrevRound(round); setSolved(false); setWrongId(null) }
 
   // 라운드마다 정답 음성 재생(부수효과는 이펙트에서)
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -44,6 +46,9 @@ export function ListenFind({ targetWords, pool, onCorrect, onDone, choiceCount =
       }, 900)
     } else {
       speak('다시 들어볼까?')
+      setWrongId(id) // 소리 꺼져 있어도 '오답'을 흔들림으로 표시
+      clearTimeout(shakeRef.current)
+      shakeRef.current = setTimeout(() => setWrongId(null), 450)
     }
   }
 
@@ -55,7 +60,7 @@ export function ListenFind({ targetWords, pool, onCorrect, onDone, choiceCount =
       <SpeakerButton size={56} onClick={() => speak(answer.text)} />
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center', flex: 1, alignItems: 'center' }}>
         {choices.map((w) => (
-          <button key={w.id} onClick={() => pick(w.id)}
+          <button key={w.id} onClick={() => pick(w.id)} className={wrongId === w.id ? 'kp-shake' : undefined}
             style={{ background: 'var(--c-card)', border: 'none', borderRadius: 'var(--radius-lg)',
               padding: 16, boxShadow: 'var(--shadow-card)' }}>
             <WordImage word={w} size={110} />
