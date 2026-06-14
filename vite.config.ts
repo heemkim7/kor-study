@@ -15,7 +15,8 @@ export default defineConfig({
           urlPattern: /\/audio\/.*\.mp3$/,
           handler: 'CacheFirst',
           options: {
-            cacheName: 'tts-audio',
+            // 음성 교체(남성→여성) 시 파일명이 같아 옛 캐시가 재생되므로 캐시명을 올려 새로 받게 함
+            cacheName: 'tts-audio-v2',
             expiration: { maxEntries: 600, maxAgeSeconds: 60 * 60 * 24 * 60 },
             cacheableResponse: { statuses: [200] },
           },
