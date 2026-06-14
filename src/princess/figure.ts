@@ -638,7 +638,7 @@ const ANIM = `<style>
 @keyframes pr-sway{0%,100%{transform:rotate(-1.2deg) translateY(0)}50%{transform:rotate(1.2deg) translateY(-4px)}}
 @keyframes pr-twinkle{0%,100%{opacity:.5;transform:scale(.9)}50%{opacity:1;transform:scale(1.12)}}
 .pr-body{transform-origin:190px 360px;transform-box:view-box;animation:pr-sway 4.2s ease-in-out infinite}
-.pr-crown{transform-origin:190px 70px;transform-box:view-box;animation:pr-twinkle 2.6s ease-in-out infinite}
+.pr-crown{transform-origin:190px 52px;transform-box:view-box;animation:pr-twinkle 2.6s ease-in-out infinite}
 @media (prefers-reduced-motion:reduce){.pr-body,.pr-crown{animation:none}}
 </style>`
 

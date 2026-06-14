@@ -1,5 +1,6 @@
 import { initialProgress, type Progress } from './progress'
 import { isKnownItem, getItem, DEFAULT_OWNED_IDS, type ItemCategory, type Outfit } from '../princess/catalog'
+import { getSticker } from '../reward/stickers'
 
 const KEY = 'hangeul-play:progress:v1'
 
@@ -21,7 +22,9 @@ export function loadProgress(): Progress {
       const item = getItem(id)
       if (item && item.category === k && ownedItems.includes(id)) outfit[k] = id
     }
-    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit }
+    // 스티커도 카탈로그에 있는 id만 인정(손상/구버전 저장 방어)
+    const collectedStickers = (parsed.collectedStickers ?? []).filter((id) => getSticker(id) !== undefined)
+    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers }
   } catch {
     return initialProgress
   }

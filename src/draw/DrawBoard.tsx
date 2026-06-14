@@ -65,6 +65,7 @@ export function DrawBoard() {
   const ctxRef = useRef<CanvasRenderingContext2D | null>(null)
   const drawing = useRef(false)
   const last = useRef({ x: 0, y: 0 })
+  const templateRef = useRef<TemplateId>('free') // 리사이즈 콜백에서 현재 템플릿을 읽기 위함
 
   const [color, setColor] = useState(COLORS[0])
   const [erasing, setErasing] = useState(false)
@@ -81,30 +82,45 @@ export function DrawBoard() {
     if (id !== 'free') drawTemplate(ctx, cv.width, cv.height, id)
   }
 
-  // 마운트 시 캔버스 백킹 크기를 화면에 맞추고 바탕+윤곽선을 그린다.
+  // 캔버스 백킹 크기를 화면(+DPR)에 맞춘다. ResizeObserver로 회전/리사이즈에도 좌표가 어긋나지 않게 동기화.
+  // (크기가 바뀌면 캔버스가 초기화되므로 현재 템플릿 윤곽선을 다시 그린다.)
   useEffect(() => {
     const cv = canvasRef.current
     if (!cv) return
-    const dpr = window.devicePixelRatio || 1
-    const rect = cv.getBoundingClientRect()
-    cv.width = Math.max(1, Math.round(rect.width * dpr))
-    cv.height = Math.max(1, Math.round(rect.height * dpr))
     ctxRef.current = cv.getContext('2d')
-    reset('free')
-    speak('자유롭게 그려 보세요')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const fit = () => {
+      const dpr = window.devicePixelRatio || 1
+      const rect = cv.getBoundingClientRect()
+      const w = Math.max(1, Math.round(rect.width * dpr))
+      const h = Math.max(1, Math.round(rect.height * dpr))
+      if (cv.width !== w || cv.height !== h) {
+        cv.width = w
+        cv.height = h
+        reset(templateRef.current)
+      }
+    }
+    fit()
+    const ro = new ResizeObserver(fit)
+    ro.observe(cv)
+    return () => ro.disconnect()
   }, [])
 
-  // 템플릿이 바뀌면 새 윤곽선으로 초기화
-  useEffect(() => { reset(template) }, [template])
+  // 첫 진입 안내(1회)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => { speak('자유롭게 그려 보세요') }, [])
+
+  // 템플릿이 바뀌면 ref 동기화 + 새 윤곽선으로 초기화
+  useEffect(() => { templateRef.current = template; reset(template) }, [template])
 
   function pos(e: React.PointerEvent) {
-    const cv = canvasRef.current!
+    const cv = canvasRef.current
+    if (!cv) return { x: 0, y: 0 }
     const rect = cv.getBoundingClientRect()
     return { x: (e.clientX - rect.left) * (cv.width / rect.width), y: (e.clientY - rect.top) * (cv.height / rect.height) }
   }
   function widthPx() {
-    const cv = canvasRef.current!
+    const cv = canvasRef.current
+    if (!cv) return 1
     const base = SIZES.find((s) => s.key === sizeKey)!.r * cv.width
     return erasing ? base * 2.2 : base
   }

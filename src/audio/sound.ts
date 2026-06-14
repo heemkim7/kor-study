@@ -144,6 +144,11 @@ export function stopBgm(): void {
     clearInterval(bgmTimer)
     bgmTimer = null
   }
+  // 게인 노드도 정리(반복 토글 시 오디오 그래프에 끊긴 노드가 쌓이지 않게)
+  if (bgmGain) {
+    bgmGain.disconnect()
+    bgmGain = null
+  }
 }
 
 export function setBgmEnabled(on: boolean): void {

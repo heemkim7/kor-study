@@ -24,14 +24,15 @@ export function StoryPlayer({ lesson, onDone }: { lesson: Lesson; onDone: () => 
   useEffect(() => {
     let advance: ReturnType<typeof setTimeout>
     let armed = false
+    let cancelled = false // 장면 변경/언마운트 후 옛 onEnd가 늦게 와도 진행을 막음(경쟁 조건 방지)
     const arm = () => {
-      if (armed) return
+      if (armed || cancelled) return
       armed = true
-      advance = setTimeout(next, 3000)
+      advance = setTimeout(() => { if (!cancelled) next() }, 3000)
     }
     speak(scene.text, { onEnd: arm })
     const fallback = setTimeout(arm, Math.max(4500, scene.text.length * 340))
-    return () => { clearTimeout(advance); clearTimeout(fallback) }
+    return () => { cancelled = true; clearTimeout(advance); clearTimeout(fallback) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [i])
 

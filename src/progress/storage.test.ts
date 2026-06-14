@@ -30,6 +30,14 @@ describe('storage', () => {
     expect(loaded.completedLessons).toEqual([])
   })
 
+  it('알 수 없는 스티커 id는 걸러내고 유효한 것만 유지', () => {
+    localStorage.setItem('hangeul-play:progress:v1', JSON.stringify({
+      collectedStickers: ['st-lion', 'no-such-sticker', 'st-star'],
+    }))
+    const loaded = loadProgress()
+    expect(loaded.collectedStickers).toEqual(['st-lion', 'st-star'])
+  })
+
   it('보유하지 않은 outfit 슬롯은 기본값으로 되돌림(손상/구버전 재과금 방지)', () => {
     localStorage.setItem('hangeul-play:progress:v1', JSON.stringify({
       stars: 10,
