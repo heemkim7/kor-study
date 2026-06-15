@@ -2,7 +2,7 @@
 // 4세 맞춤: 명료한 모음 → 쉬운 자음+모음 결합(가갸거겨)까지. 받침 조작은 뒤로 미룸(게이팅).
 // 신규 인프라 없이 decompose.ts(composeSyllable/CHO/JUNG/JONG)를 그대로 활용.
 
-export type GlyphGame = 'letter-intro' | 'make-syllable' | 'find-letter'
+export type GlyphGame = 'letter-intro' | 'make-syllable' | 'find-letter' | 'trace'
 
 export interface LetterLesson {
   id: string
@@ -34,7 +34,7 @@ export const BASIC_VOWELS = ['ㅏ', 'ㅓ', 'ㅗ', 'ㅜ', 'ㅡ', 'ㅣ']
 // 받침(종성) 보기 풀 — 대표받침 위주
 export const BASIC_JONG = ['ㄱ', 'ㄴ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅇ']
 
-export const LETTER_LESSONS: LetterLesson[] = [
+const BASE_LETTER_LESSONS: LetterLesson[] = [
   // 1주 · 모음 먼저(가장 명료한 소리)
   { id: 'v-aoi', title: '모음 ㅏ ㅗ ㅣ', unit: '글자나라 1주 · 모음', glyphs: ['ㅏ', 'ㅗ', 'ㅣ'], games: ['letter-intro', 'find-letter'] },
   { id: 'v-euu', title: '모음 ㅓ ㅜ ㅡ', unit: '글자나라 1주 · 모음', glyphs: ['ㅓ', 'ㅜ', 'ㅡ'], games: ['letter-intro', 'find-letter'] },
@@ -50,6 +50,12 @@ export const LETTER_LESSONS: LetterLesson[] = [
   { id: 'b-m', title: '받침 ㅁ · 밤 곰 봄', unit: '글자나라 5주 · 받침', glyphs: ['밤', '곰', '봄'], games: ['make-syllable', 'find-letter'] },
   { id: 'b-l', title: '받침 ㄹ · 물 발 달', unit: '글자나라 5주 · 받침', glyphs: ['물', '발', '달'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
 ]
+
+// 모든 글자 레슨 끝에 '따라쓰기'를 붙인다(보고→만들고→찾고→써보기, 학습지식 흐름).
+export const LETTER_LESSONS: LetterLesson[] = BASE_LETTER_LESSONS.map((l) => ({
+  ...l,
+  games: [...l.games, 'trace' as GlyphGame],
+}))
 
 export function getLetterLesson(id: string): LetterLesson | undefined {
   return LETTER_LESSONS.find((l) => l.id === id)

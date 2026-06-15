@@ -5,6 +5,7 @@ import { useNavigation } from './Navigation'
 import { LetterIntro } from '../games/LetterIntro'
 import { MakeSyllable } from '../games/MakeSyllable'
 import { FindLetter } from '../games/FindLetter'
+import { Trace } from '../games/Trace'
 import { RewardScreen } from '../reward/RewardScreen'
 import { todayStr } from '../progress/progress'
 import { playCorrect } from '../audio/sound'
@@ -35,6 +36,7 @@ export function LetterAdventure({ lessonId }: { lessonId: string }) {
     const done = () => nextAfterGame(index)
     if (g === 'letter-intro') return <LetterIntro glyphs={lesson.glyphs} onDone={done} />
     if (g === 'make-syllable') return <MakeSyllable glyphs={lesson.glyphs} onCorrect={onCorrect} onDone={done} />
+    if (g === 'trace') return <Trace glyphs={lesson.glyphs} onCorrect={onCorrect} onDone={done} />
     return <FindLetter glyphs={lesson.glyphs} onCorrect={onCorrect} onDone={done} />
   }
 
