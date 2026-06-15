@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useNavigation } from './Navigation'
 import { useProgress } from '../progress/useProgress'
-import { useTts } from '../tts/useTts'
 import { PrincessFigure } from '../princess/PrincessFigure'
 import { STICKERS } from '../reward/stickers'
 import { todayStr } from '../progress/progress'
@@ -10,7 +9,6 @@ import { isBgmEnabled, toggleBgm, resumeAudio } from '../audio/sound'
 export function Home() {
   const { go } = useNavigation()
   const { progress } = useProgress()
-  const { speak } = useTts()
   const [bgmOn, setBgmOn] = useState(isBgmEnabled())
   const playedToday = progress.lastPlayedDate === todayStr()
 
@@ -59,7 +57,7 @@ export function Home() {
           textAlign: 'left', margin: '0 4px' }}>📚 배우기</div>
         {subjectCard('📖', '한글', '글자와 단어를 배워요', 'linear-gradient(135deg,#efe6ff,#f8f4ff)', () => go({ name: 'subject', subject: 'hangul' }))}
         {subjectCard('🔢', '숫자', '수를 세고 비교해요', 'linear-gradient(135deg,#e3f7ec,#f3fff8)', () => go({ name: 'subject', subject: 'number' }))}
-        {subjectCard('🔤', '영어', '곧 만나요!', 'linear-gradient(135deg,#e6f1ff,#f5faff)', () => speak('영어는 곧 만나요'), '🔜')}
+        {subjectCard('🔤', '영어', '알파벳 ABC를 배워요', 'linear-gradient(135deg,#e6f1ff,#f5faff)', () => go({ name: 'subject', subject: 'english' }))}
       </div>
 
       {/* 놀이방 — 보상/창작 */}

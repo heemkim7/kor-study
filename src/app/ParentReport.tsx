@@ -4,6 +4,7 @@ import { useProgress } from '../progress/useProgress'
 import { allLessons, getWord } from '../content/loader'
 import { LETTER_LESSONS } from '../content/letters'
 import { NUMBER_LESSONS } from '../content/numbers'
+import { ABC_LESSONS } from '../content/english'
 import { STICKERS } from '../reward/stickers'
 
 // 6~9 곱셈 문제(모듈 함수 — 렌더 중 직접 난수 호출 회피)
@@ -66,9 +67,10 @@ export function ParentReport() {
     const wordIds = new Set(allLessons().map((l) => l.id))
     const letterIds = new Set(LETTER_LESSONS.map((l) => l.id))
     const numberIds = new Set(NUMBER_LESSONS.map((l) => l.id))
+    const abcIds = new Set(ABC_LESSONS.map((l) => l.id))
     const countIn = (ids: Set<string>) => progress.completedLessons.filter((id) => ids.has(id)).length
     return {
-      words: countIn(wordIds), letters: countIn(letterIds), numbers: countIn(numberIds),
+      words: countIn(wordIds), letters: countIn(letterIds), numbers: countIn(numberIds), english: countIn(abcIds),
       totalLessons: done.size,
       learnedWordTexts: progress.learnedWords.map((id) => getWord(id)?.text).filter(Boolean) as string[],
     }
@@ -102,6 +104,7 @@ export function ParentReport() {
         {card('🔥', '연속 출석', `${progress.streak}일`, 'linear-gradient(135deg,#fff3d6,#fffaf0)')}
         {card('⭐', '모은 별', progress.stars, 'linear-gradient(135deg,#fff7e0,#fffdf4)')}
         {card('📖', '배운 글자 놀이', `${stats.letters}개`, 'linear-gradient(135deg,#efe6ff,#f9f5ff)')}
+        {card('🔤', '배운 영어 놀이', `${stats.english}개`, 'linear-gradient(135deg,#e6f1ff,#f5faff)')}
         {card('🔢', '배운 숫자 놀이', `${stats.numbers}개`, 'linear-gradient(135deg,#e3f7ec,#f3fff8)')}
         {card('🍓', '배운 단어 놀이', `${stats.words}개`, 'linear-gradient(135deg,#ffe9ef,#fff5f8)')}
         {card('🏅', '모은 스티커', `${progress.collectedStickers.length}/${STICKERS.length}`, 'linear-gradient(135deg,#e8f0ff,#f5f9ff)')}

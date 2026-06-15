@@ -2,10 +2,11 @@ import { createContext, useContext, useMemo, useState, type ReactNode } from 're
 
 export type Screen =
   | { name: 'home' }
-  | { name: 'subject'; subject: 'hangul' | 'number' }
+  | { name: 'subject'; subject: 'hangul' | 'number' | 'english' }
   | { name: 'adventure'; lessonId: string }
   | { name: 'letter'; lessonId: string }
   | { name: 'number'; lessonId: string }
+  | { name: 'abc'; lessonId: string }
   | { name: 'dressup' }
   | { name: 'stickers' }
   | { name: 'draw' }

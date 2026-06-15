@@ -17,8 +17,9 @@ function drawGlyph(ctx: CanvasRenderingContext2D, w: number, h: number, g: strin
 }
 
 /** 따라쓰기 — 글자 윤곽을 손가락으로 따라 칠한다. 윤곽을 충분히 덮으면 완성(관대한 채점). */
-export function Trace({ glyphs, onCorrect, onDone }: {
+export function Trace({ glyphs, onCorrect, onDone, say = (g) => ({ text: glyphSound(g) }) }: {
   glyphs: string[]; onCorrect: () => void; onDone: () => void
+  say?: (g: string) => { text: string; lang?: string }
 }) {
   const { speak } = useTts()
   const [round, setRound] = useState(0)
@@ -75,7 +76,8 @@ export function Trace({ glyphs, onCorrect, onDone }: {
     glyphRef.current = glyph
     solvedRef.current = false
     fit()
-    speak(round === 0 ? '손가락으로 글자를 따라 써 보세요' : glyphSound(glyph))
+    if (round === 0) speak('손가락으로 글자를 따라 써 보세요')
+    else { const s = say(glyph); speak(s.text, { lang: s.lang }) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [round])
 
@@ -145,7 +147,7 @@ export function Trace({ glyphs, onCorrect, onDone }: {
     if (solvedRef.current) return
     solvedRef.current = true
     setSolved(true)
-    speak(glyphSound(glyphRef.current))
+    { const s = say(glyphRef.current); speak(s.text, { lang: s.lang }) }
     onCorrect()
     timerRef.current = setTimeout(() => {
       if (round === glyphs.length - 1) onDone()
@@ -160,7 +162,7 @@ export function Trace({ glyphs, onCorrect, onDone }: {
       <h2 style={{ fontFamily: 'var(--font-warm)', fontSize: 24 }}>글자를 따라 써요</h2>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <span style={{ fontFamily: 'var(--font-warm)', fontSize: 30, fontWeight: 800, color: 'var(--c-pink)' }}>{glyph}</span>
-        <SpeakerButton size={44} onClick={() => speak(glyphSound(glyph))} />
+        <SpeakerButton size={44} onClick={() => { const s = say(glyph); speak(s.text, { lang: s.lang }) }} />
       </div>
       <canvas ref={canvasRef} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}
         style={{ width: '100%', maxWidth: 340, flex: 1, minHeight: 0, aspectRatio: '1 / 1', borderRadius: 'var(--radius-lg)',

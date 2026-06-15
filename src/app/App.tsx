@@ -6,6 +6,7 @@ import { SubjectScreen } from './SubjectScreen'
 import { Adventure } from './Adventure'
 import { LetterAdventure } from './LetterAdventure'
 import { NumberAdventure } from './NumberAdventure'
+import { AbcAdventure } from './AbcAdventure'
 import { DressUp } from './DressUp'
 import { StickerBook } from '../reward/StickerBook'
 import { DrawBoard } from '../draw/DrawBoard'
@@ -18,6 +19,7 @@ function Router() {
   if (screen.name === 'adventure') return <Adventure lessonId={screen.lessonId} />
   if (screen.name === 'letter') return <LetterAdventure lessonId={screen.lessonId} />
   if (screen.name === 'number') return <NumberAdventure lessonId={screen.lessonId} />
+  if (screen.name === 'abc') return <AbcAdventure lessonId={screen.lessonId} />
   if (screen.name === 'dressup') return <DressUp />
   if (screen.name === 'stickers') return <StickerBook />
   if (screen.name === 'draw') return <DrawBoard />

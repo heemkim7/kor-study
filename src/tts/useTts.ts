@@ -2,10 +2,11 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { pickKoreanVoice } from './pickVoice'
 import { resolveRecording } from './recordings'
 
-export interface SpeakOptions { rate?: number; onEnd?: () => void }
+export interface SpeakOptions { rate?: number; onEnd?: () => void; lang?: string }
 
 export function useTts() {
   const voiceRef = useRef<SpeechSynthesisVoice | null>(null)
+  const enVoiceRef = useRef<SpeechSynthesisVoice | null>(null)
   const audioRef = useRef<HTMLAudioElement | null>(null)
   const [ready, setReady] = useState(false)
 
@@ -13,7 +14,9 @@ export function useTts() {
     const synth = window.speechSynthesis
     if (!synth) return
     const load = () => {
-      voiceRef.current = pickKoreanVoice(synth.getVoices())
+      const voices = synth.getVoices()
+      voiceRef.current = pickKoreanVoice(voices)
+      enVoiceRef.current = voices.find((v) => /^en/i.test(v.lang)) ?? null // 영어(en) 음성
       setReady(true)
     }
     load()
@@ -25,10 +28,12 @@ export function useTts() {
     const synth = window.speechSynthesis
     if (!synth) { opts.onEnd?.(); return }
     synth.cancel()
+    const isEn = !!opts.lang && /^en/i.test(opts.lang)
     const u = new SpeechSynthesisUtterance(text)
-    u.lang = 'ko-KR'
-    u.rate = opts.rate ?? 0.85
-    if (voiceRef.current) u.voice = voiceRef.current
+    u.lang = opts.lang ?? 'ko-KR'
+    u.rate = opts.rate ?? (isEn ? 0.9 : 0.85)
+    const v = isEn ? enVoiceRef.current : voiceRef.current
+    if (v) u.voice = v
     if (opts.onEnd) u.onend = () => opts.onEnd!()
     synth.speak(u)
   }, [])
@@ -38,8 +43,8 @@ export function useTts() {
     window.speechSynthesis?.cancel()
     if (audioRef.current) { audioRef.current.pause(); audioRef.current = null }
 
-    // 녹음이 있으면 부모 목소리로, 없으면 TTS
-    const rec = resolveRecording(text)
+    // 녹음(부모 목소리)은 한국어만. 영어는 브라우저 영어 음성으로.
+    const rec = opts.lang && /^en/i.test(opts.lang) ? null : resolveRecording(text)
     if (rec) {
       const audio = new Audio(rec)
       audioRef.current = audio

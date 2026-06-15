@@ -7,9 +7,10 @@ import { buildJourney, type JourneyNode } from '../content/journey'
 import { difficultyStars } from '../content/difficulty'
 import { buildLetterJourney, type LetterNode } from '../content/letters'
 import { buildNumberJourney, type NumNode } from '../content/numbers'
+import { buildAbcJourney, type AbcNode } from '../content/english'
 import type { Theme } from '../content/types'
 
-export type Subject = 'hangul' | 'number'
+export type Subject = 'hangul' | 'number' | 'english'
 
 const THEME_EMOJI: Partial<Record<Theme, string>> = {
   food: '🍓', animals: '🐶', vehicles: '🚌', nature: '🌙',
@@ -56,6 +57,28 @@ export function SubjectScreen({ subject }: { subject: Subject }) {
         <div style={{ flex: 1, textAlign: 'left' }}>
           <div style={{ fontFamily: 'var(--font-warm)', fontSize: 20, fontWeight: 800, color: 'var(--c-ink)' }}>🔢 {lesson.title}</div>
           <div style={{ fontSize: 13, color: 'var(--c-ink-soft)', marginTop: 2 }}>세고 비교해요{state}</div>
+        </div>
+      </button>
+    )
+  }
+
+  const renderAbcNode = ({ lesson, completed, unlocked, current }: AbcNode) => {
+    const badge = completed ? '⭐' : unlocked ? lesson.letters[0] : '🔒'
+    const state = completed ? ' · 완료!' : current ? ' · 지금 배워요!' : !unlocked ? ' · 잠김' : ''
+    return (
+      <button key={lesson.id} aria-disabled={!unlocked}
+        onClick={() => (unlocked ? go({ name: 'abc', lessonId: lesson.id }) : speak('먼저 앞 글자를 배워요'))}
+        style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '13px 16px',
+          borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer', background: 'var(--c-card)',
+          boxShadow: current ? '0 0 0 3px #8fcdee, var(--shadow-card)' : 'var(--shadow-card)', opacity: unlocked ? 1 : 0.6 }}>
+        <div style={{ width: 48, height: 48, flex: '0 0 auto', borderRadius: '50%', display: 'flex',
+          alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-warm)', fontSize: 24,
+          fontWeight: 800, color: '#fff', background: completed ? 'var(--c-correct)' : unlocked ? '#3aa0d0' : '#c9bba8' }}>
+          {badge}
+        </div>
+        <div style={{ flex: 1, textAlign: 'left' }}>
+          <div style={{ fontFamily: 'var(--font-warm)', fontSize: 20, fontWeight: 800, color: 'var(--c-ink)' }}>🔤 {lesson.title}</div>
+          <div style={{ fontSize: 13, color: 'var(--c-ink-soft)', marginTop: 2 }}>듣고·찾고·따라써요{state}</div>
         </div>
       </button>
     )
@@ -126,7 +149,7 @@ export function SubjectScreen({ subject }: { subject: Subject }) {
       </div>
     ))
 
-  const title = subject === 'hangul' ? '📖 한글' : '🔢 숫자'
+  const title = subject === 'hangul' ? '📖 한글' : subject === 'number' ? '🔢 숫자' : '🔤 영어'
 
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
@@ -146,6 +169,10 @@ export function SubjectScreen({ subject }: { subject: Subject }) {
       {subject === 'number' &&
         section('🔢 숫자 배우기', '수를 세고 많고 적음을 익혀요', '#2a9d6e',
           unitBlock(groupByUnit(buildNumberJourney(progress.completedLessons)), '#3ec46d', renderNumberNode))}
+
+      {subject === 'english' &&
+        section('🔤 알파벳', '듣고·찾고·따라쓰며 알파벳을 익혀요', '#2b8fc0',
+          unitBlock(groupByUnit(buildAbcJourney(progress.completedLessons)), '#3aa0d0', renderAbcNode))}
     </div>
   )
 }
