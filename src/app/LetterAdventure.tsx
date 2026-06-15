@@ -27,6 +27,7 @@ export function LetterAdventure({ lessonId }: { lessonId: string }) {
       setAwarded(!progress.completedLessons.includes(lesson.id))
       dispatch({ type: 'completeLesson', lessonId: lesson.id })
       dispatch({ type: 'markPlayed', today: todayStr() })
+      dispatch({ type: 'logPlay', today: todayStr() })
       setPhase({ kind: 'reward' })
     }
   }

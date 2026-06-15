@@ -37,9 +37,17 @@ export function loadProgress(): Progress {
     const lastPlayedDate = isValidDateStr(parsed.lastPlayedDate) ? parsed.lastPlayedDate : null
     const streak = typeof parsed.streak === 'number' && Number.isInteger(parsed.streak) && parsed.streak >= 0
       ? parsed.streak : 0
-    // 배운 단어도 실제 존재하는 단어만 인정(손상/구버전·삭제된 단어 id 방어)
+    // 배운 단어·복습 단어도 실제 존재하는 단어만 인정(손상/삭제된 id 방어)
     const learnedWords = (parsed.learnedWords ?? []).filter((id) => getWord(id) !== undefined)
-    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers, lastPlayedDate, streak, learnedWords }
+    const reviewWords = (parsed.reviewWords ?? []).filter((id) => getWord(id) !== undefined)
+    // 일별 활동 로그·목표 검증(손상값 방어)
+    const rawLog = parsed.playLog
+    const playLog: Record<string, number> = (rawLog && typeof rawLog === 'object' && !Array.isArray(rawLog))
+      ? Object.fromEntries(Object.entries(rawLog as Record<string, unknown>)
+        .filter(([k, v]) => /^\d{4}-\d{2}-\d{2}$/.test(k) && typeof v === 'number' && Number.isFinite(v) && v >= 0)) as Record<string, number>
+      : {}
+    const dailyGoal = typeof parsed.dailyGoal === 'number' && parsed.dailyGoal >= 1 && parsed.dailyGoal <= 5 ? parsed.dailyGoal : 1
+    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers, lastPlayedDate, streak, learnedWords, reviewWords, playLog, dailyGoal }
   } catch {
     return initialProgress
   }

@@ -6,8 +6,9 @@ import { Sparkles } from '../ui/Sparkles'
 import { buildSmartChoices } from './choices'
 
 /** 그림을 보여주고 글자 보기 중 맞는 단어를 고르기 */
-export function PickWord({ targetWords, pool, onCorrect, onDone, choiceCount = 3 }: {
-  targetWords: string[]; pool: string[]; onCorrect: () => void; onDone: () => void; choiceCount?: number
+export function PickWord({ targetWords, pool, onCorrect, onDone, onWrong, choiceCount = 3 }: {
+  targetWords: string[]; pool: string[]; onCorrect: (id?: string) => void; onDone: () => void
+  onWrong?: (id: string) => void; choiceCount?: number
 }) {
   const { speak } = useTts()
   const [round, setRound] = useState(0)
@@ -43,13 +44,14 @@ export function PickWord({ targetWords, pool, onCorrect, onDone, choiceCount = 3
     if (id === answerId) {
       setSolved(true)
       speak(answer.text)
-      onCorrect()
+      onCorrect(answerId)
       timerRef.current = setTimeout(() => {
         if (round === targetWords.length - 1) onDone()
         else setRound(round + 1)
       }, 900)
     } else {
       speak('다시 골라볼까?')
+      onWrong?.(answerId)
       setWrongId(id) // 소리 꺼져 있어도 '오답'을 흔들림으로 표시
       clearTimeout(shakeRef.current)
       shakeRef.current = setTimeout(() => setWrongId(null), 450)

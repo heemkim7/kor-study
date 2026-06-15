@@ -26,8 +26,9 @@ export function Adventure({ lessonId }: { lessonId: string }) {
   const [awarded, setAwarded] = useState(true)
 
   const pool = useMemo(() => WORDS.map((w) => w.id), [])
-  // 정답을 맞히면 별 +1 과 함께 밝은 칭찬 효과음(이미지뿐 아니라 소리로도 보상)
-  const onCorrect = () => { playCorrect(); dispatch({ type: 'addStars', n: 1 }) }
+  // 정답: 별 +1 + 칭찬음, 맞힌 단어는 복습 큐에서 빼줌. 오답: 복습 큐에 등록.
+  const onCorrect = (id?: string) => { playCorrect(); dispatch({ type: 'addStars', n: 1 }); if (id) dispatch({ type: 'reviewMastered', id }) }
+  const onWrong = (id: string) => dispatch({ type: 'reviewWrong', id })
 
   function nextAfterGame(index: number) {
     if (index < lesson.games.length - 1) setPhase({ kind: 'game', index: index + 1 })
@@ -37,6 +38,7 @@ export function Adventure({ lessonId }: { lessonId: string }) {
       dispatch({ type: 'learnWords', ids: lesson.targetWords })
       dispatch({ type: 'completeLesson', lessonId: lesson.id })
       dispatch({ type: 'markPlayed', today: todayStr() })
+      dispatch({ type: 'logPlay', today: todayStr() })
       setPhase({ kind: 'reward' })
     }
   }
@@ -48,8 +50,8 @@ export function Adventure({ lessonId }: { lessonId: string }) {
       onDone: () => nextAfterGame(index),
       choiceCount: choiceCountForLevel(lesson.level),
     }
-    if (gameId === 'listen-find') return <ListenFind {...common} />
-    if (gameId === 'pick-word') return <PickWord {...common} />
+    if (gameId === 'listen-find') return <ListenFind {...common} onWrong={onWrong} />
+    if (gameId === 'pick-word') return <PickWord {...common} onWrong={onWrong} />
     if (gameId === 'build-word') return <BuildWord {...common} />
     if (gameId === 'letter-hunt') return <LetterHunt {...common} />
     if (gameId === 'memory') return <MemoryGame {...common} />

@@ -10,6 +10,9 @@ import { AbcAdventure } from './AbcAdventure'
 import { DressUp } from './DressUp'
 import { StickerBook } from '../reward/StickerBook'
 import { DrawBoard } from '../draw/DrawBoard'
+import { WordBook } from '../reward/WordBook'
+import { Badges } from '../reward/Badges'
+import { ReviewSession } from './ReviewSession'
 import { ParentReport } from './ParentReport'
 import { resumeAudio, startBgm } from '../audio/sound'
 
@@ -23,6 +26,9 @@ function Router() {
   if (screen.name === 'dressup') return <DressUp />
   if (screen.name === 'stickers') return <StickerBook />
   if (screen.name === 'draw') return <DrawBoard />
+  if (screen.name === 'wordbook') return <WordBook />
+  if (screen.name === 'badges') return <Badges />
+  if (screen.name === 'review') return <ReviewSession />
   if (screen.name === 'parent') return <ParentReport />
   return <Home />
 }

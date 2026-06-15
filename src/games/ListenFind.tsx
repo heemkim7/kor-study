@@ -6,9 +6,10 @@ import { SpeakerButton } from '../ui/SpeakerButton'
 import { Sparkles } from '../ui/Sparkles'
 import { buildSmartChoices } from './choices'
 
-/** targetWords 각각을 한 라운드씩 출제. 정답 시 onCorrect, 전부 끝나면 onDone */
-export function ListenFind({ targetWords, pool, onCorrect, onDone, choiceCount = 3 }: {
-  targetWords: string[]; pool: string[]; onCorrect: () => void; onDone: () => void; choiceCount?: number
+/** targetWords 각각을 한 라운드씩 출제. 정답 시 onCorrect(id), 오답 시 onWrong(id), 전부 끝나면 onDone */
+export function ListenFind({ targetWords, pool, onCorrect, onDone, onWrong, choiceCount = 3 }: {
+  targetWords: string[]; pool: string[]; onCorrect: (id?: string) => void; onDone: () => void
+  onWrong?: (id: string) => void; choiceCount?: number
 }) {
   const { speak } = useTts()
   const [round, setRound] = useState(0)
@@ -43,13 +44,14 @@ export function ListenFind({ targetWords, pool, onCorrect, onDone, choiceCount =
     if (solved) return
     if (id === answerId) {
       setSolved(true)
-      onCorrect()
+      onCorrect(answerId)
       timerRef.current = setTimeout(() => {
         if (round === targetWords.length - 1) onDone()
         else setRound(round + 1)
       }, 900)
     } else {
       speak('다시 들어볼까?')
+      onWrong?.(answerId)
       setWrongId(id) // 소리 꺼져 있어도 '오답'을 흔들림으로 표시
       clearTimeout(shakeRef.current)
       shakeRef.current = setTimeout(() => setWrongId(null), 450)

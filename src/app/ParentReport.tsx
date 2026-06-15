@@ -59,7 +59,7 @@ function ParentGate({ onPass, onCancel }: { onPass: () => void; onCancel: () => 
 
 export function ParentReport() {
   const { go } = useNavigation()
-  const { progress } = useProgress()
+  const { progress, dispatch } = useProgress()
   const [passed, setPassed] = useState(false)
 
   const stats = useMemo(() => {
@@ -75,6 +75,21 @@ export function ParentReport() {
       learnedWordTexts: progress.learnedWords.map((id) => getWord(id)?.text).filter(Boolean) as string[],
     }
   }, [progress])
+
+  // 최근 7일 활동(부모 리포트 막대그래프)
+  const week = useMemo(() => {
+    const pad = (n: number) => String(n).padStart(2, '0')
+    const dow = ['일', '월', '화', '수', '목', '금', '토']
+    const base = new Date()
+    const out: { key: string; label: string; count: number }[] = []
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(base.getFullYear(), base.getMonth(), base.getDate() - i)
+      const key = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+      out.push({ key, label: dow[d.getDay()], count: progress.playLog[key] ?? 0 })
+    }
+    return out
+  }, [progress.playLog])
+  const weekMax = Math.max(1, ...week.map((d) => d.count))
 
   if (!passed) return <ParentGate onPass={() => setPassed(true)} onCancel={() => go({ name: 'home' })} />
 
@@ -108,6 +123,40 @@ export function ParentReport() {
         {card('🔢', '배운 숫자 놀이', `${stats.numbers}개`, 'linear-gradient(135deg,#e3f7ec,#f3fff8)')}
         {card('🍓', '배운 단어 놀이', `${stats.words}개`, 'linear-gradient(135deg,#ffe9ef,#fff5f8)')}
         {card('🏅', '모은 스티커', `${progress.collectedStickers.length}/${STICKERS.length}`, 'linear-gradient(135deg,#e8f0ff,#f5f9ff)')}
+      </div>
+
+      {/* 최근 7일 활동 그래프 */}
+      <div style={{ width: '100%', maxWidth: 380, background: 'var(--c-card)', borderRadius: 'var(--radius-lg)',
+        padding: 16, boxShadow: 'var(--shadow-card)', marginTop: 4 }}>
+        <div style={{ fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800, marginBottom: 10 }}>최근 7일 놀이</div>
+        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 6, height: 96 }}>
+          {week.map((d) => (
+            <div key={d.key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, height: '100%' }}>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', width: '100%' }}>
+                <div style={{ width: '100%', height: `${Math.round((d.count / weekMax) * 100)}%`, minHeight: d.count > 0 ? 8 : 2,
+                  borderRadius: 6, background: d.count > 0 ? 'linear-gradient(180deg,#8fd0ee,#3aa0d0)' : '#eee4d4' }} />
+              </div>
+              <div style={{ fontSize: 11, color: 'var(--c-ink-soft)' }}>{d.label}</div>
+              <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--c-ink)' }}>{d.count}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 하루 목표 설정 */}
+      <div style={{ width: '100%', maxWidth: 380, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        background: 'var(--c-card)', borderRadius: 'var(--radius-lg)', padding: '12px 16px', boxShadow: 'var(--shadow-card)' }}>
+        <div style={{ textAlign: 'left' }}>
+          <div style={{ fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800 }}>하루 목표</div>
+          <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>하루에 놀이 몇 개를 할까요?</div>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button onClick={() => dispatch({ type: 'setDailyGoal', n: progress.dailyGoal - 1 })} aria-label="목표 줄이기"
+            style={{ width: 38, height: 38, borderRadius: 999, border: 'none', background: '#f3e7d6', fontSize: 22, fontWeight: 800, cursor: 'pointer' }}>−</button>
+          <span style={{ fontFamily: 'var(--font-warm)', fontSize: 22, fontWeight: 800, minWidth: 28, textAlign: 'center' }}>{progress.dailyGoal}</span>
+          <button onClick={() => dispatch({ type: 'setDailyGoal', n: progress.dailyGoal + 1 })} aria-label="목표 늘리기"
+            style={{ width: 38, height: 38, borderRadius: 999, border: 'none', background: 'var(--c-accent)', color: '#fff', fontSize: 22, fontWeight: 800, cursor: 'pointer' }}>+</button>
+        </div>
       </div>
 
       <div style={{ width: '100%', maxWidth: 380, background: 'var(--c-card)', borderRadius: 'var(--radius-lg)',

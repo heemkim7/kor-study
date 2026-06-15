@@ -10,7 +10,8 @@ export function Home() {
   const { go } = useNavigation()
   const { progress } = useProgress()
   const [bgmOn, setBgmOn] = useState(isBgmEnabled())
-  const playedToday = progress.lastPlayedDate === todayStr()
+  const todayCount = progress.playLog[todayStr()] ?? 0
+  const goalMet = todayCount >= progress.dailyGoal
 
   const subjectCard = (emoji: string, title: string, desc: string, bg: string, onClick: () => void, badge?: string) => (
     <button onClick={onClick}
@@ -44,11 +45,11 @@ export function Home() {
 
       {/* 오늘의 목표 */}
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderRadius: 999,
-        background: playedToday ? 'linear-gradient(135deg,#d6f5e0,#f0fff6)' : 'linear-gradient(135deg,#fff3d6,#fffaf0)',
+        background: goalMet ? 'linear-gradient(135deg,#d6f5e0,#f0fff6)' : 'linear-gradient(135deg,#fff3d6,#fffaf0)',
         boxShadow: 'var(--shadow-card)', fontWeight: 800, fontSize: 14, color: 'var(--c-ink)' }}>
-        {playedToday
+        {goalMet
           ? <>🎉 오늘 목표 달성! {progress.streak > 1 && `🔥 ${progress.streak}일 연속`}</>
-          : <>🎯 오늘의 목표 · 놀이 1개 하기</>}
+          : <>🎯 오늘의 목표 · 놀이 {todayCount}/{progress.dailyGoal}</>}
       </div>
 
       {/* 학습 — 과목 선택 */}
@@ -93,6 +94,24 @@ export function Home() {
             <div style={{ fontSize: 30 }}>🎨</div>
             <div style={{ fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800, color: '#3aa0d0' }}>그림 그리기</div>
             <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>색칠하고 그려요</div>
+          </button>
+        </div>
+        <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+          <button onClick={() => go({ name: 'wordbook' })}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '12px 8px',
+              borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer',
+              background: 'linear-gradient(135deg,#ffeede,#fff8f0)', boxShadow: 'var(--shadow-card)' }}>
+            <div style={{ fontSize: 30 }}>📚</div>
+            <div style={{ fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800, color: '#d98a3a' }}>낱말 도감</div>
+            <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>배운 단어 모으기</div>
+          </button>
+          <button onClick={() => go({ name: 'badges' })}
+            style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '12px 8px',
+              borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer',
+              background: 'linear-gradient(135deg,#fff0d6,#fffbf0)', boxShadow: 'var(--shadow-card)' }}>
+            <div style={{ fontSize: 30 }}>🏆</div>
+            <div style={{ fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800, color: '#e0a020' }}>내 뱃지</div>
+            <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>업적을 모아요</div>
           </button>
         </div>
       </div>

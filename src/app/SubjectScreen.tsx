@@ -159,6 +159,20 @@ export function SubjectScreen({ subject }: { subject: Subject }) {
           borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)', fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>🏠</button>
       <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 28, marginTop: 4 }}>{title}</h1>
 
+      {subject === 'hangul' && progress.reviewWords.length > 0 && (
+        <button onClick={() => go({ name: 'review' })}
+          style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', maxWidth: 380, padding: '14px 18px',
+            borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer', marginTop: 4,
+            background: 'linear-gradient(135deg,#ffe0e8,#fff2f5)', boxShadow: 'var(--shadow-card)' }}>
+          <div style={{ fontSize: 30 }}>🔁</div>
+          <div style={{ flex: 1, textAlign: 'left' }}>
+            <div style={{ fontFamily: 'var(--font-warm)', fontSize: 19, fontWeight: 800, color: 'var(--c-pink)' }}>복습하기</div>
+            <div style={{ fontSize: 13, color: 'var(--c-ink-soft)' }}>틀린 단어 {progress.reviewWords.length}개를 다시 봐요</div>
+          </div>
+          <div style={{ fontSize: 22 }}>▶</div>
+        </button>
+      )}
+
       {subject === 'hangul' && <>
         {section('📖 글자 배우기', '자음·모음부터 차근차근 한글을 깨쳐요', '#7a4fc0',
           unitBlock(groupByUnit(buildLetterJourney(progress.completedLessons)), '#9b6bff', renderLetterNode))}

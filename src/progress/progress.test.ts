@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { initialProgress, addStars, learnWords, completeLesson, setPrincessName, unlockItem, equipItem, markPlayed } from './progress'
+import { initialProgress, addStars, learnWords, completeLesson, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal } from './progress'
 import { GACHA_COST } from '../princess/economy'
 
 describe('addStars', () => {
@@ -59,6 +59,33 @@ describe('markPlayed (스트릭)', () => {
   it('이틀 이상 빠지면 1로 새로 시작', () => {
     const a = markPlayed(initialProgress, '2026-06-15')
     expect(markPlayed(a, '2026-06-19').streak).toBe(1) // gap 4일
+  })
+})
+
+describe('복습 큐(reviewWords)', () => {
+  it('틀린 단어 추가(중복 없음) / 맞히면 제거', () => {
+    const a = addReviewWord(initialProgress, 'apple')
+    const b = addReviewWord(a, 'apple') // 중복
+    expect(b.reviewWords).toEqual(['apple'])
+    const c = addReviewWord(b, 'dog')
+    expect(c.reviewWords).toEqual(['apple', 'dog'])
+    const d = removeReviewWord(c, 'apple')
+    expect(d.reviewWords).toEqual(['dog'])
+  })
+})
+
+describe('playLog / dailyGoal', () => {
+  it('하루에 여러 번 기록되면 누적', () => {
+    const a = logPlay(initialProgress, '2026-06-15')
+    const b = logPlay(a, '2026-06-15')
+    const c = logPlay(b, '2026-06-16')
+    expect(c.playLog['2026-06-15']).toBe(2)
+    expect(c.playLog['2026-06-16']).toBe(1)
+  })
+  it('하루 목표는 1~5로 제한', () => {
+    expect(setDailyGoal(initialProgress, 0).dailyGoal).toBe(1)
+    expect(setDailyGoal(initialProgress, 3).dailyGoal).toBe(3)
+    expect(setDailyGoal(initialProgress, 9).dailyGoal).toBe(5)
   })
 })
 

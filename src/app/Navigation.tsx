@@ -10,6 +10,9 @@ export type Screen =
   | { name: 'dressup' }
   | { name: 'stickers' }
   | { name: 'draw' }
+  | { name: 'wordbook' }
+  | { name: 'badges' }
+  | { name: 'review' }
   | { name: 'parent' }
 
 interface Nav { screen: Screen; go: (s: Screen) => void }

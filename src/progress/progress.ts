@@ -12,6 +12,9 @@ export interface Progress {
   collectedStickers: string[] // 모은 스티커 id(스티커북)
   lastPlayedDate: string | null // 마지막으로 논 날(YYYY-MM-DD, 로컬)
   streak: number            // 연속 놀이 일수
+  reviewWords: string[]     // 틀려서 다시 볼 단어(복습 큐)
+  playLog: Record<string, number> // 날짜(YYYY-MM-DD) → 그날 완료한 놀이 수(부모 리포트)
+  dailyGoal: number         // 하루 목표 놀이 수(부모 설정, 기본 1)
 }
 
 export const initialProgress: Progress = {
@@ -25,6 +28,34 @@ export const initialProgress: Progress = {
   collectedStickers: [],
   lastPlayedDate: null,
   streak: 0,
+  reviewWords: [],
+  playLog: {},
+  dailyGoal: 1,
+}
+
+/** 오늘 완료한 놀이 수 +1 기록(부모 리포트용). 최근 60일만 보관. */
+export function logPlay(p: Progress, today: string): Progress {
+  const next = { ...p.playLog, [today]: (p.playLog[today] ?? 0) + 1 }
+  const keys = Object.keys(next).sort()
+  while (keys.length > 60) { const k = keys.shift()!; delete next[k] }
+  return { ...p, playLog: next }
+}
+
+/** 하루 목표 놀이 수 설정(1~5). */
+export function setDailyGoal(p: Progress, n: number): Progress {
+  return { ...p, dailyGoal: Math.max(1, Math.min(5, Math.round(n))) }
+}
+
+/** 틀린 단어를 복습 큐에 추가(중복 없이, 최대 30개). */
+export function addReviewWord(p: Progress, id: string): Progress {
+  if (p.reviewWords.includes(id)) return p
+  return { ...p, reviewWords: [...p.reviewWords, id].slice(-30) }
+}
+
+/** 복습에서 맞힌 단어를 큐에서 제거. */
+export function removeReviewWord(p: Progress, id: string): Progress {
+  if (!p.reviewWords.includes(id)) return p
+  return { ...p, reviewWords: p.reviewWords.filter((x) => x !== id) }
 }
 
 /** 로컬 기준 오늘 날짜 YYYY-MM-DD. */
