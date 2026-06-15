@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { ProgressProvider } from '../progress/useProgress'
 import { NavigationProvider, useNavigation } from './Navigation'
 import { Home } from './Home'
+import { SubjectScreen } from './SubjectScreen'
 import { Adventure } from './Adventure'
 import { LetterAdventure } from './LetterAdventure'
 import { NumberAdventure } from './NumberAdventure'
@@ -13,6 +14,7 @@ import { resumeAudio, startBgm } from '../audio/sound'
 
 function Router() {
   const { screen } = useNavigation()
+  if (screen.name === 'subject') return <SubjectScreen subject={screen.subject} />
   if (screen.name === 'adventure') return <Adventure lessonId={screen.lessonId} />
   if (screen.name === 'letter') return <LetterAdventure lessonId={screen.lessonId} />
   if (screen.name === 'number') return <NumberAdventure lessonId={screen.lessonId} />
