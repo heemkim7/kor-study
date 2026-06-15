@@ -1,11 +1,13 @@
 import { useNavigation } from '../app/Navigation'
 import { useProgress } from '../progress/useProgress'
+import { useViewport } from '../app/FitShell'
 import { ACHIEVEMENTS } from './achievements'
 
 /** 뱃지·업적 — 기존 진행 신호로 달성 여부를 보여주는 갤러리. */
 export function Badges() {
   const { go } = useNavigation()
   const { progress } = useProgress()
+  const { landscape } = useViewport()
   const earned = ACHIEVEMENTS.filter((a) => a.done(progress)).length
 
   return (
@@ -20,7 +22,8 @@ export function Badges() {
         모은 뱃지 {earned} / {ACHIEVEMENTS.length}
       </div>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, width: '100%', maxWidth: 380, marginTop: 4 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${landscape ? 2 : 1}, 1fr)`, gap: 10,
+        width: '100%', maxWidth: landscape ? 780 : 380, marginTop: 4 }}>
         {ACHIEVEMENTS.map((a) => {
           const done = a.done(progress)
           return (

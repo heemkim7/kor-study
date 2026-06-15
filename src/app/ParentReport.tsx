@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { useNavigation } from './Navigation'
+import { useViewport } from './FitShell'
 import { useProgress } from '../progress/useProgress'
 import { allLessons, getWord } from '../content/loader'
 import { LETTER_LESSONS } from '../content/letters'
@@ -59,6 +60,7 @@ function ParentGate({ onPass, onCancel }: { onPass: () => void; onCancel: () => 
 
 export function ParentReport() {
   const { go } = useNavigation()
+  const { landscape } = useViewport()
   const { progress, dispatch } = useProgress()
   const [passed, setPassed] = useState(false)
 
@@ -104,6 +106,75 @@ export function ParentReport() {
     </div>
   )
 
+  const statsBlock = (
+    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, width: '100%' }}>
+      {card('🔥', '연속 출석', `${progress.streak}일`, 'linear-gradient(135deg,#fff3d6,#fffaf0)')}
+      {card('⭐', '모은 별', progress.stars, 'linear-gradient(135deg,#fff7e0,#fffdf4)')}
+      {card('📖', '배운 글자 놀이', `${stats.letters}개`, 'linear-gradient(135deg,#efe6ff,#f9f5ff)')}
+      {card('🔤', '배운 영어 놀이', `${stats.english}개`, 'linear-gradient(135deg,#e6f1ff,#f5faff)')}
+      {card('🔢', '배운 숫자 놀이', `${stats.numbers}개`, 'linear-gradient(135deg,#e3f7ec,#f3fff8)')}
+      {card('🍓', '배운 단어 놀이', `${stats.words}개`, 'linear-gradient(135deg,#ffe9ef,#fff5f8)')}
+      {card('🏅', '모은 스티커', `${progress.collectedStickers.length}/${STICKERS.length}`, 'linear-gradient(135deg,#e8f0ff,#f5f9ff)')}
+    </div>
+  )
+
+  const graphBlock = (
+    <div style={{ width: '100%', background: 'var(--c-card)', borderRadius: 'var(--radius-lg)',
+      padding: 16, boxShadow: 'var(--shadow-card)' }}>
+      <div style={{ fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800, marginBottom: 10 }}>최근 7일 놀이</div>
+      <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 6, height: 96 }}>
+        {week.map((d) => (
+          <div key={d.key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, height: '100%' }}>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', width: '100%' }}>
+              <div style={{ width: '100%', height: `${Math.round((d.count / weekMax) * 100)}%`, minHeight: d.count > 0 ? 8 : 2,
+                borderRadius: 6, background: d.count > 0 ? 'linear-gradient(180deg,#8fd0ee,#3aa0d0)' : '#eee4d4' }} />
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--c-ink-soft)' }}>{d.label}</div>
+            <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--c-ink)' }}>{d.count}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+
+  const goalBlock = (
+    <div style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+      background: 'var(--c-card)', borderRadius: 'var(--radius-lg)', padding: '12px 16px', boxShadow: 'var(--shadow-card)' }}>
+      <div style={{ textAlign: 'left' }}>
+        <div style={{ fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800 }}>하루 목표</div>
+        <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>하루에 놀이 몇 개를 할까요?</div>
+      </div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <button onClick={() => dispatch({ type: 'setDailyGoal', n: progress.dailyGoal - 1 })} aria-label="목표 줄이기"
+          style={{ width: 38, height: 38, borderRadius: 999, border: 'none', background: '#f3e7d6', fontSize: 22, fontWeight: 800, cursor: 'pointer' }}>−</button>
+        <span style={{ fontFamily: 'var(--font-warm)', fontSize: 22, fontWeight: 800, minWidth: 28, textAlign: 'center' }}>{progress.dailyGoal}</span>
+        <button onClick={() => dispatch({ type: 'setDailyGoal', n: progress.dailyGoal + 1 })} aria-label="목표 늘리기"
+          style={{ width: 38, height: 38, borderRadius: 999, border: 'none', background: 'var(--c-accent)', color: '#fff', fontSize: 22, fontWeight: 800, cursor: 'pointer' }}>+</button>
+      </div>
+    </div>
+  )
+
+  const wordsBlock = (
+    <div style={{ width: '100%', background: 'var(--c-card)', borderRadius: 'var(--radius-lg)',
+      padding: 16, boxShadow: 'var(--shadow-card)' }}>
+      <div style={{ fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800, marginBottom: 8 }}>
+        배운 단어 ({stats.learnedWordTexts.length})
+      </div>
+      {stats.learnedWordTexts.length === 0 ? (
+        <div style={{ fontSize: 13, color: 'var(--c-ink-soft)' }}>아직 없어요. 놀이를 시작해 보세요!</div>
+      ) : (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {stats.learnedWordTexts.map((t, i) => (
+            <span key={i} style={{ fontSize: 14, fontWeight: 800, color: 'var(--c-ink)', background: '#fbeef5',
+              padding: '4px 10px', borderRadius: 999 }}>{t}</span>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+
+  // 컬럼 폭 380 고정. 가로면 [통계+목표 | 그래프+단어] 2단으로 펼침.
+  const colStyle = { display: 'flex', flexDirection: 'column' as const, gap: 14, width: '100%', maxWidth: 380 }
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
       gap: 14, padding: 'max(16px, env(safe-area-inset-top)) 16px 32px', position: 'relative' }}>
@@ -115,65 +186,10 @@ export function ParentReport() {
       <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 26, marginTop: 4 }}>📊 학습 리포트</h1>
       <p style={{ fontSize: 13, color: 'var(--c-ink-soft)', marginTop: -6 }}>우리 아이가 지금까지 배운 내용이에요</p>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, width: '100%', maxWidth: 380 }}>
-        {card('🔥', '연속 출석', `${progress.streak}일`, 'linear-gradient(135deg,#fff3d6,#fffaf0)')}
-        {card('⭐', '모은 별', progress.stars, 'linear-gradient(135deg,#fff7e0,#fffdf4)')}
-        {card('📖', '배운 글자 놀이', `${stats.letters}개`, 'linear-gradient(135deg,#efe6ff,#f9f5ff)')}
-        {card('🔤', '배운 영어 놀이', `${stats.english}개`, 'linear-gradient(135deg,#e6f1ff,#f5faff)')}
-        {card('🔢', '배운 숫자 놀이', `${stats.numbers}개`, 'linear-gradient(135deg,#e3f7ec,#f3fff8)')}
-        {card('🍓', '배운 단어 놀이', `${stats.words}개`, 'linear-gradient(135deg,#ffe9ef,#fff5f8)')}
-        {card('🏅', '모은 스티커', `${progress.collectedStickers.length}/${STICKERS.length}`, 'linear-gradient(135deg,#e8f0ff,#f5f9ff)')}
-      </div>
-
-      {/* 최근 7일 활동 그래프 */}
-      <div style={{ width: '100%', maxWidth: 380, background: 'var(--c-card)', borderRadius: 'var(--radius-lg)',
-        padding: 16, boxShadow: 'var(--shadow-card)', marginTop: 4 }}>
-        <div style={{ fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800, marginBottom: 10 }}>최근 7일 놀이</div>
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 6, height: 96 }}>
-          {week.map((d) => (
-            <div key={d.key} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, height: '100%' }}>
-              <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', width: '100%' }}>
-                <div style={{ width: '100%', height: `${Math.round((d.count / weekMax) * 100)}%`, minHeight: d.count > 0 ? 8 : 2,
-                  borderRadius: 6, background: d.count > 0 ? 'linear-gradient(180deg,#8fd0ee,#3aa0d0)' : '#eee4d4' }} />
-              </div>
-              <div style={{ fontSize: 11, color: 'var(--c-ink-soft)' }}>{d.label}</div>
-              <div style={{ fontSize: 11, fontWeight: 800, color: 'var(--c-ink)' }}>{d.count}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* 하루 목표 설정 */}
-      <div style={{ width: '100%', maxWidth: 380, display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-        background: 'var(--c-card)', borderRadius: 'var(--radius-lg)', padding: '12px 16px', boxShadow: 'var(--shadow-card)' }}>
-        <div style={{ textAlign: 'left' }}>
-          <div style={{ fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800 }}>하루 목표</div>
-          <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>하루에 놀이 몇 개를 할까요?</div>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <button onClick={() => dispatch({ type: 'setDailyGoal', n: progress.dailyGoal - 1 })} aria-label="목표 줄이기"
-            style={{ width: 38, height: 38, borderRadius: 999, border: 'none', background: '#f3e7d6', fontSize: 22, fontWeight: 800, cursor: 'pointer' }}>−</button>
-          <span style={{ fontFamily: 'var(--font-warm)', fontSize: 22, fontWeight: 800, minWidth: 28, textAlign: 'center' }}>{progress.dailyGoal}</span>
-          <button onClick={() => dispatch({ type: 'setDailyGoal', n: progress.dailyGoal + 1 })} aria-label="목표 늘리기"
-            style={{ width: 38, height: 38, borderRadius: 999, border: 'none', background: 'var(--c-accent)', color: '#fff', fontSize: 22, fontWeight: 800, cursor: 'pointer' }}>+</button>
-        </div>
-      </div>
-
-      <div style={{ width: '100%', maxWidth: 380, background: 'var(--c-card)', borderRadius: 'var(--radius-lg)',
-        padding: 16, boxShadow: 'var(--shadow-card)', marginTop: 4 }}>
-        <div style={{ fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800, marginBottom: 8 }}>
-          배운 단어 ({stats.learnedWordTexts.length})
-        </div>
-        {stats.learnedWordTexts.length === 0 ? (
-          <div style={{ fontSize: 13, color: 'var(--c-ink-soft)' }}>아직 없어요. 놀이를 시작해 보세요!</div>
-        ) : (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
-            {stats.learnedWordTexts.map((t, i) => (
-              <span key={i} style={{ fontSize: 14, fontWeight: 800, color: 'var(--c-ink)', background: '#fbeef5',
-                padding: '4px 10px', borderRadius: 999 }}>{t}</span>
-            ))}
-          </div>
-        )}
+      <div style={{ display: 'flex', flexDirection: landscape ? 'row' : 'column', alignItems: 'flex-start',
+        justifyContent: 'center', gap: landscape ? 16 : 14, width: '100%', maxWidth: landscape ? 790 : 380 }}>
+        <div style={colStyle}>{statsBlock}{goalBlock}</div>
+        <div style={colStyle}>{graphBlock}{wordsBlock}</div>
       </div>
     </div>
   )

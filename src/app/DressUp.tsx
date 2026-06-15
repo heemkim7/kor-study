@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useProgress } from '../progress/useProgress'
 import { useNavigation } from './Navigation'
+import { useViewport } from './FitShell'
 import { useTts } from '../tts/useTts'
 import { PrincessFigure } from '../princess/PrincessFigure'
 import { Sparkles } from '../ui/Sparkles'
@@ -33,6 +34,7 @@ const noBtn: React.CSSProperties = {
 export function DressUp() {
   const { progress, dispatch } = useProgress()
   const { go } = useNavigation()
+  const { landscape } = useViewport()
   const { speak } = useTts()
   const [tab, setTab] = useState<ItemCategory>('dress')
   const [buyItem, setBuyItem] = useState<DressUpItem | null>(null)
@@ -139,6 +141,13 @@ export function DressUp() {
 
       <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 25, margin: '0' }}>공주 꾸미기 👗</h1>
 
+      {/* 가로면 [미리보기·뽑기·변신 | 탭·아이템] 2단, 세로면 위아래로 */}
+      <div style={{ display: 'flex', flexDirection: landscape ? 'row' : 'column', alignItems: landscape ? 'flex-start' : 'center',
+        justifyContent: 'center', gap: landscape ? 20 : 12, width: '100%', maxWidth: landscape ? 800 : 420 }}>
+      {/* 왼쪽: 미리보기 + 뽑기 + 무료 변신 */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
+        width: '100%', maxWidth: landscape ? 320 : 420 }}>
+
       {/* 공주 미리보기 */}
       <div style={{ background: 'var(--c-card)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-card)',
         padding: 10, display: 'flex', justifyContent: 'center', width: '100%', maxWidth: 300 }}>
@@ -169,6 +178,12 @@ export function DressUp() {
         </button>
       </div>
 
+      </div>{/* 왼쪽 끝 */}
+
+      {/* 오른쪽: 카테고리 탭 + 아이템 그리드 */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
+        width: '100%', maxWidth: landscape ? 460 : 420 }}>
+
       {/* 카테고리 탭 */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', maxWidth: 420 }}>
         {CATEGORY_ORDER.map((cat) => (
@@ -184,7 +199,7 @@ export function DressUp() {
       </div>
 
       {/* 아이템 그리드 */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, width: '100%', maxWidth: 420 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${landscape ? 4 : 3}, 1fr)`, gap: 10, width: '100%', maxWidth: landscape ? 460 : 420 }}>
         {items.map((item) => {
           const owned = progress.ownedItems.includes(item.id)
           const equipped = outfit[item.category] === item.id
@@ -212,6 +227,9 @@ export function DressUp() {
           )
         })}
       </div>
+
+      </div>{/* 오른쪽 끝 */}
+      </div>{/* 2단 래퍼 끝 */}
 
       {/* 구매 확인 팝업 */}
       {buyItem && (

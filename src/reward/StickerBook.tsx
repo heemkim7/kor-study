@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useNavigation } from '../app/Navigation'
 import { useProgress } from '../progress/useProgress'
+import { useViewport } from '../app/FitShell'
 import { useTts } from '../tts/useTts'
 import { STICKERS } from './stickers'
 import { playSticker } from '../audio/sound'
@@ -8,6 +9,7 @@ import { playSticker } from '../audio/sound'
 export function StickerBook() {
   const { go } = useNavigation()
   const { progress } = useProgress()
+  const { landscape } = useViewport()
   const { speak } = useTts()
   const collected = new Set(progress.collectedStickers)
 
@@ -32,8 +34,8 @@ export function StickerBook() {
         놀이를 끝낼 때마다 새 스티커를 모아요!
       </p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10,
-        width: '100%', maxWidth: 380, marginTop: 6 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${landscape ? 7 : 4}, 1fr)`, gap: 10,
+        width: '100%', maxWidth: landscape ? 760 : 380, marginTop: 6 }}>
         {STICKERS.map((s) => {
           const have = collected.has(s.id)
           return (

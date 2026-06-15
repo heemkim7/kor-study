@@ -1,5 +1,6 @@
 import { useNavigation } from '../app/Navigation'
 import { useProgress } from '../progress/useProgress'
+import { useViewport } from '../app/FitShell'
 import { useTts } from '../tts/useTts'
 import { WORDS } from '../content/words'
 import { WordImage } from '../ui/WordImage'
@@ -8,6 +9,7 @@ import { WordImage } from '../ui/WordImage'
 export function WordBook() {
   const { go } = useNavigation()
   const { progress } = useProgress()
+  const { landscape } = useViewport()
   const { speak } = useTts()
   const learned = new Set(progress.learnedWords)
 
@@ -24,7 +26,9 @@ export function WordBook() {
       </div>
       <p style={{ fontSize: 13, color: 'var(--c-ink-soft)', marginTop: -4 }}>놀이에서 배운 단어가 도감에 모여요!</p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 10, width: '100%', maxWidth: 380, marginTop: 4 }}>
+      {/* 단어가 많아(73개) 가로에선 열을 더 촘촘히 — 좌우를 채우고 세로 스크롤을 막음 */}
+      <div style={{ display: 'grid', gridTemplateColumns: landscape ? 'repeat(auto-fill, minmax(74px, 1fr))' : 'repeat(3, 1fr)',
+        gap: landscape ? 8 : 10, width: '100%', maxWidth: landscape ? 840 : 380, marginTop: 4 }}>
         {WORDS.map((w) => {
           const have = learned.has(w.id)
           return (
