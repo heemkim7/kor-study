@@ -110,7 +110,7 @@ export function SubjectScreen({ subject }: { subject: Subject }) {
       : <button key={lesson.id} onClick={() => speak('먼저 앞 단계를 끝내요')} style={baseStyle} aria-disabled="true">{inner}</button>
   }
 
-  const section = (title: string, desc: string, headColor: string, unitColor: string, body: React.ReactNode) => (
+  const section = (title: string, desc: string, headColor: string, body: React.ReactNode) => (
     <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%', maxWidth: 380, marginTop: 8 }}>
       <div style={{ fontFamily: 'var(--font-warm)', fontSize: 19, fontWeight: 800, color: headColor, textAlign: 'left', margin: '4px 4px 0' }}>{title}</div>
       <p style={{ fontSize: 12.5, color: 'var(--c-ink-soft)', textAlign: 'left', margin: '0 4px 2px' }}>{desc}</p>
@@ -137,14 +137,14 @@ export function SubjectScreen({ subject }: { subject: Subject }) {
       <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 28, marginTop: 4 }}>{title}</h1>
 
       {subject === 'hangul' && <>
-        {section('📖 글자 배우기', '자음·모음부터 차근차근 한글을 깨쳐요', '#7a4fc0', '#9b6bff',
+        {section('📖 글자 배우기', '자음·모음부터 차근차근 한글을 깨쳐요', '#7a4fc0',
           unitBlock(groupByUnit(buildLetterJourney(progress.completedLessons)), '#9b6bff', renderLetterNode))}
-        {section('🍓 단어 익히기', '그림과 함께 통글자 단어를 익혀요', 'var(--c-accent-strong)', 'var(--c-accent-strong)',
+        {section('🍓 단어 익히기', '그림과 함께 통글자 단어를 익혀요', 'var(--c-accent-strong)',
           unitBlock(groupByUnit(wordJourney), 'var(--c-accent-strong)', renderWordNode))}
       </>}
 
       {subject === 'number' &&
-        section('🔢 숫자 배우기', '수를 세고 많고 적음을 익혀요', '#2a9d6e', '#3ec46d',
+        section('🔢 숫자 배우기', '수를 세고 많고 적음을 익혀요', '#2a9d6e',
           unitBlock(groupByUnit(buildNumberJourney(progress.completedLessons)), '#3ec46d', renderNumberNode))}
     </div>
   )
