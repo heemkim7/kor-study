@@ -1,6 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { useNavigation, type Screen } from './Navigation'
 import { useProgress } from '../progress/useProgress'
+import { useViewport } from './FitShell'
 import { useTts } from '../tts/useTts'
 import { allLessons } from '../content/loader'
 import { buildJourney } from '../content/journey'
@@ -20,6 +21,7 @@ type Node = {
 export function SubjectScreen({ subject }: { subject: Subject }) {
   const { go } = useNavigation()
   const { progress } = useProgress()
+  const { landscape } = useViewport()
   const { speak } = useTts()
   const done = progress.completedLessons
 
@@ -35,7 +37,7 @@ export function SubjectScreen({ subject }: { subject: Subject }) {
     const doneCount = nodes.filter((n) => n.completed).length
     const cur = nodes.find((n) => n.current)
     return (
-      <div style={{ width: '100%', maxWidth: 380, marginTop: 14 }}>
+      <div key={label} style={{ flex: landscape ? '1 1 380px' : '0 0 auto', width: '100%', maxWidth: 410, marginTop: landscape ? 0 : 14 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', margin: '0 4px 8px' }}>
           <span style={{ fontFamily: 'var(--font-warm)', fontSize: 19, fontWeight: 800, color }}>{emoji} {label}</span>
           <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--c-ink-soft)' }}>{doneCount} / {total} 완료</span>
@@ -74,11 +76,41 @@ export function SubjectScreen({ subject }: { subject: Subject }) {
     )
   }
 
+  // 가로 화면에서 단일 트랙(숫자·영어) 옆을 채우는 장식 패널 — 좌우 여백 대신 보기 좋은 안내.
+  function heroPanel(big: string, letters: string, tip: string, color: string) {
+    return (
+      <div key="hero" style={{ flex: '1 1 320px', maxWidth: 380, alignSelf: 'stretch', display: 'flex',
+        flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, padding: 24,
+        borderRadius: 'var(--radius-lg)', background: 'var(--c-card)', boxShadow: 'var(--shadow-card)' }}>
+        <div style={{ fontSize: 72 }}>{big}</div>
+        <div style={{ fontFamily: 'var(--font-warm)', fontSize: 34, fontWeight: 800, letterSpacing: 6, color }}>{letters}</div>
+        <div style={{ fontSize: 15, color: 'var(--c-ink-soft)', fontWeight: 700 }}>{tip}</div>
+      </div>
+    )
+  }
+
   const title = subject === 'hangul' ? '📖 한글' : subject === 'number' ? '🔢 숫자' : '🔤 영어'
+
+  // 트랙 모음 — 과목별
+  const tracks: ReactNode[] = []
+  if (subject === 'hangul') {
+    tracks.push(track('📖', '글자 배우기', '#9b6bff', buildLetterJourney(done),
+      (id) => ({ name: 'letter', lessonId: id }), (n) => n.lesson.glyphs?.join(' · ') ?? ''))
+    tracks.push(track('🍓', '단어 익히기', 'var(--c-accent-strong)', buildJourney(allLessons(), done),
+      (id) => ({ name: 'adventure', lessonId: id }), (n) => `난이도 ${'★'.repeat(difficultyStars(n.lesson.level ?? 1))}`))
+  } else if (subject === 'number') {
+    tracks.push(track('🔢', '숫자 배우기', '#3ec46d', buildNumberJourney(done),
+      (id) => ({ name: 'number', lessonId: id }), () => '수를 세고 비교해요'))
+    if (landscape) tracks.push(heroPanel('🧮', '1 2 3', '하나 둘 셋, 같이 세어요', '#3ec46d'))
+  } else {
+    tracks.push(track('🔤', '알파벳', '#3aa0d0', buildAbcJourney(done),
+      (id) => ({ name: 'abc', lessonId: id }), () => '듣고·찾고·따라써요'))
+    if (landscape) tracks.push(heroPanel('🔤', 'A B C', '듣고 따라 읽어요', '#3aa0d0'))
+  }
 
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
-      gap: 4, padding: 'max(16px, env(safe-area-inset-top)) 16px 28px', position: 'relative' }}>
+      gap: 6, padding: 'max(16px, env(safe-area-inset-top)) 16px 28px', position: 'relative' }}>
       <button onClick={() => go({ name: 'home' })} aria-label="홈으로"
         style={{ position: 'absolute', top: 'max(10px, env(safe-area-inset-top))', left: 10, width: 44, height: 44,
           borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)', fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>🏠</button>
@@ -98,20 +130,12 @@ export function SubjectScreen({ subject }: { subject: Subject }) {
         </button>
       )}
 
-      {subject === 'hangul' && <>
-        {track('📖', '글자 배우기', '#9b6bff', buildLetterJourney(done),
-          (id) => ({ name: 'letter', lessonId: id }), (n) => n.lesson.glyphs?.join(' · ') ?? '')}
-        {track('🍓', '단어 익히기', 'var(--c-accent-strong)', buildJourney(allLessons(), done),
-          (id) => ({ name: 'adventure', lessonId: id }), (n) => `난이도 ${'★'.repeat(difficultyStars(n.lesson.level ?? 1))}`)}
-      </>}
-
-      {subject === 'number' &&
-        track('🔢', '숫자 배우기', '#3ec46d', buildNumberJourney(done),
-          (id) => ({ name: 'number', lessonId: id }), () => '수를 세고 비교해요')}
-
-      {subject === 'english' &&
-        track('🔤', '알파벳', '#3aa0d0', buildAbcJourney(done),
-          (id) => ({ name: 'abc', lessonId: id }), () => '듣고·찾고·따라써요')}
+      {/* 트랙 — 가로면 좌우로 펼침, 세로면 위아래로 */}
+      <div style={{ display: 'flex', flexDirection: landscape ? 'row' : 'column', flexWrap: 'wrap',
+        alignItems: landscape ? 'flex-start' : 'center', justifyContent: 'center',
+        gap: landscape ? 20 : 0, width: '100%', maxWidth: landscape ? 860 : 410, marginTop: 8 }}>
+        {tracks}
+      </div>
     </div>
   )
 }

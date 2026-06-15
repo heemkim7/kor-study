@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { getWord, getWordsByIds } from '../content/loader'
 import { useTts } from '../tts/useTts'
+import { useViewport } from '../app/FitShell'
 import { WordImage } from '../ui/WordImage'
 import { Sparkles } from '../ui/Sparkles'
 import { buildSmartChoices } from './choices'
@@ -11,6 +12,7 @@ export function PickWord({ targetWords, pool, onCorrect, onDone, onWrong, choice
   onWrong?: (id: string) => void; choiceCount?: number
 }) {
   const { speak } = useTts()
+  const { landscape } = useViewport()
   const [round, setRound] = useState(0)
   const [solved, setSolved] = useState(false)
   const [wrongId, setWrongId] = useState<string | null>(null)
@@ -67,12 +69,14 @@ export function PickWord({ targetWords, pool, onCorrect, onDone, onWrong, choice
         boxShadow: 'var(--shadow-card)' }}>
         <WordImage word={answer} size={150} />
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: 320 }}>
+      {/* 가로 화면에서는 보기를 한 줄로 펼쳐 좌우를 채움(세로 화면은 큰 버튼을 위아래로) */}
+      <div style={{ display: 'flex', flexDirection: landscape ? 'row' : 'column', flexWrap: 'wrap',
+        gap: 12, width: '100%', maxWidth: landscape ? 430 : 320, justifyContent: 'center' }}>
         {choices.map((w) => (
           <button key={w.id} onClick={() => pick(w.id)} className={wrongId === w.id ? 'kp-shake' : undefined}
             style={{ fontFamily: 'var(--font-warm)', fontSize: 26, fontWeight: 800, letterSpacing: 3,
               color: 'var(--c-ink)', background: 'var(--c-card)', border: 'none',
-              borderRadius: 'var(--radius-md)', padding: '16px', boxShadow: '0 5px 0 #f1ddc6' }}>
+              borderRadius: 'var(--radius-md)', padding: '16px 22px', boxShadow: '0 5px 0 #f1ddc6' }}>
             {w.text}
           </button>
         ))}
