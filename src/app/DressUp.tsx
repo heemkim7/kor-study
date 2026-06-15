@@ -231,12 +231,24 @@ export function DressUp() {
       </div>{/* 오른쪽 끝 */}
       </div>{/* 2단 래퍼 끝 */}
 
-      {/* 구매 확인 팝업 */}
+      {/* 구매 확인 팝업 — 바뀐 모습을 크게 보여줌(지금 vs 입었을 때) */}
       {buyItem && (
         <div style={overlayStyle} onClick={() => setBuyItem(null)}>
-          <div style={cardStyle} onClick={(e) => e.stopPropagation()}>
-            <div style={{ width: 120, height: 190, margin: '0 auto' }}>
-              <PrincessFigure outfit={{ ...outfit, [buyItem.category]: buyItem.id }} size={120} background />
+          <div style={{ ...cardStyle, maxWidth: 380 }} onClick={(e) => e.stopPropagation()}>
+            <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'center', gap: 8 }}>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ width: 110, height: 173, margin: '0 auto', opacity: 0.65 }}>
+                  <PrincessFigure outfit={outfit} size={110} background />
+                </div>
+                <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--c-ink-soft)', marginTop: 2 }}>지금</div>
+              </div>
+              <div style={{ fontSize: 30, paddingBottom: 60, color: 'var(--c-accent-strong)' }}>➜</div>
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ width: 180, height: 283, margin: '0 auto' }}>
+                  <PrincessFigure outfit={{ ...outfit, [buyItem.category]: buyItem.id }} size={180} background />
+                </div>
+                <div style={{ fontSize: 13, fontWeight: 800, color: 'var(--c-accent-strong)', marginTop: 2 }}>입으면!</div>
+              </div>
             </div>
             <div style={{ fontFamily: 'var(--font-warm)', fontSize: 22, fontWeight: 800, marginTop: 6 }}>{buyItem.name}</div>
             <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--c-accent-strong)', margin: '6px 0 2px' }}>
@@ -288,10 +300,10 @@ export function DressUp() {
       {/* 뽑기 결과 */}
       {reveal && (
         <div style={overlayStyle} onClick={() => setReveal(null)}>
-          <div style={cardStyle} onClick={(e) => e.stopPropagation()}>
+          <div style={{ ...cardStyle, maxWidth: 360 }} onClick={(e) => e.stopPropagation()}>
             <Sparkles />
-            <div style={{ width: 120, height: 190, margin: '0 auto' }}>
-              <PrincessFigure outfit={{ ...outfit, [reveal.category]: reveal.id }} size={120} background />
+            <div style={{ width: 200, height: 314, margin: '0 auto' }}>
+              <PrincessFigure outfit={{ ...outfit, [reveal.category]: reveal.id }} size={200} background />
             </div>
             <div style={{ fontFamily: 'var(--font-warm)', fontSize: 22, fontWeight: 800, marginTop: 8 }}>
               {reveal.name} 획득! 🎉
