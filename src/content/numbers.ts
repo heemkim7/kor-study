@@ -1,7 +1,7 @@
 // 수개념 트랙(새 과목) — 1~10 세기·수량 비교. 이모지로만 표현해 이미지 자산이 필요 없다(비용 0).
 // 4세에 맞춰 native 수사(하나·둘·셋…)로 읽어 준다.
 
-export type NumGame = 'num-intro' | 'count-tap' | 'compare'
+export type NumGame = 'num-intro' | 'count-tap' | 'num-trace' | 'compare'
 
 export interface NumLesson {
   id: string
@@ -21,14 +21,19 @@ export function numberName(n: number): string {
   return NUMBER_NAMES[n] ?? String(n)
 }
 
+/** 따라쓰기(Trace)용: 숫자 글리프 문자열을 한국어 수사로 읽기. */
+export function numberSay(glyph: string): { text: string; lang: string } {
+  return { text: numberName(Number(glyph)), lang: 'ko-KR' }
+}
+
 // 세기용 이모지(귀여운 사물). 라운드마다 하나를 골라 n개 보여준다.
 export const COUNT_EMOJI = ['🍎', '🐶', '⭐', '🍓', '🐱', '🎈', '🌸', '🐠', '🚗', '🦋']
 
 export const NUMBER_LESSONS: NumLesson[] = [
-  { id: 'n-123', title: '1 2 3', unit: '숫자나라 1', numbers: [1, 2, 3], games: ['num-intro', 'count-tap'] },
-  { id: 'n-45', title: '4 5', unit: '숫자나라 1', numbers: [4, 5], games: ['num-intro', 'count-tap', 'compare'] },
-  { id: 'n-678', title: '6 7 8', unit: '숫자나라 2', numbers: [6, 7, 8], games: ['num-intro', 'count-tap'] },
-  { id: 'n-910', title: '9 10', unit: '숫자나라 2', numbers: [9, 10], games: ['num-intro', 'count-tap', 'compare'] },
+  { id: 'n-123', title: '1 2 3', unit: '숫자나라 1', numbers: [1, 2, 3], games: ['num-intro', 'count-tap', 'num-trace'] },
+  { id: 'n-45', title: '4 5', unit: '숫자나라 1', numbers: [4, 5], games: ['num-intro', 'count-tap', 'num-trace', 'compare'] },
+  { id: 'n-678', title: '6 7 8', unit: '숫자나라 2', numbers: [6, 7, 8], games: ['num-intro', 'count-tap', 'num-trace'] },
+  { id: 'n-910', title: '9 10', unit: '숫자나라 2', numbers: [9, 10], games: ['num-intro', 'count-tap', 'num-trace', 'compare'] },
 ]
 
 export function getNumberLesson(id: string): NumLesson | undefined {

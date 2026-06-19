@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { getNumberLesson } from '../content/numbers'
+import { getNumberLesson, numberSay } from '../content/numbers'
 import { useProgress } from '../progress/useProgress'
 import { useNavigation } from './Navigation'
 import { NumberIntro } from '../games/NumberIntro'
 import { CountTap } from '../games/CountTap'
+import { Trace } from '../games/Trace'
 import { Compare } from '../games/Compare'
 import { RewardScreen } from '../reward/RewardScreen'
 import { todayStr } from '../progress/progress'
@@ -36,6 +37,7 @@ export function NumberAdventure({ lessonId }: { lessonId: string }) {
     const done = () => nextAfterGame(index)
     if (g === 'num-intro') return <NumberIntro numbers={lesson.numbers} onDone={done} />
     if (g === 'count-tap') return <CountTap numbers={lesson.numbers} onCorrect={onCorrect} onDone={done} />
+    if (g === 'num-trace') return <Trace glyphs={lesson.numbers.map(String)} say={numberSay} onCorrect={onCorrect} onDone={done} />
     return <Compare numbers={lesson.numbers} onCorrect={onCorrect} onDone={done} />
   }
 
