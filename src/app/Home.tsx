@@ -155,8 +155,10 @@ export function Home() {
         </div>
       </div>
 
-      <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 30, marginTop: -2 }}>우리 딸 배움터</h1>
-      <p style={{ color: 'var(--c-ink-soft)', marginTop: -8 }}>무엇을 배워 볼까요?</p>
+      <img src="/img/mascot.webp" alt="" aria-hidden
+        style={{ width: 88, height: 88, borderRadius: '50%', objectFit: 'cover', boxShadow: 'var(--shadow-card)', marginTop: 2 }} />
+      <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 30, marginTop: 2 }}>우리 딸 배움터</h1>
+      <p style={{ color: 'var(--c-ink-soft)', marginTop: -8 }}>콩콩이와 함께 배워요!</p>
 
       {/* 오늘의 목표 */}
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderRadius: 999,
