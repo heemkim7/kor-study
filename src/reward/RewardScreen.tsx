@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useTts } from '../tts/useTts'
 import { useProgress } from '../progress/useProgress'
 import { getSticker } from './stickers'
+import { Sparkles } from '../ui/Sparkles'
 import { playReward, playSticker } from '../audio/sound'
 
 export function RewardScreen({ onHome, awarded = true }: { onHome: () => void; awarded?: boolean }) {
@@ -20,8 +21,10 @@ export function RewardScreen({ onHome, awarded = true }: { onHome: () => void; a
 
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'center', gap: 18, padding: 24, textAlign: 'center' }}>
-      <div style={{ fontSize: 96 }}>🎉</div>
+      justifyContent: 'center', gap: 18, padding: 24, textAlign: 'center', position: 'relative' }}>
+      <Sparkles />
+      <img src="/img/mascot.webp" alt="" aria-hidden className="kp-pop"
+        style={{ width: 124, height: 124, borderRadius: '50%', objectFit: 'cover', boxShadow: 'var(--shadow-card)' }} />
       <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 30 }}>참 잘했어요!</h1>
       {awarded && latest && (
         <div className="kp-pop" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
