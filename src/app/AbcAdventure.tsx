@@ -4,6 +4,7 @@ import { useProgress } from '../progress/useProgress'
 import { useNavigation } from './Navigation'
 import { AbcIntro } from '../games/AbcIntro'
 import { AbcFind } from '../games/AbcFind'
+import { AbcPhonics } from '../games/AbcPhonics'
 import { Trace } from '../games/Trace'
 import { RewardScreen } from '../reward/RewardScreen'
 import { todayStr } from '../progress/progress'
@@ -36,6 +37,7 @@ export function AbcAdventure({ lessonId }: { lessonId: string }) {
     const done = () => nextAfterGame(index)
     if (g === 'abc-intro') return <AbcIntro letters={lesson.letters} onDone={done} />
     if (g === 'abc-find') return <AbcFind letters={lesson.letters} onCorrect={onCorrect} onDone={done} />
+    if (g === 'abc-phonics') return <AbcPhonics letters={lesson.letters} onCorrect={onCorrect} onDone={done} />
     return <Trace glyphs={lesson.letters} say={abcSay} onCorrect={onCorrect} onDone={done} />
   }
 

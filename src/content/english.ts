@@ -1,7 +1,7 @@
 // 영어(ABC) 트랙 — 알파벳 + 예시 단어(이모지). 발음은 브라우저 영어(en-US) 음성.
 // 이미지 자산 0(이모지). 한글 부모 목소리 녹음과 분리됨.
 
-export type AbcGame = 'abc-intro' | 'abc-find' | 'abc-trace'
+export type AbcGame = 'abc-intro' | 'abc-find' | 'abc-phonics' | 'abc-trace'
 
 export interface AbcLesson {
   id: string
@@ -29,11 +29,11 @@ export function abcSay(letter: string): { text: string; lang: string } {
 }
 
 export const ABC_LESSONS: AbcLesson[] = [
-  { id: 'abc-1', title: 'A B C D E', unit: '알파벳 1', letters: ['A', 'B', 'C', 'D', 'E'], games: ['abc-intro', 'abc-find', 'abc-trace'] },
-  { id: 'abc-2', title: 'F G H I J', unit: '알파벳 1', letters: ['F', 'G', 'H', 'I', 'J'], games: ['abc-intro', 'abc-find', 'abc-trace'] },
-  { id: 'abc-3', title: 'K L M N O', unit: '알파벳 2', letters: ['K', 'L', 'M', 'N', 'O'], games: ['abc-intro', 'abc-find', 'abc-trace'] },
-  { id: 'abc-4', title: 'P Q R S T', unit: '알파벳 2', letters: ['P', 'Q', 'R', 'S', 'T'], games: ['abc-intro', 'abc-find', 'abc-trace'] },
-  { id: 'abc-5', title: 'U V W X Y Z', unit: '알파벳 3', letters: ['U', 'V', 'W', 'X', 'Y', 'Z'], games: ['abc-intro', 'abc-find', 'abc-trace'] },
+  { id: 'abc-1', title: 'A B C D E', unit: '알파벳 1', letters: ['A', 'B', 'C', 'D', 'E'], games: ['abc-intro', 'abc-find', 'abc-phonics', 'abc-trace'] },
+  { id: 'abc-2', title: 'F G H I J', unit: '알파벳 1', letters: ['F', 'G', 'H', 'I', 'J'], games: ['abc-intro', 'abc-find', 'abc-phonics', 'abc-trace'] },
+  { id: 'abc-3', title: 'K L M N O', unit: '알파벳 2', letters: ['K', 'L', 'M', 'N', 'O'], games: ['abc-intro', 'abc-find', 'abc-phonics', 'abc-trace'] },
+  { id: 'abc-4', title: 'P Q R S T', unit: '알파벳 2', letters: ['P', 'Q', 'R', 'S', 'T'], games: ['abc-intro', 'abc-find', 'abc-phonics', 'abc-trace'] },
+  { id: 'abc-5', title: 'U V W X Y Z', unit: '알파벳 3', letters: ['U', 'V', 'W', 'X', 'Y', 'Z'], games: ['abc-intro', 'abc-find', 'abc-phonics', 'abc-trace'] },
 ]
 
 export function getAbcLesson(id: string): AbcLesson | undefined {

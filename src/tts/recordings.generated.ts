@@ -324,6 +324,7 @@ export const GENERATED_RECORDINGS: Record<string, string> = {
   "책": "/audio/tts/4xd6.mp3",
   "책 글자를 찾아요": "/audio/tts/1hraamk.mp3",
   "천사 고리": "/audio/tts/1sgbmhl.mp3",
+  "첫소리 그림을 찾아요": "/audio/tts/1lia1g6.mp3",
   "청록 머리": "/audio/tts/1rivtlf.mp3",
   "초": "/audio/tts/4xil.mp3",
   "초 글자를 찾아요": "/audio/tts/yjykgf.mp3",
