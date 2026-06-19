@@ -2,18 +2,36 @@ import { useState } from 'react'
 import { useNavigation } from './Navigation'
 import { useProgress } from '../progress/useProgress'
 import { useViewport } from './FitShell'
+import { useTts } from '../tts/useTts'
 import { PrincessFigure } from '../princess/PrincessFigure'
 import { STICKERS } from '../reward/stickers'
-import { todayStr } from '../progress/progress'
-import { isBgmEnabled, toggleBgm, resumeAudio } from '../audio/sound'
+import { PETS } from '../reward/pets'
+import { todayStr, canOpenChest, CHEST_STARS, CHEST_MILESTONE_STARS } from '../progress/progress'
+import { isBgmEnabled, toggleBgm, resumeAudio, playReward } from '../audio/sound'
 
 export function Home() {
   const { go } = useNavigation()
-  const { progress } = useProgress()
+  const { progress, dispatch } = useProgress()
   const { landscape } = useViewport()
+  const { speak } = useTts()
   const [bgmOn, setBgmOn] = useState(isBgmEnabled())
+  const [chestOpen, setChestOpen] = useState(false)
+  const [chestReward, setChestReward] = useState<number | null>(null)
   const todayCount = progress.playLog[todayStr()] ?? 0
   const goalMet = todayCount >= progress.dailyGoal
+  const canOpen = canOpenChest(progress, todayStr())
+
+  // 매일 선물상자 — 하루 1회 별 보너스(스트릭 마일스톤이면 더)
+  function openTheChest() {
+    if (!canOpen) { setChestReward(null); setChestOpen(true); return } // 이미 받은 날
+    const milestone = progress.streak > 0 && progress.streak % 7 === 0
+    const gain = milestone ? CHEST_MILESTONE_STARS : CHEST_STARS
+    dispatch({ type: 'openChest', today: todayStr() })
+    setChestReward(gain)
+    setChestOpen(true)
+    resumeAudio(); playReward()
+    speak('오늘의 선물이에요!')
+  }
 
   const subjectCard = (emoji: string, title: string, desc: string, bg: string, onClick: () => void, badge?: string) => (
     <button onClick={onClick}
@@ -94,6 +112,24 @@ export function Home() {
           <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>업적을 모아요</div>
         </button>
       </div>
+      <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+        <button onClick={() => go({ name: 'egg' })}
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '12px 8px',
+            borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer',
+            background: 'linear-gradient(135deg,#ffe1ec,#fff2f7)', boxShadow: 'var(--shadow-card)' }}>
+          <div style={{ fontSize: 30 }}>🥚</div>
+          <div style={{ fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800, color: 'var(--c-pink)' }}>알 키우기</div>
+          <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>{progress.hatchedPets.length} / {PETS.length}마리</div>
+        </button>
+        <button onClick={() => go({ name: 'garden' })}
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '12px 8px',
+            borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer',
+            background: 'linear-gradient(135deg,#e3f7e8,#f3fff7)', boxShadow: 'var(--shadow-card)' }}>
+          <div style={{ fontSize: 30 }}>🪴</div>
+          <div style={{ fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800, color: '#3ec46d' }}>마법 정원</div>
+          <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>꽃을 키워요</div>
+        </button>
+      </div>
     </div>
   )
 
@@ -108,8 +144,14 @@ export function Home() {
         <button onClick={() => { resumeAudio(); setBgmOn(toggleBgm()) }} aria-label={bgmOn ? '배경음악 끄기' : '배경음악 켜기'}
           style={{ width: 40, height: 40, borderRadius: 999, border: 'none', background: 'var(--c-card)',
             fontSize: 18, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>{bgmOn ? '🔊' : '🔇'}</button>
-        <div style={{ fontWeight: 800, color: 'var(--c-accent-strong)' }}>
-          {progress.streak > 0 && <>🔥 {progress.streak} · </>}⭐ {progress.stars} · 🏅 {progress.stickers}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ fontWeight: 800, color: 'var(--c-accent-strong)' }}>
+            {progress.streak > 0 && <>🔥 {progress.streak} · </>}⭐ {progress.stars} · 🏅 {progress.stickers}
+          </div>
+          <button onClick={openTheChest} aria-label="오늘의 선물상자" className={canOpen ? 'kp-wiggle' : undefined}
+            style={{ width: 40, height: 40, borderRadius: 999, border: 'none',
+              background: canOpen ? 'linear-gradient(135deg,#ffd24d,#ff9ec7)' : 'var(--c-card)',
+              fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>🎁</button>
         </div>
       </div>
 
@@ -139,6 +181,34 @@ export function Home() {
           fontSize: 13, fontWeight: 800, textDecoration: 'underline', cursor: 'pointer' }}>
         📊 보호자 · 학습 리포트
       </button>
+
+      {/* 매일 선물상자 팝업 */}
+      {chestOpen && (
+        <div onClick={() => setChestOpen(false)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(70,40,60,0.5)', zIndex: 30,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 22 }}>
+          <div onClick={(e) => e.stopPropagation()}
+            style={{ background: 'var(--c-card)', borderRadius: 'var(--radius-lg)', padding: '28px 28px 22px',
+              textAlign: 'center', maxWidth: 320, width: '100%', boxShadow: 'var(--shadow-card)' }}>
+            <div style={{ fontSize: 84, lineHeight: 1 }}>🎁</div>
+            {chestReward != null ? (
+              <>
+                <div style={{ fontFamily: 'var(--font-warm)', fontSize: 22, fontWeight: 800, marginTop: 6 }}>오늘의 선물!</div>
+                <div style={{ fontSize: 26, fontWeight: 800, color: 'var(--c-accent-strong)', marginTop: 6 }}>⭐ +{chestReward}</div>
+              </>
+            ) : (
+              <div style={{ fontFamily: 'var(--font-warm)', fontSize: 18, fontWeight: 800, marginTop: 8, lineHeight: 1.4 }}>
+                오늘 선물은 받았어요.<br />내일 또 만나요! 👋
+              </div>
+            )}
+            <button onClick={() => setChestOpen(false)}
+              style={{ marginTop: 16, border: 'none', borderRadius: 'var(--radius-md)', padding: '12px 30px', minHeight: 50,
+                fontFamily: 'var(--font-warm)', fontSize: 18, fontWeight: 800, color: '#fff', background: 'var(--c-accent)', boxShadow: '0 4px 0 #d98a3a' }}>
+              좋아요!
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

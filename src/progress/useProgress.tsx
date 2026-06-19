@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react'
-import { addStars, completeLesson, learnWords, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, type Progress } from './progress'
+import { addStars, completeLesson, learnWords, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, type Progress } from './progress'
 import { loadProgress, saveProgress } from './storage'
 
 type Action =
@@ -14,12 +14,17 @@ type Action =
   | { type: 'reviewMastered'; id: string }
   | { type: 'logPlay'; today: string }
   | { type: 'setDailyGoal'; n: number }
+  | { type: 'crackEgg' }
+  | { type: 'plantSeed'; plantId: string }
+  | { type: 'waterPlant'; index: number }
+  | { type: 'openChest'; today: string }
 
 function reducer(state: Progress, action: Action): Progress {
   switch (action.type) {
     case 'addStars': return addStars(state, action.n)
     case 'learnWords': return learnWords(state, action.ids)
-    case 'completeLesson': return completeLesson(state, action.lessonId)
+    // 레슨을 완료하면 스티커 지급(completeLesson) + 마법 정원도 한 단계 성장(growGarden)
+    case 'completeLesson': return growGarden(completeLesson(state, action.lessonId))
     case 'setPrincessName': return setPrincessName(state, action.name)
     case 'unlockItem': return unlockItem(state, action.itemId, action.costOverride)
     case 'equipItem': return equipItem(state, action.itemId)
@@ -28,6 +33,10 @@ function reducer(state: Progress, action: Action): Progress {
     case 'reviewMastered': return removeReviewWord(state, action.id)
     case 'logPlay': return logPlay(state, action.today)
     case 'setDailyGoal': return setDailyGoal(state, action.n)
+    case 'crackEgg': return crackEgg(state)
+    case 'plantSeed': return plantSeed(state, action.plantId)
+    case 'waterPlant': return waterPlant(state, action.index)
+    case 'openChest': return openChest(state, action.today)
   }
 }
 

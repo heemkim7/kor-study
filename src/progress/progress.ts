@@ -1,5 +1,16 @@
 import { DEFAULT_OUTFIT, DEFAULT_OWNED_IDS, getItem, type Outfit } from '../princess/catalog'
 import { STICKERS } from '../reward/stickers'
+import { nextUnhatchedPet } from '../reward/pets'
+import { getPlant, MAX_PLANT_STAGE } from '../reward/plants'
+
+// 보상 경제 상수
+export const EGG_CRACK_TARGET = 5   // 알을 이만큼 두드리면 부화
+export const PLANT_COST = 4         // 정원에 꽃 한 그루 심는 별 값
+export const MAX_GARDEN = 12        // 정원 슬롯 수
+export const CHEST_STARS = 3        // 매일 선물상자 기본 별
+export const CHEST_MILESTONE_STARS = 5 // 스트릭 마일스톤(7일 단위) 선물 별
+
+export interface GardenPlant { plantId: string; stage: number }
 
 export interface Progress {
   stars: number
@@ -15,6 +26,10 @@ export interface Progress {
   reviewWords: string[]     // 틀려서 다시 볼 단어(복습 큐)
   playLog: Record<string, number> // 날짜(YYYY-MM-DD) → 그날 완료한 놀이 수(부모 리포트)
   dailyGoal: number         // 하루 목표 놀이 수(부모 설정, 기본 1)
+  hatchedPets: string[]     // 알에서 부화시킨 펫 id(수집)
+  eggCrackStep: number      // 현재 알을 두드린 횟수(0~EGG_CRACK_TARGET)
+  garden: GardenPlant[]     // 마법 정원에 심은 식물과 성장 단계
+  lastChestDate: string | null // 마지막으로 선물상자 연 날(YYYY-MM-DD)
 }
 
 export const initialProgress: Progress = {
@@ -31,6 +46,10 @@ export const initialProgress: Progress = {
   reviewWords: [],
   playLog: {},
   dailyGoal: 1,
+  hatchedPets: [],
+  eggCrackStep: 0,
+  garden: [],
+  lastChestDate: null,
 }
 
 /** 오늘 완료한 놀이 수 +1 기록(부모 리포트용). 최근 60일만 보관. */
@@ -139,4 +158,58 @@ export function unlockItem(p: Progress, itemId: string, costOverride?: number): 
     ownedItems: [...p.ownedItems, itemId],
     outfit: { ...p.outfit, [item.category]: itemId } as Outfit,
   }
+}
+
+// ---- 보상: 알 부화 ----
+/** 별 1개로 알을 한 번 두드림. 임계 도달 시 다음 미보유 펫을 '순서대로 확정' 부화(꽝 없음). 별 부족·전부 수집 시 변화 없음. */
+export function crackEgg(p: Progress): Progress {
+  if (p.stars < 1) return p
+  const next = nextUnhatchedPet(p.hatchedPets)
+  if (!next) return p // 다 모았음
+  const step = p.eggCrackStep + 1
+  if (step >= EGG_CRACK_TARGET) {
+    return { ...p, stars: p.stars - 1, eggCrackStep: 0, hatchedPets: [...p.hatchedPets, next] }
+  }
+  return { ...p, stars: p.stars - 1, eggCrackStep: step }
+}
+
+// ---- 보상: 마법 정원 ----
+/** 별 PLANT_COST개로 빈 슬롯에 식물 심기(별 부족·슬롯 가득·알 수 없는 식물이면 변화 없음). */
+export function plantSeed(p: Progress, plantId: string): Progress {
+  if (!getPlant(plantId)) return p
+  if (p.garden.length >= MAX_GARDEN) return p
+  if (p.stars < PLANT_COST) return p
+  return { ...p, stars: p.stars - PLANT_COST, garden: [...p.garden, { plantId, stage: 0 }] }
+}
+
+/** 식물에 물주기(무료) — 한 단계 성장(상한 MAX_PLANT_STAGE). */
+export function waterPlant(p: Progress, index: number): Progress {
+  if (index < 0 || index >= p.garden.length) return p
+  if (p.garden[index].stage >= MAX_PLANT_STAGE) return p
+  return { ...p, garden: p.garden.map((g, i) => (i === index ? { ...g, stage: g.stage + 1 } : g)) }
+}
+
+/** 정원 전체 한 단계 성장(레슨 완료 시 호출). 빈 정원·이미 만개면 변화 없음. */
+export function growGarden(p: Progress): Progress {
+  if (p.garden.length === 0) return p
+  let changed = false
+  const garden = p.garden.map((g) => {
+    if (g.stage < MAX_PLANT_STAGE) { changed = true; return { ...g, stage: g.stage + 1 } }
+    return g
+  })
+  return changed ? { ...p, garden } : p
+}
+
+// ---- 보상: 매일 선물상자 ----
+/** 오늘 선물상자를 열 수 있는지(하루 1회). */
+export function canOpenChest(p: Progress, today: string): boolean {
+  return p.lastChestDate !== today
+}
+
+/** 하루 1회 선물상자 열기 — 별 보너스(스트릭 7일 단위 마일스톤이면 더). 같은 날 재호출은 멱등. */
+export function openChest(p: Progress, today: string): Progress {
+  if (p.lastChestDate === today) return p
+  const milestone = p.streak > 0 && p.streak % 7 === 0
+  const gain = milestone ? CHEST_MILESTONE_STARS : CHEST_STARS
+  return { ...p, stars: p.stars + gain, lastChestDate: today }
 }

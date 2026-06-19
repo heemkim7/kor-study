@@ -1,6 +1,8 @@
-import { initialProgress, type Progress } from './progress'
+import { initialProgress, EGG_CRACK_TARGET, MAX_GARDEN, type Progress, type GardenPlant } from './progress'
 import { isKnownItem, getItem, DEFAULT_OWNED_IDS, type ItemCategory, type Outfit } from '../princess/catalog'
 import { getSticker } from '../reward/stickers'
+import { getPet } from '../reward/pets'
+import { getPlant, MAX_PLANT_STAGE } from '../reward/plants'
 import { getWord } from '../content/loader'
 
 const KEY = 'hangeul-play:progress:v1'
@@ -47,7 +49,17 @@ export function loadProgress(): Progress {
         .filter(([k, v]) => /^\d{4}-\d{2}-\d{2}$/.test(k) && typeof v === 'number' && Number.isFinite(v) && v >= 0)) as Record<string, number>
       : {}
     const dailyGoal = typeof parsed.dailyGoal === 'number' && parsed.dailyGoal >= 1 && parsed.dailyGoal <= 5 ? parsed.dailyGoal : 1
-    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers, lastPlayedDate, streak, learnedWords, reviewWords, playLog, dailyGoal }
+    // 보상(알·정원·선물상자) 필드 검증 — 손상/구버전 방어
+    const hatchedPets = (parsed.hatchedPets ?? []).filter((id) => getPet(id) !== undefined)
+    const eggCrackStep = typeof parsed.eggCrackStep === 'number' && Number.isInteger(parsed.eggCrackStep)
+      && parsed.eggCrackStep >= 0 && parsed.eggCrackStep < EGG_CRACK_TARGET ? parsed.eggCrackStep : 0
+    const garden: GardenPlant[] = (Array.isArray(parsed.garden) ? parsed.garden : [])
+      .filter((g): g is GardenPlant => !!g && typeof g === 'object'
+        && getPlant((g as GardenPlant).plantId) !== undefined
+        && Number.isInteger((g as GardenPlant).stage) && (g as GardenPlant).stage >= 0 && (g as GardenPlant).stage <= MAX_PLANT_STAGE)
+      .slice(0, MAX_GARDEN)
+    const lastChestDate = isValidDateStr(parsed.lastChestDate) ? parsed.lastChestDate : null
+    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers, lastPlayedDate, streak, learnedWords, reviewWords, playLog, dailyGoal, hatchedPets, eggCrackStep, garden, lastChestDate }
   } catch {
     return initialProgress
   }

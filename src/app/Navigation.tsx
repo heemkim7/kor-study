@@ -10,6 +10,8 @@ export type Screen =
   | { name: 'dressup' }
   | { name: 'stickers' }
   | { name: 'draw' }
+  | { name: 'egg' }
+  | { name: 'garden' }
   | { name: 'wordbook' }
   | { name: 'badges' }
   | { name: 'review' }

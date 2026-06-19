@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { initialProgress, addStars, learnWords, completeLesson, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal } from './progress'
+import { initialProgress, addStars, learnWords, completeLesson, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, EGG_CRACK_TARGET, PLANT_COST, CHEST_STARS, CHEST_MILESTONE_STARS } from './progress'
 import { GACHA_COST } from '../princess/economy'
 
 describe('addStars', () => {
@@ -147,5 +147,60 @@ describe('equipItem', () => {
   it('보유하지 않은 아이템은 장착 안 됨', () => {
     const p = equipItem(initialProgress, 'crown-star')
     expect(p).toBe(initialProgress)
+  })
+})
+
+describe('알 부화(crackEgg)', () => {
+  it('별 1개씩 두드려 임계에서 펫 1마리 부화(별 차감)', () => {
+    let p = addStars(initialProgress, EGG_CRACK_TARGET)
+    for (let i = 0; i < EGG_CRACK_TARGET - 1; i++) p = crackEgg(p)
+    expect(p.hatchedPets).toHaveLength(0)
+    expect(p.eggCrackStep).toBe(EGG_CRACK_TARGET - 1)
+    p = crackEgg(p) // 임계 도달 → 부화
+    expect(p.hatchedPets).toHaveLength(1)
+    expect(p.eggCrackStep).toBe(0)
+    expect(p.stars).toBe(0)
+  })
+  it('별 없으면 변화 없음', () => {
+    expect(crackEgg(initialProgress)).toBe(initialProgress)
+  })
+})
+
+describe('마법 정원(plantSeed/waterPlant/growGarden)', () => {
+  it('별로 식물 심기(별 차감)', () => {
+    const p = plantSeed(addStars(initialProgress, PLANT_COST), 'pl-rose')
+    expect(p.garden).toEqual([{ plantId: 'pl-rose', stage: 0 }])
+    expect(p.stars).toBe(0)
+  })
+  it('별 부족·알 수 없는 식물이면 변화 없음', () => {
+    expect(plantSeed(initialProgress, 'pl-rose')).toBe(initialProgress)
+    const rich = addStars(initialProgress, PLANT_COST)
+    expect(plantSeed(rich, 'no-such')).toBe(rich)
+  })
+  it('레슨 완료로 정원이 한 단계씩 자람(상한 2)', () => {
+    let p = plantSeed(addStars(initialProgress, PLANT_COST), 'pl-rose')
+    p = growGarden(p); expect(p.garden[0].stage).toBe(1)
+    p = growGarden(p); expect(p.garden[0].stage).toBe(2)
+    expect(growGarden(p)).toBe(p) // 만개면 변화 없음
+  })
+  it('물주기는 무료로 한 단계 성장', () => {
+    const p = waterPlant(plantSeed(addStars(initialProgress, PLANT_COST), 'pl-rose'), 0)
+    expect(p.garden[0].stage).toBe(1)
+  })
+  it('빈 정원은 growGarden 변화 없음', () => {
+    expect(growGarden(initialProgress)).toBe(initialProgress)
+  })
+})
+
+describe('매일 선물상자(openChest)', () => {
+  it('하루 1회 별 지급, 같은 날 재호출은 멱등', () => {
+    const a = openChest(initialProgress, '2026-06-19')
+    expect(a.stars).toBe(CHEST_STARS)
+    expect(a.lastChestDate).toBe('2026-06-19')
+    expect(openChest(a, '2026-06-19')).toBe(a)
+  })
+  it('스트릭 7일 마일스톤이면 더 큰 선물', () => {
+    const seven = { ...initialProgress, streak: 7 }
+    expect(openChest(seven, '2026-06-19').stars).toBe(CHEST_MILESTONE_STARS)
   })
 })
