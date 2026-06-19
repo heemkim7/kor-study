@@ -1,5 +1,5 @@
 import { createContext, useContext, useLayoutEffect, useRef, useState, type ReactNode } from 'react'
-import { useNavigation } from './Navigation'
+import { useNavigation, type Screen } from './Navigation'
 
 // 디자인 기준 폭. 세로 화면(폰)은 좁은 컬럼. 가로 화면(태블릿·PC)에서는
 // '허브형' 화면(홈·과목 선택)만 넓은 캔버스로 그려 콘텐츠를 좌우로 펼친다(좌우 여백 최소화).
@@ -14,6 +14,12 @@ const LANDSCAPE_RATIO = 1.2
 const WIDE_SCREENS = new Set(['home', 'subject', 'dressup', 'stickers', 'wordbook', 'badges', 'parent'])
 
 const computeLandscape = () => window.innerWidth / window.innerHeight >= LANDSCAPE_RATIO
+
+// 화면별 동화풍 배경(제작 단계 AI 생성·번들). 없는 화면은 기본 배경으로 폴백.
+function bgFor(screen: Screen): string {
+  if (screen.name === 'subject' && screen.subject === 'hangul') return '/img/bg/hangul.webp'
+  return '/img/bg/home.webp'
+}
 
 type VP = { landscape: boolean }
 const ViewportCtx = createContext<VP>({ landscape: false })
@@ -67,8 +73,8 @@ export function FitShell({ children }: { children: ReactNode }) {
     <ViewportCtx.Provider value={{ landscape }}>
       <div style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center',
         justifyContent: 'center', overflow: 'hidden',
-        // 동화풍 배경 일러스트(제작 단계 생성·번들) + 옅은 화이트 스크림으로 가독성 확보
-        background: "linear-gradient(rgba(255,255,255,0.30), rgba(255,255,255,0.38)), url('/img/bg/home.webp') center/cover no-repeat" }}>
+        // 화면별 동화풍 배경 일러스트(제작 단계 생성·번들) + 옅은 화이트 스크림으로 가독성 확보
+        background: `linear-gradient(rgba(255,255,255,0.30), rgba(255,255,255,0.38)), url('${bgFor(screen)}') center/cover no-repeat` }}>
         <div ref={innerRef} style={{ width: designW, flex: '0 0 auto',
           transform: `scale(${scale})`, transformOrigin: 'center center' }}>
           {children}
