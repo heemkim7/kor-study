@@ -17,7 +17,11 @@ const computeLandscape = () => window.innerWidth / window.innerHeight >= LANDSCA
 
 // 화면별 동화풍 배경(제작 단계 AI 생성·번들). 없는 화면은 기본 배경으로 폴백.
 function bgFor(screen: Screen): string {
-  if (screen.name === 'subject' && screen.subject === 'hangul') return '/img/bg/hangul.webp'
+  if (screen.name === 'subject') {
+    if (screen.subject === 'hangul') return '/img/bg/hangul.webp'
+    if (screen.subject === 'number') return '/img/bg/number.webp'
+    if (screen.subject === 'english') return '/img/bg/english.webp'
+  }
   return '/img/bg/home.webp'
 }
 
