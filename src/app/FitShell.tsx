@@ -66,7 +66,9 @@ export function FitShell({ children }: { children: ReactNode }) {
   return (
     <ViewportCtx.Provider value={{ landscape }}>
       <div style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center',
-        justifyContent: 'center', overflow: 'hidden' }}>
+        justifyContent: 'center', overflow: 'hidden',
+        // 동화풍 배경 일러스트(제작 단계 생성·번들) + 옅은 화이트 스크림으로 가독성 확보
+        background: "linear-gradient(rgba(255,255,255,0.30), rgba(255,255,255,0.38)), url('/img/bg/home.webp') center/cover no-repeat" }}>
         <div ref={innerRef} style={{ width: designW, flex: '0 0 auto',
           transform: `scale(${scale})`, transformOrigin: 'center center' }}>
           {children}
