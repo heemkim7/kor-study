@@ -2,6 +2,7 @@ import { DEFAULT_OUTFIT, DEFAULT_OWNED_IDS, getItem, type Outfit } from '../prin
 import { STICKERS } from '../reward/stickers'
 import { nextUnhatchedPet } from '../reward/pets'
 import { getPlant, MAX_PLANT_STAGE } from '../reward/plants'
+import { getRoyalLook, DEFAULT_ROYAL } from '../reward/royal'
 
 // 보상 경제 상수
 export const EGG_CRACK_TARGET = 5   // 알을 이만큼 두드리면 부화
@@ -30,6 +31,7 @@ export interface Progress {
   eggCrackStep: number      // 현재 알을 두드린 횟수(0~EGG_CRACK_TARGET)
   garden: GardenPlant[]     // 마법 정원에 심은 식물과 성장 단계
   lastChestDate: string | null // 마지막으로 선물상자 연 날(YYYY-MM-DD)
+  royalUnlocked: string[]   // 실사 공주 룩 잠금 해제 id(기본 1개 무료)
 }
 
 export const initialProgress: Progress = {
@@ -50,6 +52,7 @@ export const initialProgress: Progress = {
   eggCrackStep: 0,
   garden: [],
   lastChestDate: null,
+  royalUnlocked: [DEFAULT_ROYAL],
 }
 
 /** 오늘 완료한 놀이 수 +1 기록(부모 리포트용). 최근 60일만 보관. */
@@ -212,4 +215,13 @@ export function openChest(p: Progress, today: string): Progress {
   const milestone = p.streak > 0 && p.streak % 7 === 0
   const gain = milestone ? CHEST_MILESTONE_STARS : CHEST_STARS
   return { ...p, stars: p.stars + gain, lastChestDate: today }
+}
+
+// ---- 보상: 실사 공주 룩 잠금 해제 ----
+/** 별로 실사 공주 룩 해제(이미 가졌거나 별 부족·알수없는 id면 변화 없음). */
+export function unlockRoyal(p: Progress, id: string): Progress {
+  const look = getRoyalLook(id)
+  if (!look || p.royalUnlocked.includes(id)) return p
+  if (p.stars < look.cost) return p
+  return { ...p, stars: p.stars - look.cost, royalUnlocked: [...p.royalUnlocked, id] }
 }

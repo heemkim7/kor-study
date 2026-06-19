@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react'
-import { addStars, completeLesson, learnWords, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, type Progress } from './progress'
+import { addStars, completeLesson, learnWords, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, unlockRoyal, type Progress } from './progress'
 import { loadProgress, saveProgress } from './storage'
 
 type Action =
@@ -18,6 +18,7 @@ type Action =
   | { type: 'plantSeed'; plantId: string }
   | { type: 'waterPlant'; index: number }
   | { type: 'openChest'; today: string }
+  | { type: 'unlockRoyal'; id: string }
 
 function reducer(state: Progress, action: Action): Progress {
   switch (action.type) {
@@ -37,6 +38,7 @@ function reducer(state: Progress, action: Action): Progress {
     case 'plantSeed': return plantSeed(state, action.plantId)
     case 'waterPlant': return waterPlant(state, action.index)
     case 'openChest': return openChest(state, action.today)
+    case 'unlockRoyal': return unlockRoyal(state, action.id)
   }
 }
 

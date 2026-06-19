@@ -76,6 +76,19 @@ export function Home() {
         </div>
         <div style={{ fontSize: 24 }}>▶</div>
       </button>
+      <button onClick={() => go({ name: 'royal' })}
+        style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '12px 18px',
+          borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer',
+          background: 'linear-gradient(135deg,#efe0ff,#fbf3ff)', boxShadow: 'var(--shadow-card)' }}>
+        <div style={{ width: 52, height: 70, flex: '0 0 auto', borderRadius: 10, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
+          <img src="/img/royal/pink.webp" alt="" aria-hidden style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        </div>
+        <div style={{ flex: 1, textAlign: 'left' }}>
+          <div style={{ fontFamily: 'var(--font-warm)', fontSize: 21, fontWeight: 800, color: '#9b6bff' }}>✨ 진짜 공주</div>
+          <div style={{ fontSize: 14, color: 'var(--c-ink-soft)', marginTop: 2 }}>실사 공주를 별로 모아요</div>
+        </div>
+        <div style={{ fontSize: 24 }}>▶</div>
+      </button>
       <div style={{ display: 'flex', gap: 10, width: '100%' }}>
         <button onClick={() => go({ name: 'stickers' })}
           style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '12px 8px',

@@ -3,6 +3,7 @@ import { isKnownItem, getItem, DEFAULT_OWNED_IDS, type ItemCategory, type Outfit
 import { getSticker } from '../reward/stickers'
 import { getPet } from '../reward/pets'
 import { getPlant, MAX_PLANT_STAGE } from '../reward/plants'
+import { getRoyalLook, DEFAULT_ROYAL } from '../reward/royal'
 import { getWord } from '../content/loader'
 
 const KEY = 'hangeul-play:progress:v1'
@@ -59,7 +60,9 @@ export function loadProgress(): Progress {
         && Number.isInteger((g as GardenPlant).stage) && (g as GardenPlant).stage >= 0 && (g as GardenPlant).stage <= MAX_PLANT_STAGE)
       .slice(0, MAX_GARDEN)
     const lastChestDate = isValidDateStr(parsed.lastChestDate) ? parsed.lastChestDate : null
-    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers, lastPlayedDate, streak, learnedWords, reviewWords, playLog, dailyGoal, hatchedPets, eggCrackStep, garden, lastChestDate }
+    // 실사 공주 룩 — 카탈로그에 있는 id만, 기본 룩은 항상 포함
+    const royalUnlocked = Array.from(new Set([DEFAULT_ROYAL, ...((parsed.royalUnlocked ?? []).filter((id) => getRoyalLook(id) !== undefined))]))
+    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers, lastPlayedDate, streak, learnedWords, reviewWords, playLog, dailyGoal, hatchedPets, eggCrackStep, garden, lastChestDate, royalUnlocked }
   } catch {
     return initialProgress
   }
