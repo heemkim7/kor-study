@@ -7,6 +7,7 @@ export const ROYAL_LOOKS: RoyalLook[] = [
   { id: 'blue', name: '겨울 공주', file: '/img/royal/blue.webp', cost: 10 },
   { id: 'lavender', name: '라벤더 공주', file: '/img/royal/lavender.webp', cost: 10 },
   { id: 'mint', name: '정원 공주', file: '/img/royal/mint.webp', cost: 10 },
+  { id: 'red', name: '루비 공주', file: '/img/royal/red.webp', cost: 10 },
 ]
 
 export const DEFAULT_ROYAL = 'pink' // 기본 무료 룩
