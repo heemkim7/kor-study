@@ -7,8 +7,8 @@ import { Sparkles } from '../ui/Sparkles'
 import { buildHuntGrid } from './huntGrid'
 
 /** 큰 글자(단어의 첫 음절)를 보여주고, 격자에서 같은 글자를 모두 찾는다. */
-export function LetterHunt({ targetWords, pool, onCorrect, onDone }: {
-  targetWords: string[]; pool: string[]; onCorrect: () => void; onDone: () => void; choiceCount?: number
+export function LetterHunt({ targetWords, pool, onCorrect, onWrong, onDone }: {
+  targetWords: string[]; pool: string[]; onCorrect: () => void; onWrong?: (id?: string) => void; onDone: () => void; choiceCount?: number
 }) {
   const { speak } = useTts()
   const [round, setRound] = useState(0)
@@ -61,6 +61,7 @@ export function LetterHunt({ targetWords, pool, onCorrect, onDone }: {
       }
     } else {
       speak('다시 찾아볼까?')
+      onWrong?.(answerId)
       setWrongIdx(idx)
       clearTimeout(shakeRef.current)
       shakeRef.current = setTimeout(() => setWrongIdx(null), 450)

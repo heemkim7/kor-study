@@ -9,8 +9,8 @@ import { BASIC_CONSONANTS, BASIC_VOWELS, BASIC_JONG, glyphSound } from '../conte
 type Slot = 'cho' | 'jung' | 'jong'
 
 /** 글자 만들기 — 자음 + 모음 (+ 받침)을 골라 글자를 완성한다(한글 조합 원리). */
-export function MakeSyllable({ glyphs, onCorrect, onDone }: {
-  glyphs: string[]; onCorrect: () => void; onDone: () => void
+export function MakeSyllable({ glyphs, onCorrect, onWrong, onDone }: {
+  glyphs: string[]; onCorrect: () => void; onWrong?: () => void; onDone: () => void
 }) {
   const { speak } = useTts()
   const [round, setRound] = useState(0)
@@ -63,6 +63,7 @@ export function MakeSyllable({ glyphs, onCorrect, onDone }: {
       }, 1100)
     } else {
       speak('다시 해볼까?')
+      onWrong?.()
       setShaking(true)
       clearTimeout(shakeRef.current)
       shakeRef.current = setTimeout(() => { setShaking(false); setCho(null); setJung(null); setJong(null) }, 480)

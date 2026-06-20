@@ -5,7 +5,7 @@ import { getSticker } from './stickers'
 import { Sparkles } from '../ui/Sparkles'
 import { playReward, playSticker } from '../audio/sound'
 
-export function RewardScreen({ onHome, awarded = true }: { onHome: () => void; awarded?: boolean }) {
+export function RewardScreen({ onHome, awarded = true, stars }: { onHome: () => void; awarded?: boolean; stars?: number }) {
   const { speak } = useTts()
   const { progress } = useProgress()
   // 방금 모은(가장 최근) 스티커
@@ -26,6 +26,13 @@ export function RewardScreen({ onHome, awarded = true }: { onHome: () => void; a
       <img src="/img/mascot.webp" alt="" aria-hidden className="kp-pop"
         style={{ width: 124, height: 124, borderRadius: '50%', objectFit: 'cover', boxShadow: 'var(--shadow-card)' }} />
       <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 30 }}>참 잘했어요!</h1>
+      {stars != null && (
+        <div className="kp-pop" aria-label={`별 ${stars}개`} style={{ fontSize: 40, letterSpacing: 6 }}>
+          {[1, 2, 3].map((i) => (
+            <span key={i} style={{ opacity: i <= stars ? 1 : 0.25, filter: i <= stars ? 'none' : 'grayscale(1)' }}>⭐</span>
+          ))}
+        </div>
+      )}
       {awarded && latest && (
         <div className="kp-pop" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 6,
           background: 'var(--c-card)', borderRadius: 'var(--radius-lg)', padding: '16px 26px', boxShadow: 'var(--shadow-card)' }}>

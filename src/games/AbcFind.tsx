@@ -6,8 +6,8 @@ import { shuffle } from './choices'
 import { abcSay } from '../content/english'
 
 /** 소리를 듣고 같은 알파벳을 고른다(영어 음성). */
-export function AbcFind({ letters, onCorrect, onDone }: {
-  letters: string[]; onCorrect: () => void; onDone: () => void
+export function AbcFind({ letters, onCorrect, onWrong, onDone }: {
+  letters: string[]; onCorrect: () => void; onWrong?: () => void; onDone: () => void
 }) {
   const { speak } = useTts()
   const [round, setRound] = useState(0)
@@ -39,6 +39,7 @@ export function AbcFind({ letters, onCorrect, onDone }: {
         else setRound(round + 1)
       }, 950)
     } else {
+      onWrong?.()
       setWrong(l)
       clearTimeout(shakeRef.current)
       shakeRef.current = setTimeout(() => setWrong(null), 450)

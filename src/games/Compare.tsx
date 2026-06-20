@@ -20,8 +20,8 @@ function makeComparePairs(numbers: number[], rounds: number): Array<[number, num
 }
 
 /** 수량 비교 — 어느 쪽이 더 많은지 고른다(많고 적음 개념). */
-export function Compare({ numbers, onCorrect, onDone }: {
-  numbers: number[]; onCorrect: () => void; onDone: () => void
+export function Compare({ numbers, onCorrect, onWrong, onDone }: {
+  numbers: number[]; onCorrect: () => void; onWrong?: () => void; onDone: () => void
 }) {
   const { speak } = useTts()
   const [round, setRound] = useState(0)
@@ -56,6 +56,7 @@ export function Compare({ numbers, onCorrect, onDone }: {
       }, 1000)
     } else {
       speak('다시 볼까?')
+      onWrong?.()
       setWrong(side)
       clearTimeout(shakeRef.current)
       shakeRef.current = setTimeout(() => setWrong(null), 450)

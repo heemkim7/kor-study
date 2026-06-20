@@ -62,7 +62,13 @@ export function loadProgress(): Progress {
     const lastChestDate = isValidDateStr(parsed.lastChestDate) ? parsed.lastChestDate : null
     // 실사 공주 룩 — 카탈로그에 있는 id만, 기본 룩은 항상 포함
     const royalUnlocked = Array.from(new Set([DEFAULT_ROYAL, ...((parsed.royalUnlocked ?? []).filter((id) => getRoyalLook(id) !== undefined))]))
-    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers, lastPlayedDate, streak, learnedWords, reviewWords, playLog, dailyGoal, hatchedPets, eggCrackStep, garden, lastChestDate, royalUnlocked }
+    // 레슨 마스터리 별 — 값이 1~3 정수인 항목만
+    const rawStars = parsed.lessonStars
+    const lessonStars: Record<string, number> = (rawStars && typeof rawStars === 'object' && !Array.isArray(rawStars))
+      ? Object.fromEntries(Object.entries(rawStars as Record<string, unknown>)
+        .filter(([, v]) => typeof v === 'number' && Number.isInteger(v) && v >= 1 && v <= 3)) as Record<string, number>
+      : {}
+    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers, lastPlayedDate, streak, learnedWords, reviewWords, playLog, dailyGoal, hatchedPets, eggCrackStep, garden, lastChestDate, royalUnlocked, lessonStars }
   } catch {
     return initialProgress
   }

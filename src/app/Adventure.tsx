@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { getLesson } from '../content/loader'
 import { WORDS } from '../content/words'
 import { choiceCountForLevel } from '../content/difficulty'
@@ -12,7 +12,7 @@ import { BuildWord } from '../games/BuildWord'
 import { LetterHunt } from '../games/LetterHunt'
 import { MemoryGame } from '../games/MemoryGame'
 import { RewardScreen } from '../reward/RewardScreen'
-import { todayStr } from '../progress/progress'
+import { todayStr, masteryStars } from '../progress/progress'
 import { playCorrect } from '../audio/sound'
 
 type Phase = { kind: 'story' } | { kind: 'words' } | { kind: 'game'; index: number } | { kind: 'reward' }
@@ -24,19 +24,24 @@ export function Adventure({ lessonId }: { lessonId: string }) {
   // 스토리가 있으면 그림책부터, 없으면(연습 레슨) 바로 오늘의 단어로
   const [phase, setPhase] = useState<Phase>(lesson.story.length ? { kind: 'story' } : { kind: 'words' })
   const [awarded, setAwarded] = useState(true)
+  const [earned, setEarned] = useState<number | undefined>(undefined)
+  const wrongRef = useRef(0) // 이번 판 오답 수(마스터리 별 산정용)
 
   const pool = useMemo(() => WORDS.map((w) => w.id), [])
-  // 정답: 별 +1 + 칭찬음, 맞힌 단어는 복습 큐에서 빼줌. 오답: 복습 큐에 등록.
+  // 정답: 별 +1 + 칭찬음, 맞힌 단어는 복습 큐에서 빼줌. 오답: 복습 큐 등록 + 오답 집계.
   const onCorrect = (id?: string) => { playCorrect(); dispatch({ type: 'addStars', n: 1 }); if (id) dispatch({ type: 'reviewMastered', id }) }
-  const onWrong = (id: string) => dispatch({ type: 'reviewWrong', id })
+  const onWrong = (id?: string) => { wrongRef.current++; if (id) dispatch({ type: 'reviewWrong', id }) }
 
   function nextAfterGame(index: number) {
     if (index < lesson.games.length - 1) setPhase({ kind: 'game', index: index + 1 })
     else {
       // 처음 완료할 때만 스티커가 지급됨(completeLesson은 멱등) → 보상 화면 문구를 맞춤
       setAwarded(!progress.completedLessons.includes(lesson.id))
+      const m = masteryStars(wrongRef.current)
+      setEarned(m)
       dispatch({ type: 'learnWords', ids: lesson.targetWords })
       dispatch({ type: 'completeLesson', lessonId: lesson.id })
+      dispatch({ type: 'setLessonStars', lessonId: lesson.id, stars: m })
       dispatch({ type: 'markPlayed', today: todayStr() })
       dispatch({ type: 'logPlay', today: todayStr() })
       setPhase({ kind: 'reward' })
@@ -46,12 +51,12 @@ export function Adventure({ lessonId }: { lessonId: string }) {
   function renderGame(index: number) {
     const gameId = lesson.games[index]
     const common = {
-      targetWords: lesson.targetWords, pool, onCorrect,
+      targetWords: lesson.targetWords, pool, onCorrect, onWrong,
       onDone: () => nextAfterGame(index),
       choiceCount: choiceCountForLevel(lesson.level),
     }
-    if (gameId === 'listen-find') return <ListenFind {...common} onWrong={onWrong} />
-    if (gameId === 'pick-word') return <PickWord {...common} onWrong={onWrong} />
+    if (gameId === 'listen-find') return <ListenFind {...common} />
+    if (gameId === 'pick-word') return <PickWord {...common} />
     if (gameId === 'build-word') return <BuildWord {...common} />
     if (gameId === 'letter-hunt') return <LetterHunt {...common} />
     if (gameId === 'memory') return <MemoryGame {...common} />
@@ -72,7 +77,7 @@ export function Adventure({ lessonId }: { lessonId: string }) {
   if (phase.kind === 'story') content = <StoryPlayer lesson={lesson} onDone={() => setPhase({ kind: 'words' })} />
   else if (phase.kind === 'words') content = <TodayWords lesson={lesson} onDone={() => setPhase({ kind: 'game', index: 0 })} />
   else if (phase.kind === 'game') content = renderGame(phase.index)
-  else content = <RewardScreen awarded={awarded} onHome={() => go({ name: 'home' })} />
+  else content = <RewardScreen awarded={awarded} stars={earned} onHome={() => go({ name: 'home' })} />
 
   return (
     <div style={{ position: 'relative', minHeight: '100%' }}>

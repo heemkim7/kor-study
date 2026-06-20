@@ -12,8 +12,8 @@ function buildPhonicsChoices(answer: string, pool: string[]): string[] {
 }
 
 /** 파닉스 — 글자의 첫소리에 맞는 그림 고르기 (A → Apple 🍎). 기존 ABC_WORD 재사용, 영어 음성. */
-export function AbcPhonics({ letters, onCorrect, onDone }: {
-  letters: string[]; onCorrect: () => void; onDone: () => void
+export function AbcPhonics({ letters, onCorrect, onWrong, onDone }: {
+  letters: string[]; onCorrect: () => void; onWrong?: () => void; onDone: () => void
 }) {
   const { speak } = useTts()
   const [round, setRound] = useState(0)
@@ -51,6 +51,7 @@ export function AbcPhonics({ letters, onCorrect, onDone }: {
         else setRound(round + 1)
       }, 1100)
     } else {
+      onWrong?.()
       setWrong(l)
       clearTimeout(shakeRef.current)
       shakeRef.current = setTimeout(() => setWrong(null), 450)

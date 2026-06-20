@@ -36,11 +36,15 @@ export function SubjectScreen({ subject }: { subject: Subject }) {
     const total = nodes.length
     const doneCount = nodes.filter((n) => n.completed).length
     const cur = nodes.find((n) => n.current)
+    // 이 트랙에서 모은 마스터리 별 합계(레슨별 1~3)
+    const trackStars = nodes.reduce((s, n) => s + (progress.lessonStars[n.lesson.id] ?? 0), 0)
     return (
       <div key={label} style={{ flex: landscape ? '1 1 380px' : '0 0 auto', width: '100%', maxWidth: 410, marginTop: landscape ? 0 : 14 }}>
         <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', margin: '0 4px 8px' }}>
           <span style={{ fontFamily: 'var(--font-warm)', fontSize: 19, fontWeight: 800, color }}>{emoji} {label}</span>
-          <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--c-ink-soft)' }}>{doneCount} / {total} 완료</span>
+          <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--c-ink-soft)' }}>
+            {trackStars > 0 && <span style={{ color: '#e0a020' }}>⭐{trackStars} · </span>}{doneCount} / {total} 완료
+          </span>
         </div>
 
         {cur ? (

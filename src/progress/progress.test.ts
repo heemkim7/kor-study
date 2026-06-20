@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { initialProgress, addStars, learnWords, completeLesson, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, unlockRoyal, EGG_CRACK_TARGET, PLANT_COST, CHEST_STARS, CHEST_MILESTONE_STARS } from './progress'
+import { initialProgress, addStars, learnWords, completeLesson, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, unlockRoyal, masteryStars, setLessonStars, EGG_CRACK_TARGET, PLANT_COST, CHEST_STARS, CHEST_MILESTONE_STARS } from './progress'
 import { GACHA_COST } from '../princess/economy'
 
 describe('addStars', () => {
@@ -220,5 +220,22 @@ describe('실사 공주 룩(unlockRoyal)', () => {
     const rich = addStars(initialProgress, 10)
     expect(unlockRoyal(rich, 'pink')).toBe(rich) // 이미 보유(기본)
     expect(unlockRoyal(rich, 'no-such')).toBe(rich)
+  })
+})
+
+describe('레슨 마스터리 별(masteryStars/setLessonStars)', () => {
+  it('오답 수 → 별: 0=3, 1~2=2, 3+=1', () => {
+    expect(masteryStars(0)).toBe(3)
+    expect(masteryStars(1)).toBe(2)
+    expect(masteryStars(2)).toBe(2)
+    expect(masteryStars(3)).toBe(1)
+    expect(masteryStars(9)).toBe(1)
+  })
+  it('최고 기록만 갱신(낮은 별은 무시)', () => {
+    const a = setLessonStars(initialProgress, 'fruit-1', 2)
+    expect(a.lessonStars['fruit-1']).toBe(2)
+    const b = setLessonStars(a, 'fruit-1', 3) // 더 높음 → 갱신
+    expect(b.lessonStars['fruit-1']).toBe(3)
+    expect(setLessonStars(b, 'fruit-1', 1)).toBe(b) // 더 낮음 → 변화 없음
   })
 })

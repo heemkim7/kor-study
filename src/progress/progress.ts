@@ -32,6 +32,7 @@ export interface Progress {
   garden: GardenPlant[]     // 마법 정원에 심은 식물과 성장 단계
   lastChestDate: string | null // 마지막으로 선물상자 연 날(YYYY-MM-DD)
   royalUnlocked: string[]   // 실사 공주 룩 잠금 해제 id(기본 1개 무료)
+  lessonStars: Record<string, number> // 레슨별 마스터리 별(1~3, 최고 기록)
 }
 
 export const initialProgress: Progress = {
@@ -53,6 +54,7 @@ export const initialProgress: Progress = {
   garden: [],
   lastChestDate: null,
   royalUnlocked: [DEFAULT_ROYAL],
+  lessonStars: {},
 }
 
 /** 오늘 완료한 놀이 수 +1 기록(부모 리포트용). 최근 60일만 보관. */
@@ -215,6 +217,20 @@ export function openChest(p: Progress, today: string): Progress {
   const milestone = p.streak > 0 && p.streak % 7 === 0
   const gain = milestone ? CHEST_MILESTONE_STARS : CHEST_STARS
   return { ...p, stars: p.stars + gain, lastChestDate: today }
+}
+
+// ---- 레슨 마스터리 별 ----
+/** 한 판에서의 오답 수 → 별 개수(1~3). 오답 0=별3, 1~2=별2, 그 이상=별1. */
+export function masteryStars(wrong: number): number {
+  return wrong <= 0 ? 3 : wrong <= 2 ? 2 : 1
+}
+
+/** 레슨 마스터리 별을 기록(기존보다 높을 때만 갱신, 1~3 클램프). */
+export function setLessonStars(p: Progress, lessonId: string, stars: number): Progress {
+  const next = Math.max(1, Math.min(3, Math.round(stars)))
+  const cur = p.lessonStars[lessonId] ?? 0
+  if (next <= cur) return p
+  return { ...p, lessonStars: { ...p.lessonStars, [lessonId]: next } }
 }
 
 // ---- 보상: 실사 공주 룩 잠금 해제 ----

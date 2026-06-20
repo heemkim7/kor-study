@@ -6,8 +6,8 @@ import { shuffle } from './choices'
 import { glyphSound } from '../content/letters'
 
 /** 소리를 듣고 같은 글자를 고른다(글자-소리 대응·음운 변별). */
-export function FindLetter({ glyphs, onCorrect, onDone }: {
-  glyphs: string[]; onCorrect: () => void; onDone: () => void
+export function FindLetter({ glyphs, onCorrect, onWrong, onDone }: {
+  glyphs: string[]; onCorrect: () => void; onWrong?: () => void; onDone: () => void
 }) {
   const { speak } = useTts()
   const [round, setRound] = useState(0)
@@ -43,6 +43,7 @@ export function FindLetter({ glyphs, onCorrect, onDone }: {
       }, 950)
     } else {
       speak('다시 들어볼까?')
+      onWrong?.()
       setWrong(g)
       clearTimeout(shakeRef.current)
       shakeRef.current = setTimeout(() => setWrong(null), 450)

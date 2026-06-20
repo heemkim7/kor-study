@@ -7,8 +7,8 @@ import { numberName, COUNT_EMOJI } from '../content/numbers'
 const DIGIT_POOL = Array.from({ length: 10 }, (_, i) => String(i + 1))
 
 /** 세어 보기 — 이모지를 세어(탭하며) 몇 개인지 숫자를 고른다. */
-export function CountTap({ numbers, onCorrect, onDone }: {
-  numbers: number[]; onCorrect: () => void; onDone: () => void
+export function CountTap({ numbers, onCorrect, onWrong, onDone }: {
+  numbers: number[]; onCorrect: () => void; onWrong?: () => void; onDone: () => void
 }) {
   const { speak } = useTts()
   const [round, setRound] = useState(0)
@@ -48,6 +48,7 @@ export function CountTap({ numbers, onCorrect, onDone }: {
       }, 1000)
     } else {
       speak('다시 세어 볼까?')
+      onWrong?.()
       setWrong(d)
       clearTimeout(shakeRef.current)
       shakeRef.current = setTimeout(() => setWrong(null), 450)
