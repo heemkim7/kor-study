@@ -13,6 +13,7 @@ export type Screen =
   | { name: 'draw' }
   | { name: 'egg' }
   | { name: 'garden' }
+  | { name: 'family' }
   | { name: 'wordbook' }
   | { name: 'badges' }
   | { name: 'review' }

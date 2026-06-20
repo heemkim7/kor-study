@@ -33,7 +33,11 @@ export interface Progress {
   lastChestDate: string | null // 마지막으로 선물상자 연 날(YYYY-MM-DD)
   royalUnlocked: string[]   // 실사 공주 룩 잠금 해제 id(기본 1개 무료)
   lessonStars: Record<string, number> // 레슨별 마스터리 별(1~3, 최고 기록)
+  familyWords: string[]     // 부모가 넣은 우리 가족 단어(이름·엄마·아빠 등) — 개인화
 }
+
+export const MAX_FAMILY_WORDS = 12
+export const MAX_FAMILY_WORD_LEN = 8
 
 export const initialProgress: Progress = {
   stars: 0,
@@ -55,6 +59,7 @@ export const initialProgress: Progress = {
   lastChestDate: null,
   royalUnlocked: [DEFAULT_ROYAL],
   lessonStars: {},
+  familyWords: [],
 }
 
 /** 오늘 완료한 놀이 수 +1 기록(부모 리포트용). 최근 60일만 보관. */
@@ -217,6 +222,20 @@ export function openChest(p: Progress, today: string): Progress {
   const milestone = p.streak > 0 && p.streak % 7 === 0
   const gain = milestone ? CHEST_MILESTONE_STARS : CHEST_STARS
   return { ...p, stars: p.stars + gain, lastChestDate: today }
+}
+
+// ---- 개인화: 우리 가족 단어 ----
+/** 부모가 우리 가족 단어 추가(중복·빈값·길이초과·정원초과 시 변화 없음). */
+export function addFamilyWord(p: Progress, text: string): Progress {
+  const t = text.trim()
+  if (!t || t.length > MAX_FAMILY_WORD_LEN || p.familyWords.includes(t) || p.familyWords.length >= MAX_FAMILY_WORDS) return p
+  return { ...p, familyWords: [...p.familyWords, t] }
+}
+
+/** 우리 가족 단어 삭제. */
+export function removeFamilyWord(p: Progress, text: string): Progress {
+  if (!p.familyWords.includes(text)) return p
+  return { ...p, familyWords: p.familyWords.filter((w) => w !== text) }
 }
 
 // ---- 레슨 마스터리 별 ----

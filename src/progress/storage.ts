@@ -1,4 +1,4 @@
-import { initialProgress, EGG_CRACK_TARGET, MAX_GARDEN, type Progress, type GardenPlant } from './progress'
+import { initialProgress, EGG_CRACK_TARGET, MAX_GARDEN, MAX_FAMILY_WORDS, MAX_FAMILY_WORD_LEN, type Progress, type GardenPlant } from './progress'
 import { isKnownItem, getItem, DEFAULT_OWNED_IDS, type ItemCategory, type Outfit } from '../princess/catalog'
 import { getSticker } from '../reward/stickers'
 import { getPet } from '../reward/pets'
@@ -68,7 +68,11 @@ export function loadProgress(): Progress {
       ? Object.fromEntries(Object.entries(rawStars as Record<string, unknown>)
         .filter(([, v]) => typeof v === 'number' && Number.isInteger(v) && v >= 1 && v <= 3)) as Record<string, number>
       : {}
-    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers, lastPlayedDate, streak, learnedWords, reviewWords, playLog, dailyGoal, hatchedPets, eggCrackStep, garden, lastChestDate, royalUnlocked, lessonStars }
+    // 우리 가족 단어 — 비지 않은 짧은 문자열만, 중복 제거, 개수 제한
+    const familyWords = Array.from(new Set((Array.isArray(parsed.familyWords) ? parsed.familyWords : [])
+      .filter((w): w is string => typeof w === 'string' && w.trim().length > 0 && w.trim().length <= MAX_FAMILY_WORD_LEN)
+      .map((w) => w.trim()))).slice(0, MAX_FAMILY_WORDS)
+    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers, lastPlayedDate, streak, learnedWords, reviewWords, playLog, dailyGoal, hatchedPets, eggCrackStep, garden, lastChestDate, royalUnlocked, lessonStars, familyWords }
   } catch {
     return initialProgress
   }

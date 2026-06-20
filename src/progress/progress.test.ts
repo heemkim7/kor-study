@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { initialProgress, addStars, learnWords, completeLesson, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, unlockRoyal, masteryStars, setLessonStars, EGG_CRACK_TARGET, PLANT_COST, CHEST_STARS, CHEST_MILESTONE_STARS } from './progress'
+import { initialProgress, addStars, learnWords, completeLesson, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, unlockRoyal, masteryStars, setLessonStars, addFamilyWord, removeFamilyWord, MAX_FAMILY_WORDS, MAX_FAMILY_WORD_LEN, EGG_CRACK_TARGET, PLANT_COST, CHEST_STARS, CHEST_MILESTONE_STARS } from './progress'
 import { GACHA_COST } from '../princess/economy'
 
 describe('addStars', () => {
@@ -237,5 +237,31 @@ describe('레슨 마스터리 별(masteryStars/setLessonStars)', () => {
     const b = setLessonStars(a, 'fruit-1', 3) // 더 높음 → 갱신
     expect(b.lessonStars['fruit-1']).toBe(3)
     expect(setLessonStars(b, 'fruit-1', 1)).toBe(b) // 더 낮음 → 변화 없음
+  })
+})
+
+describe('우리 가족 단어(addFamilyWord/removeFamilyWord)', () => {
+  it('단어를 추가하고 앞뒤 공백을 다듬는다', () => {
+    const a = addFamilyWord(initialProgress, '  김하윤  ')
+    expect(a.familyWords).toEqual(['김하윤'])
+  })
+  it('빈 문자열·중복·너무 긴 단어는 무시(원본 그대로 반환)', () => {
+    const a = addFamilyWord(initialProgress, '엄마')
+    expect(addFamilyWord(a, '   ')).toBe(a)          // 빈 값
+    expect(addFamilyWord(a, '엄마')).toBe(a)          // 중복
+    expect(addFamilyWord(a, '가'.repeat(MAX_FAMILY_WORD_LEN + 1))).toBe(a) // 길이 초과
+  })
+  it('최대 개수를 넘으면 더 추가되지 않는다', () => {
+    let p = initialProgress
+    for (let i = 0; i < MAX_FAMILY_WORDS; i++) p = addFamilyWord(p, `단어${i}`)
+    expect(p.familyWords).toHaveLength(MAX_FAMILY_WORDS)
+    const full = addFamilyWord(p, '하나더')
+    expect(full).toBe(p)
+  })
+  it('단어를 지운다(없는 단어는 변화 없음)', () => {
+    const a = addFamilyWord(addFamilyWord(initialProgress, '엄마'), '아빠')
+    const b = removeFamilyWord(a, '엄마')
+    expect(b.familyWords).toEqual(['아빠'])
+    expect(removeFamilyWord(a, '없음')).toBe(a)
   })
 })

@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react'
-import { addStars, completeLesson, learnWords, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, unlockRoyal, setLessonStars, type Progress } from './progress'
+import { addStars, completeLesson, learnWords, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, unlockRoyal, setLessonStars, addFamilyWord, removeFamilyWord, type Progress } from './progress'
 import { loadProgress, saveProgress } from './storage'
 
 type Action =
@@ -20,6 +20,8 @@ type Action =
   | { type: 'openChest'; today: string }
   | { type: 'unlockRoyal'; id: string }
   | { type: 'setLessonStars'; lessonId: string; stars: number }
+  | { type: 'addFamilyWord'; text: string }
+  | { type: 'removeFamilyWord'; text: string }
 
 function reducer(state: Progress, action: Action): Progress {
   switch (action.type) {
@@ -41,6 +43,8 @@ function reducer(state: Progress, action: Action): Progress {
     case 'openChest': return openChest(state, action.today)
     case 'unlockRoyal': return unlockRoyal(state, action.id)
     case 'setLessonStars': return setLessonStars(state, action.lessonId, action.stars)
+    case 'addFamilyWord': return addFamilyWord(state, action.text)
+    case 'removeFamilyWord': return removeFamilyWord(state, action.text)
   }
 }
 

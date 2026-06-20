@@ -11,7 +11,7 @@ const MAX_SCALE = 2.6
 const LANDSCAPE_RATIO = 1.2
 // 가로일 때 넓은 캔버스로 펼치는 화면(좌우 2단·다열 레이아웃을 가진 화면).
 // 게임처럼 한 가지에 집중하는 화면은 제외(좁은 컬럼을 가운데에 두는 편이 보기 좋음).
-const WIDE_SCREENS = new Set(['home', 'subject', 'dressup', 'royal', 'stickers', 'wordbook', 'badges', 'parent'])
+const WIDE_SCREENS = new Set(['home', 'subject', 'dressup', 'royal', 'stickers', 'wordbook', 'badges', 'parent', 'family'])
 
 const computeLandscape = () => window.innerWidth / window.innerHeight >= LANDSCAPE_RATIO
 

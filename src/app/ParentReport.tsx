@@ -7,6 +7,7 @@ import { LETTER_LESSONS } from '../content/letters'
 import { NUMBER_LESSONS } from '../content/numbers'
 import { ABC_LESSONS } from '../content/english'
 import { STICKERS } from '../reward/stickers'
+import { MAX_FAMILY_WORDS, MAX_FAMILY_WORD_LEN } from '../progress/progress'
 
 // 6~9 곱셈 문제(모듈 함수 — 렌더 중 직접 난수 호출 회피)
 function genGateProblem(): { a: number; b: number } {
@@ -63,6 +64,7 @@ export function ParentReport() {
   const { landscape } = useViewport()
   const { progress, dispatch } = useProgress()
   const [passed, setPassed] = useState(false)
+  const [familyInput, setFamilyInput] = useState('')
 
   const stats = useMemo(() => {
     const done = new Set(progress.completedLessons)
@@ -173,6 +175,52 @@ export function ParentReport() {
     </div>
   )
 
+  // 우리 가족 단어 편집(개인화) — 아이 이름·가족 이름을 넣으면 '우리 가족 읽기'에서 통글자로 읽는다.
+  function addWord() {
+    const t = familyInput.trim()
+    if (!t) return
+    dispatch({ type: 'addFamilyWord', text: t })
+    setFamilyInput('')
+  }
+  const familyFull = progress.familyWords.length >= MAX_FAMILY_WORDS
+  const familyBlock = (
+    <div style={{ width: '100%', background: 'var(--c-card)', borderRadius: 'var(--radius-lg)',
+      padding: 16, boxShadow: 'var(--shadow-card)' }}>
+      <div style={{ fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800, marginBottom: 4 }}>
+        👨‍👩‍👧 우리 가족 단어 ({progress.familyWords.length}/{MAX_FAMILY_WORDS})
+      </div>
+      <div style={{ fontSize: 12, color: 'var(--c-ink-soft)', marginBottom: 10 }}>
+        아이 이름·엄마·아빠 등을 넣으면 아이가 통글자로 읽어요(최대 {MAX_FAMILY_WORD_LEN}자).
+      </div>
+      <div style={{ display: 'flex', gap: 8 }}>
+        <input value={familyInput} maxLength={MAX_FAMILY_WORD_LEN}
+          onChange={(e) => setFamilyInput(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') addWord() }}
+          placeholder="예: 김하윤" disabled={familyFull}
+          style={{ flex: 1, minWidth: 0, height: 44, borderRadius: 'var(--radius-md)', border: '2px solid #eadfce',
+            padding: '0 12px', fontSize: 16, fontWeight: 700, color: 'var(--c-ink)', background: familyFull ? '#f6f0e6' : '#fff' }} />
+        <button onClick={addWord} disabled={familyFull || !familyInput.trim()}
+          style={{ flex: '0 0 auto', height: 44, padding: '0 18px', borderRadius: 'var(--radius-md)', border: 'none',
+            fontFamily: 'var(--font-warm)', fontSize: 15, fontWeight: 800, color: '#fff',
+            background: familyFull || !familyInput.trim() ? '#d8c6ad' : 'var(--c-accent)', cursor: 'pointer' }}>추가</button>
+      </div>
+      {familyFull && <div style={{ fontSize: 12, color: 'var(--c-pink)', fontWeight: 800, marginTop: 8 }}>가득 찼어요. 지우고 넣어 주세요.</div>}
+      {progress.familyWords.length > 0 && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, marginTop: 12 }}>
+          {progress.familyWords.map((w) => (
+            <span key={w} style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: 15, fontWeight: 800,
+              color: 'var(--c-ink)', background: '#fff2dc', padding: '6px 8px 6px 12px', borderRadius: 999 }}>
+              {w}
+              <button onClick={() => dispatch({ type: 'removeFamilyWord', text: w })} aria-label={`${w} 지우기`}
+                style={{ width: 22, height: 22, borderRadius: 999, border: 'none', background: '#e9b8a0', color: '#fff',
+                  fontSize: 14, fontWeight: 800, lineHeight: 1, cursor: 'pointer' }}>×</button>
+            </span>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+
   // 컬럼 폭 380 고정. 가로면 [통계+목표 | 그래프+단어] 2단으로 펼침.
   const colStyle = { display: 'flex', flexDirection: 'column' as const, gap: 14, width: '100%', maxWidth: 380 }
   return (
@@ -188,7 +236,7 @@ export function ParentReport() {
 
       <div style={{ display: 'flex', flexDirection: landscape ? 'row' : 'column', alignItems: 'flex-start',
         justifyContent: 'center', gap: landscape ? 16 : 14, width: '100%', maxWidth: landscape ? 790 : 380 }}>
-        <div style={colStyle}>{statsBlock}{goalBlock}</div>
+        <div style={colStyle}>{statsBlock}{goalBlock}{familyBlock}</div>
         <div style={colStyle}>{graphBlock}{wordsBlock}</div>
       </div>
     </div>

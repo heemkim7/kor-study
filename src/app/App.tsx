@@ -12,6 +12,7 @@ import { RoyalDressUp } from '../reward/RoyalDressUp'
 import { StickerBook } from '../reward/StickerBook'
 import { EggHatch } from '../reward/EggHatch'
 import { Garden } from '../reward/Garden'
+import { FamilyRead } from '../reward/FamilyRead'
 import { DrawBoard } from '../draw/DrawBoard'
 import { WordBook } from '../reward/WordBook'
 import { Badges } from '../reward/Badges'
@@ -32,6 +33,7 @@ function Router() {
   if (screen.name === 'stickers') return <StickerBook />
   if (screen.name === 'egg') return <EggHatch />
   if (screen.name === 'garden') return <Garden />
+  if (screen.name === 'family') return <FamilyRead />
   if (screen.name === 'draw') return <DrawBoard />
   if (screen.name === 'wordbook') return <WordBook />
   if (screen.name === 'badges') return <Badges />

@@ -143,6 +143,19 @@ export function Home() {
           <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>꽃을 키워요</div>
         </button>
       </div>
+      <button onClick={() => go({ name: 'family' })}
+        style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '12px 18px',
+          borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer',
+          background: 'linear-gradient(135deg,#fff0d9,#fffaf2)', boxShadow: 'var(--shadow-card)' }}>
+        <div style={{ fontSize: 34, flex: '0 0 auto', width: 48, textAlign: 'center' }}>👨‍👩‍👧</div>
+        <div style={{ flex: 1, textAlign: 'left' }}>
+          <div style={{ fontFamily: 'var(--font-warm)', fontSize: 21, fontWeight: 800, color: '#e0922a' }}>우리 가족 읽기</div>
+          <div style={{ fontSize: 14, color: 'var(--c-ink-soft)', marginTop: 2 }}>
+            {progress.familyWords.length > 0 ? `내 이름과 가족 단어 ${progress.familyWords.length}개를 읽어요` : '보호자가 이름을 넣어 주세요'}
+          </div>
+        </div>
+        <div style={{ fontSize: 24 }}>▶</div>
+      </button>
     </div>
   )
 

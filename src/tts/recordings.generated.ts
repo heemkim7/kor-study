@@ -284,6 +284,7 @@ export const GENERATED_RECORDINGS: Record<string, string> = {
   "요정 날개": "/audio/tts/zardze.mp3",
   "우": "/audio/tts/4w9h.mp3",
   "우 글자를 찾아요": "/audio/tts/11hl6ev.mp3",
+  "우리 가족을 읽어 봐요": "/audio/tts/vaotd7.mp3",
   "우유": "/audio/tts/4io0l.mp3",
   "우주": "/audio/tts/4iodt.mp3",
   "원": "/audio/tts/4wad.mp3",
