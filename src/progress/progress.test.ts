@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { initialProgress, addStars, learnWords, completeLesson, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, unlockRoyal, masteryStars, setLessonStars, addFamilyWord, removeFamilyWord, MAX_FAMILY_WORDS, MAX_FAMILY_WORD_LEN, EGG_CRACK_TARGET, PLANT_COST, CHEST_STARS, CHEST_MILESTONE_STARS } from './progress'
+import { initialProgress, addStars, learnWords, completeLesson, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, unlockRoyal, masteryStars, setLessonStars, addFamilyWord, removeFamilyWord, setTimeLimit, addPlaySeconds, grantBonusMinutes, isOverTimeLimit, playSecondsToday, MAX_FAMILY_WORDS, MAX_FAMILY_WORD_LEN, MAX_TIME_LIMIT_MIN, TIME_BONUS_MIN, EGG_CRACK_TARGET, PLANT_COST, CHEST_STARS, CHEST_MILESTONE_STARS } from './progress'
 import { GACHA_COST } from '../princess/economy'
 
 describe('addStars', () => {
@@ -263,5 +263,40 @@ describe('우리 가족 단어(addFamilyWord/removeFamilyWord)', () => {
     const b = removeFamilyWord(a, '엄마')
     expect(b.familyWords).toEqual(['아빠'])
     expect(removeFamilyWord(a, '없음')).toBe(a)
+  })
+})
+
+describe('하루 놀이 시간 제한(setTimeLimit/addPlaySeconds/isOverTimeLimit)', () => {
+  const DAY = '2026-06-20'
+  it('제한이 0(없음)이면 아무리 놀아도 잠기지 않는다', () => {
+    const p = addPlaySeconds(initialProgress, DAY, 3600)
+    expect(p.timeLimitMin).toBe(0)
+    expect(isOverTimeLimit(p, DAY)).toBe(false)
+  })
+  it('제한 분을 클램프(0~상한)하고, 같은 값이면 동일 객체', () => {
+    expect(setTimeLimit(initialProgress, -5).timeLimitMin).toBe(0)
+    expect(setTimeLimit(initialProgress, 999).timeLimitMin).toBe(MAX_TIME_LIMIT_MIN)
+    const a = setTimeLimit(initialProgress, 15)
+    expect(setTimeLimit(a, 15)).toBe(a)
+  })
+  it('논 시간을 누적하고 제한을 넘으면 잠긴다', () => {
+    let p = setTimeLimit(initialProgress, 10) // 10분 = 600초
+    p = addPlaySeconds(p, DAY, 300)
+    expect(playSecondsToday(p, DAY)).toBe(300)
+    expect(isOverTimeLimit(p, DAY)).toBe(false)
+    p = addPlaySeconds(p, DAY, 300) // 합 600초 = 정확히 제한
+    expect(isOverTimeLimit(p, DAY)).toBe(true)
+  })
+  it('초 누적값은 0~3600으로 클램프되고, 0은 동일 객체', () => {
+    const base = setTimeLimit(initialProgress, 30)
+    expect(addPlaySeconds(base, DAY, 0)).toBe(base)
+    expect(playSecondsToday(addPlaySeconds(base, DAY, 99999), DAY)).toBe(3600)
+  })
+  it('보호자가 보너스 시간을 주면 잠금이 풀린다', () => {
+    let p = setTimeLimit(initialProgress, 10)
+    p = addPlaySeconds(p, DAY, 600)
+    expect(isOverTimeLimit(p, DAY)).toBe(true)
+    p = grantBonusMinutes(p, DAY, TIME_BONUS_MIN) // +10분 허용
+    expect(isOverTimeLimit(p, DAY)).toBe(false)
   })
 })

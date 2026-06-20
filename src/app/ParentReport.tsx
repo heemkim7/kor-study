@@ -7,57 +7,10 @@ import { LETTER_LESSONS } from '../content/letters'
 import { NUMBER_LESSONS } from '../content/numbers'
 import { ABC_LESSONS } from '../content/english'
 import { STICKERS } from '../reward/stickers'
-import { MAX_FAMILY_WORDS, MAX_FAMILY_WORD_LEN } from '../progress/progress'
+import { ParentGate } from './ParentGate'
+import { MAX_FAMILY_WORDS, MAX_FAMILY_WORD_LEN, MAX_TIME_LIMIT_MIN, playSecondsToday, todayStr } from '../progress/progress'
 
-// 6~9 곱셈 문제(모듈 함수 — 렌더 중 직접 난수 호출 회피)
-function genGateProblem(): { a: number; b: number } {
-  return { a: 6 + Math.floor(Math.random() * 4), b: 6 + Math.floor(Math.random() * 4) }
-}
-
-/** 보호자 확인(곱셈 게이트) — 4세가 못 풀게 막고, 통과 시 학습 리포트를 보여준다. */
-function ParentGate({ onPass, onCancel }: { onPass: () => void; onCancel: () => void }) {
-  const [problem, setProblem] = useState(genGateProblem)
-  const [input, setInput] = useState('')
-  const [wrong, setWrong] = useState(false)
-
-  function press(d: string) {
-    setWrong(false)
-    setInput((s) => (s.length < 3 ? s + d : s))
-  }
-  function submit() {
-    if (Number(input) === problem.a * problem.b) onPass()
-    else { setWrong(true); setInput(''); setProblem(genGateProblem()) } // 오답 시 새 문제 → 무차별 대입 차단
-  }
-
-  return (
-    <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
-      justifyContent: 'center', gap: 18, padding: 24, textAlign: 'center' }}>
-      <div style={{ fontSize: 40 }}>🔒</div>
-      <h2 style={{ fontFamily: 'var(--font-warm)', fontSize: 22 }}>보호자 확인</h2>
-      <p style={{ color: 'var(--c-ink-soft)', fontSize: 14, marginTop: -8 }}>아래 곱셈을 풀어 주세요</p>
-      <div className={wrong ? 'kp-shake' : undefined}
-        style={{ fontFamily: 'var(--font-warm)', fontSize: 36, fontWeight: 800, color: 'var(--c-ink)' }}>
-        {problem.a} × {problem.b} = {input || '?'}
-      </div>
-      {wrong && <div style={{ color: 'var(--c-pink)', fontWeight: 800, fontSize: 14 }}>다시 입력해 주세요</div>}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 64px)', gap: 8 }}>
-        {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((d) => (
-          <button key={d} onClick={() => press(d)}
-            style={{ height: 56, borderRadius: 'var(--radius-md)', border: 'none', fontSize: 24, fontWeight: 800,
-              background: 'var(--c-card)', boxShadow: '0 4px 0 #f1ddc6' }}>{d}</button>
-        ))}
-        <button onClick={() => setInput('')} style={{ height: 56, borderRadius: 'var(--radius-md)', border: 'none',
-          fontSize: 16, fontWeight: 800, background: '#f3e7d6' }}>지움</button>
-        <button onClick={() => press('0')} style={{ height: 56, borderRadius: 'var(--radius-md)', border: 'none',
-          fontSize: 24, fontWeight: 800, background: 'var(--c-card)', boxShadow: '0 4px 0 #f1ddc6' }}>0</button>
-        <button onClick={submit} style={{ height: 56, borderRadius: 'var(--radius-md)', border: 'none',
-          fontSize: 18, fontWeight: 800, color: '#fff', background: 'var(--c-accent)' }}>확인</button>
-      </div>
-      <button onClick={onCancel} style={{ marginTop: 6, background: 'none', border: 'none',
-        color: 'var(--c-ink-soft)', fontSize: 14, textDecoration: 'underline' }}>돌아가기</button>
-    </div>
-  )
-}
+const TIME_LIMIT_OPTIONS = [0, 10, 15, 20, 30, 45] // 분(0=제한 없음)
 
 export function ParentReport() {
   const { go } = useNavigation()
@@ -221,6 +174,38 @@ export function ParentReport() {
     </div>
   )
 
+  // 부모·안전: 하루 놀이 시간 제한(스크린타임)
+  const usedSec = playSecondsToday(progress, todayStr())
+  const usedMin = Math.floor(usedSec / 60)
+  const timeBlock = (
+    <div style={{ width: '100%', background: 'var(--c-card)', borderRadius: 'var(--radius-lg)',
+      padding: 16, boxShadow: 'var(--shadow-card)' }}>
+      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 4 }}>
+        <div style={{ fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800 }}>⏰ 하루 놀이 시간</div>
+        <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>
+          오늘 {usedMin}분{progress.timeLimitMin > 0 && ` / ${progress.timeLimitMin}분`} 놀았어요
+        </div>
+      </div>
+      <div style={{ fontSize: 12, color: 'var(--c-ink-soft)', marginBottom: 10 }}>
+        정한 시간이 지나면 '쉬는 시간' 화면이 나와요(최대 {MAX_TIME_LIMIT_MIN}분).
+      </div>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+        {TIME_LIMIT_OPTIONS.map((m) => {
+          const on = progress.timeLimitMin === m
+          return (
+            <button key={m} onClick={() => dispatch({ type: 'setTimeLimit', min: m })}
+              style={{ flex: '1 0 28%', minWidth: 72, height: 44, borderRadius: 'var(--radius-md)',
+                border: on ? '2px solid var(--c-accent)' : '2px solid #eadfce',
+                background: on ? 'var(--c-accent)' : '#fff', color: on ? '#fff' : 'var(--c-ink)',
+                fontFamily: 'var(--font-warm)', fontSize: 15, fontWeight: 800, cursor: 'pointer' }}>
+              {m === 0 ? '제한 없음' : `${m}분`}
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
+
   // 컬럼 폭 380 고정. 가로면 [통계+목표 | 그래프+단어] 2단으로 펼침.
   const colStyle = { display: 'flex', flexDirection: 'column' as const, gap: 14, width: '100%', maxWidth: 380 }
   return (
@@ -236,8 +221,8 @@ export function ParentReport() {
 
       <div style={{ display: 'flex', flexDirection: landscape ? 'row' : 'column', alignItems: 'flex-start',
         justifyContent: 'center', gap: landscape ? 16 : 14, width: '100%', maxWidth: landscape ? 790 : 380 }}>
-        <div style={colStyle}>{statsBlock}{goalBlock}{familyBlock}</div>
-        <div style={colStyle}>{graphBlock}{wordsBlock}</div>
+        <div style={colStyle}>{statsBlock}{goalBlock}{timeBlock}</div>
+        <div style={colStyle}>{graphBlock}{familyBlock}{wordsBlock}</div>
       </div>
     </div>
   )

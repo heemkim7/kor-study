@@ -1,4 +1,4 @@
-import { initialProgress, EGG_CRACK_TARGET, MAX_GARDEN, MAX_FAMILY_WORDS, MAX_FAMILY_WORD_LEN, type Progress, type GardenPlant } from './progress'
+import { initialProgress, EGG_CRACK_TARGET, MAX_GARDEN, MAX_FAMILY_WORDS, MAX_FAMILY_WORD_LEN, MAX_TIME_LIMIT_MIN, type Progress, type GardenPlant } from './progress'
 import { isKnownItem, getItem, DEFAULT_OWNED_IDS, type ItemCategory, type Outfit } from '../princess/catalog'
 import { getSticker } from '../reward/stickers'
 import { getPet } from '../reward/pets'
@@ -72,7 +72,17 @@ export function loadProgress(): Progress {
     const familyWords = Array.from(new Set((Array.isArray(parsed.familyWords) ? parsed.familyWords : [])
       .filter((w): w is string => typeof w === 'string' && w.trim().length > 0 && w.trim().length <= MAX_FAMILY_WORD_LEN)
       .map((w) => w.trim()))).slice(0, MAX_FAMILY_WORDS)
-    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers, lastPlayedDate, streak, learnedWords, reviewWords, playLog, dailyGoal, hatchedPets, eggCrackStep, garden, lastChestDate, royalUnlocked, lessonStars, familyWords }
+    // 시간 제한(분)·놀이 시간 로그·보너스 로그 검증
+    const timeLimitMin = typeof parsed.timeLimitMin === 'number' && Number.isFinite(parsed.timeLimitMin)
+      ? Math.max(0, Math.min(MAX_TIME_LIMIT_MIN, Math.round(parsed.timeLimitMin))) : 0
+    const secondsLog = (raw: unknown): Record<string, number> =>
+      (raw && typeof raw === 'object' && !Array.isArray(raw))
+        ? Object.fromEntries(Object.entries(raw as Record<string, unknown>)
+          .filter(([k, v]) => /^\d{4}-\d{2}-\d{2}$/.test(k) && typeof v === 'number' && Number.isFinite(v) && v >= 0)) as Record<string, number>
+        : {}
+    const playSecondsLog = secondsLog(parsed.playSecondsLog)
+    const timeBonusLog = secondsLog(parsed.timeBonusLog)
+    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers, lastPlayedDate, streak, learnedWords, reviewWords, playLog, dailyGoal, hatchedPets, eggCrackStep, garden, lastChestDate, royalUnlocked, lessonStars, familyWords, timeLimitMin, playSecondsLog, timeBonusLog }
   } catch {
     return initialProgress
   }

@@ -34,10 +34,15 @@ export interface Progress {
   royalUnlocked: string[]   // 실사 공주 룩 잠금 해제 id(기본 1개 무료)
   lessonStars: Record<string, number> // 레슨별 마스터리 별(1~3, 최고 기록)
   familyWords: string[]     // 부모가 넣은 우리 가족 단어(이름·엄마·아빠 등) — 개인화
+  timeLimitMin: number      // 하루 놀이 시간 제한(분, 0=제한 없음) — 부모·안전
+  playSecondsLog: Record<string, number> // 날짜 → 그날 실제 논 시간(초)
+  timeBonusLog: Record<string, number>    // 날짜 → 부모가 추가로 허락한 시간(초)
 }
 
 export const MAX_FAMILY_WORDS = 12
 export const MAX_FAMILY_WORD_LEN = 8
+export const MAX_TIME_LIMIT_MIN = 120  // 시간 제한 상한(분)
+export const TIME_BONUS_MIN = 10       // 잠금 화면에서 보호자가 한 번에 늘리는 시간(분)
 
 export const initialProgress: Progress = {
   stars: 0,
@@ -60,6 +65,9 @@ export const initialProgress: Progress = {
   royalUnlocked: [DEFAULT_ROYAL],
   lessonStars: {},
   familyWords: [],
+  timeLimitMin: 0,
+  playSecondsLog: {},
+  timeBonusLog: {},
 }
 
 /** 오늘 완료한 놀이 수 +1 기록(부모 리포트용). 최근 60일만 보관. */
@@ -259,4 +267,49 @@ export function unlockRoyal(p: Progress, id: string): Progress {
   if (!look || p.royalUnlocked.includes(id)) return p
   if (p.stars < look.cost) return p
   return { ...p, stars: p.stars - look.cost, royalUnlocked: [...p.royalUnlocked, id] }
+}
+
+// ---- 부모·안전: 하루 놀이 시간 제한(스크린타임) ----
+/** 하루 놀이 시간 제한(분)을 설정. 0=제한 없음, 상한 MAX_TIME_LIMIT_MIN. */
+export function setTimeLimit(p: Progress, min: number): Progress {
+  const next = Math.max(0, Math.min(MAX_TIME_LIMIT_MIN, Math.round(min)))
+  if (next === p.timeLimitMin) return p
+  return { ...p, timeLimitMin: next }
+}
+
+/** 오늘 논 시간(초)을 누적. sec는 0~3600으로 클램프(이상치 방어). 최근 60일만 보관. */
+export function addPlaySeconds(p: Progress, today: string, sec: number): Progress {
+  const add = Math.max(0, Math.min(3600, Math.round(sec)))
+  if (add === 0) return p
+  const next = { ...p.playSecondsLog, [today]: (p.playSecondsLog[today] ?? 0) + add }
+  const keys = Object.keys(next).sort()
+  while (keys.length > 60) { const k = keys.shift()!; delete next[k] }
+  return { ...p, playSecondsLog: next }
+}
+
+/** 잠금 화면에서 보호자가 오늘 추가로 허락한 시간(분)을 더한다. */
+export function grantBonusMinutes(p: Progress, today: string, min: number): Progress {
+  const add = Math.max(0, Math.round(min)) * 60
+  if (add === 0) return p
+  const next = { ...p.timeBonusLog, [today]: (p.timeBonusLog[today] ?? 0) + add }
+  const keys = Object.keys(next).sort()
+  while (keys.length > 60) { const k = keys.shift()!; delete next[k] }
+  return { ...p, timeBonusLog: next }
+}
+
+/** 오늘 논 시간(초). */
+export function playSecondsToday(p: Progress, today: string): number {
+  return p.playSecondsLog[today] ?? 0
+}
+
+/** 오늘 허용된 총 시간(초): 제한 + 보너스. 제한 없음(0)이면 Infinity. */
+export function allowedSecondsToday(p: Progress, today: string): number {
+  if (p.timeLimitMin <= 0) return Infinity
+  return p.timeLimitMin * 60 + (p.timeBonusLog[today] ?? 0)
+}
+
+/** 오늘 놀이 시간을 다 썼는지(제한 켜져 있고 사용량 ≥ 허용량). */
+export function isOverTimeLimit(p: Progress, today: string): boolean {
+  if (p.timeLimitMin <= 0) return false
+  return playSecondsToday(p, today) >= allowedSecondsToday(p, today)
 }

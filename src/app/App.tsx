@@ -18,6 +18,7 @@ import { WordBook } from '../reward/WordBook'
 import { Badges } from '../reward/Badges'
 import { ReviewSession } from './ReviewSession'
 import { ParentReport } from './ParentReport'
+import { TimeGuard } from './TimeGuard'
 import { FitShell } from './FitShell'
 import { resumeAudio, startBgm } from '../audio/sound'
 
@@ -58,7 +59,9 @@ export function App() {
     <ProgressProvider>
       <NavigationProvider>
         <FitShell>
-          <Router />
+          <TimeGuard>
+            <Router />
+          </TimeGuard>
         </FitShell>
       </NavigationProvider>
     </ProgressProvider>
