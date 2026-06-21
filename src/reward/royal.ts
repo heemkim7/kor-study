@@ -34,10 +34,11 @@ export const ROYAL_CATEGORIES: { key: RoyalCategory; label: string; emoji: strin
 ]
 
 // 부위별 기본 좌표(아이템마다 미세 조정 가능). 3:4 인형 미리보기 기준(라이브에서 튜닝).
+// 정면·대칭 베이스(base-rose) 기준 정밀 앵커(머리 꼭대기 y~9%, 목선 y~24%, 중심 x=50%).
 const POS: Record<RoyalCategory, { xPct: number; yPct: number; wPct: number }> = {
-  crown: { xPct: 50, yPct: 3, wPct: 27 },
-  hair: { xPct: 50, yPct: 5, wPct: 33 },
-  necklace: { xPct: 50, yPct: 30, wPct: 23 },
+  crown: { xPct: 50, yPct: 7, wPct: 27 },
+  hair: { xPct: 50, yPct: 9, wPct: 31 },
+  necklace: { xPct: 50, yPct: 22, wPct: 16 },
   shoes: { xPct: 50, yPct: 90, wPct: 30 },
   hand: { xPct: 72, yPct: 40, wPct: 15 },
 }
