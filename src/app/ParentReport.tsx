@@ -18,6 +18,8 @@ export function ParentReport() {
   const { progress, dispatch } = useProgress()
   const [passed, setPassed] = useState(false)
   const [familyInput, setFamilyInput] = useState('')
+  const [resetArmed, setResetArmed] = useState(false)
+  const [unlockedMsg, setUnlockedMsg] = useState(false)
 
   const stats = useMemo(() => {
     const done = new Set(progress.completedLessons)
@@ -206,6 +208,50 @@ export function ParentReport() {
     </div>
   )
 
+  // 관리자 테스트 모드 — 잠금 없이 다 눌러볼 수 있게(보호자 게이트 뒤에서만 노출)
+  const testBlock = (
+    <div style={{ width: '100%', background: 'var(--c-card)', borderRadius: 'var(--radius-lg)',
+      padding: 16, boxShadow: 'var(--shadow-card)', border: '2px dashed #d8c6ad' }}>
+      <div style={{ fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800, marginBottom: 4 }}>🔧 관리자 테스트</div>
+      <div style={{ fontSize: 12, color: 'var(--c-ink-soft)', marginBottom: 10 }}>
+        잠금을 모두 풀어 공주·꾸미기·수집을 전부 둘러볼 수 있어요(별 999, 시간제한 해제).
+      </div>
+      <button onClick={() => { dispatch({ type: 'devUnlockAll' }); setUnlockedMsg(true); window.setTimeout(() => setUnlockedMsg(false), 2500) }}
+        style={{ width: '100%', height: 48, borderRadius: 'var(--radius-md)', border: 'none',
+          fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800, color: '#fff',
+          background: 'var(--c-accent)', boxShadow: '0 4px 0 #d98a3a', cursor: 'pointer' }}>
+        🔓 전부 잠금 해제
+      </button>
+      {unlockedMsg && <div style={{ fontSize: 13, color: '#3ec46d', fontWeight: 800, marginTop: 8 }}>✓ 모두 열렸어요! 이제 다 눌러볼 수 있어요.</div>}
+
+      <div style={{ height: 1, background: '#eadfce', margin: '14px 0' }} />
+      {!resetArmed ? (
+        <button onClick={() => setResetArmed(true)}
+          style={{ width: '100%', height: 44, borderRadius: 'var(--radius-md)', border: '2px solid #e9b8a0',
+            fontFamily: 'var(--font-warm)', fontSize: 14, fontWeight: 800, color: '#c0563a',
+            background: '#fff', cursor: 'pointer' }}>
+          🔄 처음 상태로 초기화
+        </button>
+      ) : (
+        <div>
+          <div style={{ fontSize: 13, color: 'var(--c-pink)', fontWeight: 800, marginBottom: 8 }}>
+            정말 처음 상태로 되돌릴까요? (별·수집·진행이 모두 지워져요)
+          </div>
+          <div style={{ display: 'flex', gap: 8 }}>
+            <button onClick={() => { dispatch({ type: 'resetProgress' }); setResetArmed(false) }}
+              style={{ flex: 1, height: 44, borderRadius: 'var(--radius-md)', border: 'none',
+                fontFamily: 'var(--font-warm)', fontSize: 14, fontWeight: 800, color: '#fff',
+                background: '#d9534f', cursor: 'pointer' }}>네, 초기화</button>
+            <button onClick={() => setResetArmed(false)}
+              style={{ flex: 1, height: 44, borderRadius: 'var(--radius-md)', border: '2px solid #eadfce',
+                fontFamily: 'var(--font-warm)', fontSize: 14, fontWeight: 800, color: 'var(--c-ink)',
+                background: '#fff', cursor: 'pointer' }}>취소</button>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+
   // 컬럼 폭 380 고정. 가로면 [통계+목표 | 그래프+단어] 2단으로 펼침.
   const colStyle = { display: 'flex', flexDirection: 'column' as const, gap: 14, width: '100%', maxWidth: 380 }
   return (
@@ -222,7 +268,7 @@ export function ParentReport() {
       <div style={{ display: 'flex', flexDirection: landscape ? 'row' : 'column', alignItems: 'flex-start',
         justifyContent: 'center', gap: landscape ? 16 : 14, width: '100%', maxWidth: landscape ? 790 : 380 }}>
         <div style={colStyle}>{statsBlock}{goalBlock}{timeBlock}</div>
-        <div style={colStyle}>{graphBlock}{familyBlock}{wordsBlock}</div>
+        <div style={colStyle}>{graphBlock}{familyBlock}{wordsBlock}{testBlock}</div>
       </div>
     </div>
   )

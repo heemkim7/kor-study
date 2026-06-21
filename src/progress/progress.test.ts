@@ -1,5 +1,7 @@
 import { describe, it, expect } from 'vitest'
-import { initialProgress, addStars, learnWords, completeLesson, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, unlockRoyal, masteryStars, setLessonStars, addFamilyWord, removeFamilyWord, setTimeLimit, addPlaySeconds, grantBonusMinutes, isOverTimeLimit, playSecondsToday, MAX_FAMILY_WORDS, MAX_FAMILY_WORD_LEN, MAX_TIME_LIMIT_MIN, TIME_BONUS_MIN, EGG_CRACK_TARGET, PLANT_COST, CHEST_STARS, CHEST_MILESTONE_STARS } from './progress'
+import { initialProgress, addStars, learnWords, completeLesson, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, unlockRoyal, masteryStars, setLessonStars, addFamilyWord, removeFamilyWord, setTimeLimit, addPlaySeconds, grantBonusMinutes, isOverTimeLimit, playSecondsToday, devUnlockAll, resetProgress, MAX_FAMILY_WORDS, MAX_FAMILY_WORD_LEN, MAX_TIME_LIMIT_MIN, TIME_BONUS_MIN, EGG_CRACK_TARGET, PLANT_COST, CHEST_STARS, CHEST_MILESTONE_STARS } from './progress'
+import { ROYAL_LOOKS } from '../reward/royal'
+import { CATALOG } from '../princess/catalog'
 import { GACHA_COST } from '../princess/economy'
 
 describe('addStars', () => {
@@ -202,6 +204,23 @@ describe('매일 선물상자(openChest)', () => {
   it('스트릭 7일 마일스톤이면 더 큰 선물', () => {
     const seven = { ...initialProgress, streak: 7 }
     expect(openChest(seven, '2026-06-19').stars).toBe(CHEST_MILESTONE_STARS)
+  })
+})
+
+describe('관리자 테스트 모드(devUnlockAll/resetProgress)', () => {
+  it('전부 잠금 해제: 공주·꾸미기 전부 보유, 별 999+, 시간제한 해제', () => {
+    const p = devUnlockAll(initialProgress)
+    expect(p.royalUnlocked).toEqual(expect.arrayContaining(ROYAL_LOOKS.map((l) => l.id)))
+    expect(p.ownedItems).toEqual(expect.arrayContaining(CATALOG.map((i) => i.id)))
+    expect(p.stars).toBeGreaterThanOrEqual(999)
+    expect(p.timeLimitMin).toBe(0)
+  })
+  it('별이 이미 999보다 많으면 줄지 않음', () => {
+    const rich = addStars(initialProgress, 5000)
+    expect(devUnlockAll(rich).stars).toBe(5000)
+  })
+  it('초기화는 처음 상태를 반환', () => {
+    expect(resetProgress()).toBe(initialProgress)
   })
 })
 

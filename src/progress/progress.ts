@@ -1,8 +1,8 @@
-import { DEFAULT_OUTFIT, DEFAULT_OWNED_IDS, getItem, type Outfit } from '../princess/catalog'
+import { CATALOG, DEFAULT_OUTFIT, DEFAULT_OWNED_IDS, getItem, type Outfit } from '../princess/catalog'
 import { STICKERS } from '../reward/stickers'
-import { nextUnhatchedPet } from '../reward/pets'
+import { PETS, nextUnhatchedPet } from '../reward/pets'
 import { getPlant, MAX_PLANT_STAGE } from '../reward/plants'
-import { getRoyalLook, DEFAULT_ROYAL } from '../reward/royal'
+import { getRoyalLook, ROYAL_LOOKS, DEFAULT_ROYAL } from '../reward/royal'
 
 // 보상 경제 상수
 export const EGG_CRACK_TARGET = 5   // 알을 이만큼 두드리면 부화
@@ -312,4 +312,24 @@ export function allowedSecondsToday(p: Progress, today: string): number {
 export function isOverTimeLimit(p: Progress, today: string): boolean {
   if (p.timeLimitMin <= 0) return false
   return playSecondsToday(p, today) >= allowedSecondsToday(p, today)
+}
+
+// ---- 관리자 테스트 모드 ----
+/** 테스트용: 별·공주·꾸미기 아이템·수집을 전부 열어 잠금 없이 다 둘러볼 수 있게 한다.
+ *  (보호자 게이트 뒤에서만 호출) 진행 자체는 보존하고 잠금만 푼다. */
+export function devUnlockAll(p: Progress): Progress {
+  return {
+    ...p,
+    stars: Math.max(p.stars, 999),
+    ownedItems: Array.from(new Set([...p.ownedItems, ...CATALOG.map((i) => i.id)])),
+    royalUnlocked: Array.from(new Set([...p.royalUnlocked, ...ROYAL_LOOKS.map((l) => l.id)])),
+    collectedStickers: Array.from(new Set([...p.collectedStickers, ...STICKERS.map((s) => s.id)])),
+    hatchedPets: Array.from(new Set([...p.hatchedPets, ...PETS.map((pet) => pet.id)])),
+    timeLimitMin: 0, // 테스트 중 잠금 방해 없게
+  }
+}
+
+/** 테스트용: 모든 진행을 처음 상태로 초기화(새 사용자 흐름 점검용). */
+export function resetProgress(): Progress {
+  return initialProgress
 }

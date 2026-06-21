@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useReducer, type ReactNode } from 'react'
-import { addStars, completeLesson, learnWords, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, unlockRoyal, setLessonStars, addFamilyWord, removeFamilyWord, setTimeLimit, addPlaySeconds, grantBonusMinutes, type Progress } from './progress'
+import { addStars, completeLesson, learnWords, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, unlockRoyal, setLessonStars, addFamilyWord, removeFamilyWord, setTimeLimit, addPlaySeconds, grantBonusMinutes, devUnlockAll, resetProgress, type Progress } from './progress'
 import { loadProgress, saveProgress } from './storage'
 
 type Action =
@@ -25,6 +25,8 @@ type Action =
   | { type: 'setTimeLimit'; min: number }
   | { type: 'addPlaySeconds'; today: string; sec: number }
   | { type: 'grantBonusMinutes'; today: string; min: number }
+  | { type: 'devUnlockAll' }
+  | { type: 'resetProgress' }
 
 function reducer(state: Progress, action: Action): Progress {
   switch (action.type) {
@@ -51,6 +53,8 @@ function reducer(state: Progress, action: Action): Progress {
     case 'setTimeLimit': return setTimeLimit(state, action.min)
     case 'addPlaySeconds': return addPlaySeconds(state, action.today, action.sec)
     case 'grantBonusMinutes': return grantBonusMinutes(state, action.today, action.min)
+    case 'devUnlockAll': return devUnlockAll(state)
+    case 'resetProgress': return resetProgress()
   }
 }
 
