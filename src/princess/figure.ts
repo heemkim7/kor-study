@@ -342,19 +342,25 @@ function hemRuffle(): string {
 function dressLayer(d: DressPal, idPrefix: string, motif: Motif): string {
   const p: string[] = []
   const clipId = `${idPrefix}-skirt`
+  const gradId = `${idPrefix}-skgr`
+  // 새틴 그라데이션(위 밝고 아래 진하게) — 고급스러운 입체감
+  p.push(`<defs><linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">` +
+    `<stop offset="0" stop-color="${d.hi}"/><stop offset="0.42" stop-color="${d.main}"/><stop offset="1" stop-color="${d.sh}"/></linearGradient></defs>`)
   // 속치마
   p.push(pth(`M ${FCX - 30} ${WY} L ${FCX + 30} ${WY} L ${FCX + 150} ${HEMY} Q ${FCX} ${HEMY + 22} ${FCX - 150} ${HEMY} Z`, d.under))
   p.push(ell(FCX - 16, HEMY + 6, 12, 7, d.sh))
   p.push(ell(FCX + 16, HEMY + 6, 12, 7, d.sh))
   p.push(ell(FCX - 16, HEMY + 4, 10, 5, TRIM))
   p.push(ell(FCX + 16, HEMY + 4, 10, 5, TRIM))
-  // 겉치마 본체
-  p.push(pth(SKIRT_PATH, d.main))
+  // 겉치마 본체(그라데이션)
+  p.push(pth(SKIRT_PATH, `url(#${gradId})`))
   // 무늬(치마 모양으로 클리핑)
   p.push(`<clipPath id="${clipId}"><path d="${SKIRT_PATH}"/></clipPath>`)
   p.push(`<g clip-path="url(#${clipId})">${skirtMotifs(motif, d)}</g>`)
   // 음영·하이라이트(무늬 위로 은은하게)
   p.push(pth(`M ${FCX + 6} ${WY} L ${FCX + 28} ${WY} L ${FCX + 122} ${HEMY - 2} Q ${FCX + 72} ${HEMY + 2} ${FCX + 42} ${HEMY - 2} Z`, d.sh, 'opacity="0.35"'))
+  // 새틴 광택(왼쪽 위에서 비치는 부드러운 흰 빛 — 치마 모양 안쪽만)
+  p.push(`<g clip-path="url(#${clipId})">${ell(FCX - 28, WY + 120, 30, 150, TRIM, 'opacity="0.14"')}${ell(FCX - 40, WY + 80, 14, 90, TRIM, 'opacity="0.16"')}</g>`)
   p.push(stroke(`M ${FCX - 14} ${WY + 8} Q ${FCX - 54} ${HEMY - 90} ${FCX - 74} ${HEMY - 6}`, d.hi, 6, 'opacity="0.55"'))
   // 허리 새시 리본 꼬리
   p.push(sashTails(d))
@@ -373,10 +379,13 @@ function arms(): string {
   )
 }
 
-function bodice(d: DressPal): string {
+function bodice(d: DressPal, idPrefix: string): string {
   const p: string[] = []
+  const bg = `${idPrefix}-bdgr`
+  p.push(`<defs><linearGradient id="${bg}" x1="0" y1="0" x2="0" y2="1">` +
+    `<stop offset="0" stop-color="${d.hi}"/><stop offset="0.5" stop-color="${d.main}"/><stop offset="1" stop-color="${d.sh}"/></linearGradient></defs>`)
   p.push(pth(`M ${FCX - 36} ${SHY} Q ${FCX} ${SHY + 6} ${FCX + 36} ${SHY} L ${FCX + 28} ${WY} Q ${FCX} ${WY + 10} ${FCX - 28} ${WY} Z`, d.sh))
-  p.push(pth(`M ${FCX - 30} ${SHY + 2} Q ${FCX - 14} ${SHY + 20} ${FCX} ${SHY + 16} Q ${FCX + 14} ${SHY + 20} ${FCX + 30} ${SHY + 2} L ${FCX + 24} ${WY - 4} Q ${FCX} ${WY + 4} ${FCX - 24} ${WY - 4} Z`, d.main))
+  p.push(pth(`M ${FCX - 30} ${SHY + 2} Q ${FCX - 14} ${SHY + 20} ${FCX} ${SHY + 16} Q ${FCX + 14} ${SHY + 20} ${FCX + 30} ${SHY + 2} L ${FCX + 24} ${WY - 4} Q ${FCX} ${WY + 4} ${FCX - 24} ${WY - 4} Z`, `url(#${bg})`))
   p.push(ell(FCX - 40, SHY + 6, 18, 14, d.main))
   p.push(ell(FCX + 40, SHY + 6, 18, 14, d.main))
   p.push(ell(FCX - 40, SHY + 2, 8, 4, d.hi, 'opacity="0.7"'))
@@ -666,14 +675,15 @@ export function buildPrincessSvg(outfit: Partial<Outfit> = {}, opts: FigureOpts 
   // 머리 요소(헤어/얼굴/왕관)는 HEAD_TRANSFORM으로 키운다. 몸/소품은 그대로.
   const headWrap = (c: string) => `<g transform="${HEAD_TRANSFORM}">${c}</g>`
 
-  // 1) 뒤쪽: 망토·날개(몸) → 뒷머리(머리)
+  // 1) 뒤쪽: 바닥 그림자 → 망토·날개(몸) → 뒷머리(머리)
   const behind: string[] = []
+  behind.push(ell(FCX, HEMY + 18, 96, 14, '#00000016')) // 서 있는 바닥 그림자(입체감)
   if (acc === 'acc-cape') behind.push(cape())
   if (acc === 'acc-wings') behind.push(wings())
   behind.push(headWrap(backHair(h, style)))
 
   // 2) 몸통: 드레스·팔·상의·목·가슴 액세서리
-  const mid: string[] = [dressLayer(d, idPrefix, dressMotif(dressId)), arms(), bodice(d), neck()]
+  const mid: string[] = [dressLayer(d, idPrefix, dressMotif(dressId)), arms(), bodice(d, idPrefix), neck()]
   if (acc === 'acc-necklace') mid.push(necklacePendant())
   if (acc === 'acc-bowtie') mid.push(bowtieAcc())
 
