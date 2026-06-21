@@ -34,7 +34,7 @@ export function StickerBook() {
         놀이를 끝낼 때마다 새 스티커를 모아요!
       </p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${landscape ? 7 : 4}, 1fr)`, gap: 10,
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${landscape ? 6 : 4}, 1fr)`, gap: 14,
         width: '100%', maxWidth: landscape ? 760 : 380, marginTop: 6 }}>
         {STICKERS.map((s) => {
           const have = collected.has(s.id)

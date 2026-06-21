@@ -82,7 +82,7 @@ export function LetterHunt({ targetWords, pool, onCorrect, onWrong, onDone }: {
         <SpeakerButton size={52} onClick={() => speak(`${target} 글자를 찾아요`)} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, marginTop: 4, width: '100%', maxWidth: 300 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginTop: 4, width: '100%', maxWidth: 330 }}>
         {grid.map((cell, idx) => {
           const hit = found.includes(idx)
           return (

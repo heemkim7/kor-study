@@ -65,7 +65,7 @@ export function Compare({ numbers, onCorrect, onWrong, onDone }: {
 
   const panel = (side: number, count: number, emoji: string) => (
     <button onClick={() => pick(side)} className={wrong === side ? 'kp-shake' : undefined}
-      style={{ flex: 1, minHeight: 220, display: 'flex', flexWrap: 'wrap', gap: 6, alignContent: 'center',
+      style={{ flex: 1, minHeight: 220, display: 'flex', flexWrap: 'wrap', gap: 10, alignContent: 'center',
         justifyContent: 'center', padding: 14, border: solved && side === moreSide ? '4px solid var(--c-correct)' : 'none',
         borderRadius: 'var(--radius-lg)', background: 'var(--c-card)', boxShadow: 'var(--shadow-card)' }}>
       {Array.from({ length: count }, (_, k) => <span key={k} style={{ fontSize: 34, lineHeight: 1 }}>{emoji}</span>)}

@@ -150,30 +150,30 @@ export function DrawBoard() {
 
   const swatch = (bg: string, active: boolean, onClick: () => void, label?: string) => (
     <button onClick={onClick} aria-label={label} style={{
-      width: 34, height: 34, borderRadius: 999, border: active ? '3px solid var(--c-ink)' : '3px solid #fff',
+      width: 42, height: 42, borderRadius: 999, border: active ? '3px solid var(--c-ink)' : '3px solid #fff',
       background: bg, boxShadow: 'var(--shadow-card)', cursor: 'pointer', flex: '0 0 auto',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>{label && bg === '#fff' ? '🧽' : ''}</button>
+      display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>{label && bg === '#fff' ? '🧽' : ''}</button>
   )
 
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column',
       padding: 'max(10px, env(safe-area-inset-top)) 10px 10px', gap: 8, position: 'relative' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <button onClick={() => go({ name: 'home' })} aria-label="집으로"
-          style={{ width: 40, height: 40, borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)',
-            fontSize: 18, boxShadow: 'var(--shadow-card)', cursor: 'pointer', flex: '0 0 auto' }}>🏠</button>
+          style={{ width: 50, height: 50, borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)',
+            fontSize: 24, boxShadow: 'var(--shadow-card)', cursor: 'pointer', flex: '0 0 auto' }}>🏠</button>
         {/* 템플릿(여러 버전) */}
-        <div style={{ display: 'flex', gap: 6, overflowX: 'auto', flex: 1 }}>
+        <div style={{ display: 'flex', gap: 10, overflowX: 'auto', flex: 1 }}>
           {TEMPLATES.map((t) => (
             <button key={t.id} onClick={() => setTemplate(t.id)} style={{
-              width: 40, height: 40, borderRadius: 'var(--radius-md)', border: 'none', flex: '0 0 auto',
+              width: 50, height: 50, borderRadius: 'var(--radius-md)', border: 'none', flex: '0 0 auto',
               background: template === t.id ? 'var(--c-accent)' : 'var(--c-card)',
-              fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>{t.label}</button>
+              fontSize: 24, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>{t.label}</button>
           ))}
         </div>
         <button onClick={() => reset(template)} aria-label="다 지우기" style={{
-          width: 40, height: 40, borderRadius: 'var(--radius-md)', border: 'none', flex: '0 0 auto',
-          background: 'var(--c-card)', fontSize: 18, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>🗑️</button>
+          width: 50, height: 50, borderRadius: 'var(--radius-md)', border: 'none', flex: '0 0 auto',
+          background: 'var(--c-card)', fontSize: 24, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>🗑️</button>
       </div>
 
       <canvas ref={canvasRef} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}
@@ -181,13 +181,13 @@ export function DrawBoard() {
           background: '#fff', boxShadow: 'var(--shadow-card)', touchAction: 'none', display: 'block' }} />
 
       {/* 색·붓크기·지우개 */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
         {COLORS.map((c) => swatch(c, !erasing && color === c, () => { setColor(c); setErasing(false) }))}
         {swatch('#fff', erasing, () => setErasing(true), '지우개')}
         <div style={{ width: 1, height: 28, background: '#e3cba8', margin: '0 2px' }} />
         {SIZES.map((s) => (
           <button key={s.key} onClick={() => setSizeKey(s.key)} aria-label={`붓 ${s.key}`} style={{
-            width: 36, height: 36, borderRadius: 999, border: sizeKey === s.key ? '3px solid var(--c-ink)' : '3px solid #fff',
+            width: 44, height: 44, borderRadius: 999, border: sizeKey === s.key ? '3px solid var(--c-ink)' : '3px solid #fff',
             background: 'var(--c-card)', boxShadow: 'var(--shadow-card)', cursor: 'pointer', flex: '0 0 auto',
             display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <span style={{ width: s.dot, height: s.dot, borderRadius: 999, background: '#3a3a44', display: 'block' }} />

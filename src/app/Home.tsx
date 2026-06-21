@@ -89,56 +89,56 @@ export function Home() {
         </div>
         <div style={{ fontSize: 24 }}>▶</div>
       </button>
-      <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+      <div style={{ display: 'flex', gap: 12, width: '100%' }}>
         <button onClick={() => go({ name: 'stickers' })}
-          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '12px 8px',
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '18px 8px', minHeight: 92,
             borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer',
             background: 'linear-gradient(135deg,#fff3d6,#fffaf0)', boxShadow: 'var(--shadow-card)' }}>
-          <div style={{ fontSize: 30 }}>🏅</div>
+          <div style={{ fontSize: 40 }}>🏅</div>
           <div style={{ fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800, color: 'var(--c-accent-strong)' }}>스티커 책</div>
           <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>{progress.collectedStickers.length} / {STICKERS.length}장</div>
         </button>
         <button onClick={() => go({ name: 'draw' })}
-          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '12px 8px',
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '18px 8px', minHeight: 92,
             borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer',
             background: 'linear-gradient(135deg,#d9f2ff,#f0fbff)', boxShadow: 'var(--shadow-card)' }}>
-          <div style={{ fontSize: 30 }}>🎨</div>
+          <div style={{ fontSize: 40 }}>🎨</div>
           <div style={{ fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800, color: '#3aa0d0' }}>그림 그리기</div>
           <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>색칠하고 그려요</div>
         </button>
       </div>
-      <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+      <div style={{ display: 'flex', gap: 12, width: '100%' }}>
         <button onClick={() => go({ name: 'wordbook' })}
-          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '12px 8px',
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '18px 8px', minHeight: 92,
             borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer',
             background: 'linear-gradient(135deg,#ffeede,#fff8f0)', boxShadow: 'var(--shadow-card)' }}>
-          <div style={{ fontSize: 30 }}>📚</div>
+          <div style={{ fontSize: 40 }}>📚</div>
           <div style={{ fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800, color: '#d98a3a' }}>낱말 도감</div>
           <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>배운 단어 모으기</div>
         </button>
         <button onClick={() => go({ name: 'badges' })}
-          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '12px 8px',
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '18px 8px', minHeight: 92,
             borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer',
             background: 'linear-gradient(135deg,#fff0d6,#fffbf0)', boxShadow: 'var(--shadow-card)' }}>
-          <div style={{ fontSize: 30 }}>🏆</div>
+          <div style={{ fontSize: 40 }}>🏆</div>
           <div style={{ fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800, color: '#e0a020' }}>내 뱃지</div>
           <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>업적을 모아요</div>
         </button>
       </div>
-      <div style={{ display: 'flex', gap: 10, width: '100%' }}>
+      <div style={{ display: 'flex', gap: 12, width: '100%' }}>
         <button onClick={() => go({ name: 'egg' })}
-          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '12px 8px',
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '18px 8px', minHeight: 92,
             borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer',
             background: 'linear-gradient(135deg,#ffe1ec,#fff2f7)', boxShadow: 'var(--shadow-card)' }}>
-          <div style={{ fontSize: 30 }}>🥚</div>
+          <div style={{ fontSize: 40 }}>🥚</div>
           <div style={{ fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800, color: 'var(--c-pink)' }}>알 키우기</div>
           <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>{progress.hatchedPets.length} / {PETS.length}마리</div>
         </button>
         <button onClick={() => go({ name: 'garden' })}
-          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '12px 8px',
+          style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, padding: '18px 8px', minHeight: 92,
             borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer',
             background: 'linear-gradient(135deg,#e3f7e8,#f3fff7)', boxShadow: 'var(--shadow-card)' }}>
-          <div style={{ fontSize: 30 }}>🪴</div>
+          <div style={{ fontSize: 40 }}>🪴</div>
           <div style={{ fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800, color: '#3ec46d' }}>마법 정원</div>
           <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>꽃을 키워요</div>
         </button>
@@ -168,16 +168,16 @@ export function Home() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%',
         maxWidth: landscape ? COL * 2 + 24 : COL }}>
         <button onClick={() => { resumeAudio(); setBgmOn(toggleBgm()) }} aria-label={bgmOn ? '배경음악 끄기' : '배경음악 켜기'}
-          style={{ width: 40, height: 40, borderRadius: 999, border: 'none', background: 'var(--c-card)',
-            fontSize: 18, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>{bgmOn ? '🔊' : '🔇'}</button>
+          style={{ width: 54, height: 54, borderRadius: 999, border: 'none', background: 'var(--c-card)',
+            fontSize: 24, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>{bgmOn ? '🔊' : '🔇'}</button>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ fontWeight: 800, color: 'var(--c-accent-strong)' }}>
             {progress.streak > 0 && <>🔥 {progress.streak} · </>}⭐ {progress.stars} · 🏅 {progress.stickers}
           </div>
           <button onClick={openTheChest} aria-label="오늘의 선물상자" className={canOpen ? 'kp-wiggle' : undefined}
-            style={{ width: 40, height: 40, borderRadius: 999, border: 'none',
+            style={{ width: 54, height: 54, borderRadius: 999, border: 'none',
               background: canOpen ? 'linear-gradient(135deg,#ffd24d,#ff9ec7)' : 'var(--c-card)',
-              fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>🎁</button>
+              fontSize: 26, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>🎁</button>
         </div>
       </div>
 

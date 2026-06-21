@@ -60,20 +60,20 @@ export function CountTap({ numbers, onCorrect, onWrong, onDone }: {
       gap: 16, padding: 24, position: 'relative' }}>
       {solved && <Sparkles />}
       <h2 style={{ fontFamily: 'var(--font-warm)', fontSize: 24 }}>몇 개일까요?</h2>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', maxWidth: 320,
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10, justifyContent: 'center', maxWidth: 340,
         background: 'var(--c-card)', borderRadius: 'var(--radius-lg)', padding: 16, boxShadow: 'var(--shadow-card)' }}>
         {Array.from({ length: answer }, (_, i) => (
           <button key={i} onClick={() => tapEmoji(i)} className={counted.includes(i) ? 'kp-pop' : undefined}
-            style={{ fontSize: 40, lineHeight: 1, border: 'none', background: 'transparent',
+            style={{ fontSize: 42, lineHeight: 1, border: 'none', background: 'transparent', padding: 8, minWidth: 58, minHeight: 58,
               opacity: counted.includes(i) ? 1 : 0.85, filter: counted.includes(i) ? 'drop-shadow(0 0 4px #ffd24d)' : 'none' }}>
             {emoji}
           </button>
         ))}
       </div>
-      <div style={{ display: 'flex', gap: 14, justifyContent: 'center' }}>
+      <div style={{ display: 'flex', gap: 16, justifyContent: 'center' }}>
         {choices.map((d) => (
           <button key={d} onClick={() => pick(d)} className={wrong === d ? 'kp-shake' : undefined}
-            style={{ width: 76, height: 76, borderRadius: 'var(--radius-lg)', border: 'none',
+            style={{ width: 84, height: 84, borderRadius: 'var(--radius-lg)', border: 'none',
               fontFamily: 'var(--font-warm)', fontSize: 40, fontWeight: 800, color: 'var(--c-ink)',
               background: 'var(--c-card)', boxShadow: '0 5px 0 #f1ddc6' }}>
             {d}

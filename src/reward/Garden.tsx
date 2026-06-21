@@ -50,7 +50,7 @@ export function Garden() {
       </div>
       <p style={{ fontSize: 13, color: 'var(--c-ink-soft)', marginTop: -2 }}>놀이를 하면 꽃이 무럭무럭 자라요 · 꽃을 누르면 물을 줘요</p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 10, width: '100%', maxWidth: 460,
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, width: '100%', maxWidth: 460,
         marginTop: 4, background: 'linear-gradient(180deg,#eafaf0,#f4fff8)', borderRadius: 'var(--radius-lg)', padding: 12,
         boxShadow: 'var(--shadow-card)' }}>
         {slots.map((s) => {

@@ -86,7 +86,7 @@ export function MakeSyllable({ glyphs, onCorrect, onWrong, onDone }: {
   const preview = cho && jung && (!needJong || jong) ? (composeSyllable(cho, jung, needJong ? (jong as string) : '') ?? '') : ''
 
   const slot = (filled: string | null, label: string) => (
-    <div style={{ width: 58, height: 62, display: 'flex', alignItems: 'center', justifyContent: 'center',
+    <div style={{ width: 64, height: 66, display: 'flex', alignItems: 'center', justifyContent: 'center',
       borderRadius: 'var(--radius-md)', background: filled ? 'var(--c-card)' : '#fff',
       border: filled ? 'none' : '3px dashed #e3cba8', boxShadow: filled ? 'var(--shadow-card)' : 'none',
       fontFamily: 'var(--font-warm)', fontSize: 34, fontWeight: 800, color: 'var(--c-ink)' }}>
@@ -96,8 +96,8 @@ export function MakeSyllable({ glyphs, onCorrect, onWrong, onDone }: {
 
   const tileBtn = (val: string, kind: Slot, active: boolean) => (
     <button key={kind + val} onClick={() => choose(kind, val)} disabled={solved}
-      style={{ width: 54, height: 54, borderRadius: 'var(--radius-md)', border: 'none',
-        fontFamily: 'var(--font-warm)', fontSize: 30, fontWeight: 800,
+      style={{ width: 66, height: 66, borderRadius: 'var(--radius-md)', border: 'none',
+        fontFamily: 'var(--font-warm)', fontSize: 34, fontWeight: 800,
         color: active ? '#fff' : 'var(--c-ink)', background: active ? 'var(--c-accent)' : 'var(--c-card)',
         boxShadow: '0 4px 0 #f1ddc6' }}>
       {val}
@@ -122,7 +122,7 @@ export function MakeSyllable({ glyphs, onCorrect, onWrong, onDone }: {
       </div>
 
       {/* 조립 슬롯: 자음 + 모음 (+ 받침) = 글자 */}
-      <div className={shaking ? 'kp-shake' : undefined} style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap', justifyContent: 'center' }}>
+      <div className={shaking ? 'kp-shake' : undefined} style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
         {slot(cho, '자음')}
         {plus}
         {slot(jung, '모음')}
@@ -137,16 +137,16 @@ export function MakeSyllable({ glyphs, onCorrect, onWrong, onDone }: {
       </div>
 
       {/* 자음 타일 */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', marginTop: 2 }}>
+      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center', marginTop: 2 }}>
         {consTiles.map((c) => tileBtn(c, 'cho', cho === c))}
       </div>
       {/* 모음 타일 */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+      <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
         {vowTiles.map((v) => tileBtn(v, 'jung', jung === v))}
       </div>
       {/* 받침 타일 */}
       {needJong && (
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap', justifyContent: 'center' }}>
           <span style={{ alignSelf: 'center', fontSize: 13, color: 'var(--c-ink-soft)', fontWeight: 800, marginRight: 2 }}>받침</span>
           {jongTiles.map((j) => tileBtn(j, 'jong', jong === j))}
         </div>

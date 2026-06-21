@@ -83,9 +83,9 @@ export function BuildWord({ targetWords, pool, onCorrect, onWrong, onDone, choic
       </div>
 
       {/* 정답 슬롯 */}
-      <div style={{ display: 'flex', gap: 10 }}>
+      <div style={{ display: 'flex', gap: 14 }}>
         {slots.map((_, i) => (
-          <div key={i} style={{ width: 64, height: 64, display: 'flex', alignItems: 'center',
+          <div key={i} style={{ width: 74, height: 74, display: 'flex', alignItems: 'center',
             justifyContent: 'center', borderRadius: 'var(--radius-md)',
             background: placed[i] ? 'var(--c-correct)' : '#fff',
             border: placed[i] ? 'none' : '3px dashed #e3cba8',
@@ -97,12 +97,12 @@ export function BuildWord({ targetWords, pool, onCorrect, onWrong, onDone, choic
       </div>
 
       {/* 음절 타일 */}
-      <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', justifyContent: 'center', marginTop: 6 }}>
+      <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center', marginTop: 6 }}>
         {tiles.map((t, idx) => {
           const used = usedIdx.includes(idx)
           return (
             <button key={idx} onClick={() => tapTile(idx)} disabled={used} className={wrongIdx === idx ? 'kp-shake' : undefined}
-              style={{ width: 66, height: 66, borderRadius: 'var(--radius-md)', border: 'none',
+              style={{ width: 76, height: 76, borderRadius: 'var(--radius-md)', border: 'none',
                 fontFamily: 'var(--font-warm)', fontSize: 34, fontWeight: 800, color: 'var(--c-ink)',
                 background: used ? '#f3e7d6' : 'var(--c-card)',
                 opacity: used ? 0.35 : 1,

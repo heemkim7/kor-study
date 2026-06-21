@@ -185,11 +185,11 @@ export function DressUp() {
         width: '100%', maxWidth: landscape ? 460 : 420 }}>
 
       {/* 카테고리 탭 */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center', maxWidth: 420 }}>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', justifyContent: 'center', maxWidth: 440 }}>
         {CATEGORY_ORDER.map((cat) => (
           <button key={cat} onClick={() => setTab(cat)}
-            style={{ border: 'none', borderRadius: 999, padding: '9px 16px', minHeight: 44,
-              fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800,
+            style={{ border: 'none', borderRadius: 999, padding: '11px 18px', minHeight: 50,
+              fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800,
               color: tab === cat ? '#fff' : 'var(--c-ink)',
               background: tab === cat ? 'var(--c-accent)' : 'var(--c-card)',
               boxShadow: 'var(--shadow-card)' }}>
@@ -199,7 +199,7 @@ export function DressUp() {
       </div>
 
       {/* 아이템 그리드 */}
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${landscape ? 4 : 3}, 1fr)`, gap: 10, width: '100%', maxWidth: landscape ? 460 : 420 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${landscape ? 4 : 3}, 1fr)`, gap: 14, width: '100%', maxWidth: landscape ? 480 : 420 }}>
         {items.map((item) => {
           const owned = progress.ownedItems.includes(item.id)
           const equipped = outfit[item.category] === item.id

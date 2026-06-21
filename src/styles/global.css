@@ -22,9 +22,14 @@ body {
 button {
   font-family: inherit; cursor: pointer;
   touch-action: manipulation; -webkit-user-select: none; user-select: none;
-  transition: transform .06s ease, filter .06s ease;
+  transition: transform .08s ease, filter .08s ease;
 }
-button:active:not(:disabled) { transform: translateY(2px); filter: brightness(0.97); }
+/* 유아용: 누르면 확실히 반응(살짝 작아지고 어두워짐) — '눌렸다'를 또렷이 전달 */
+button:active:not(:disabled) { transform: scale(0.93); filter: brightness(0.92); }
+
+/* 유아용 큰 터치 영역 보조 클래스 — 작은 아이콘 버튼에 붙여 손가락이 빗나가도 눌리게 */
+.kp-tap { position: relative; }
+.kp-tap::after { content: ''; position: absolute; inset: -8px; }
 
 /* 오답 시 흔들림(소리 꺼져 있어도 '아니야'를 형태로 전달) */
 @keyframes kp-shake { 0%,100%{transform:translateX(0)} 20%,60%{transform:translateX(-7px)} 40%,80%{transform:translateX(7px)} }

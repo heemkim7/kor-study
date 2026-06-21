@@ -61,7 +61,7 @@ export function MemoryGame({ targetWords, onCorrect, onDone }: {
       gap: 18, padding: '20px 16px', position: 'relative' }}>
       {celebrate && <Sparkles />}
       <h2 style={{ fontFamily: 'var(--font-warm)', fontSize: 24 }}>같은 짝을 찾아요</h2>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12, width: '100%', maxWidth: 320 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, width: '100%', maxWidth: 340 }}>
         {deck.map((card, idx) => {
           const revealed = flipped.includes(idx) || matched.includes(card.wordId)
           const word = getWord(card.wordId)!

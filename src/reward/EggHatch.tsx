@@ -81,7 +81,7 @@ export function EggHatch() {
           <div style={{ fontFamily: 'var(--font-warm)', fontSize: 15, fontWeight: 800, color: 'var(--c-ink-soft)', margin: '0 4px 8px', textAlign: 'center' }}>
             모은 친구 {hatched.size} / {PETS.length}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 8 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14 }}>
             {PETS.map((pet) => {
               const have = hatched.has(pet.id)
               return (
