@@ -17,6 +17,10 @@ export const ROYAL_LOOKS: RoyalLook[] = [
   { id: 'forest', name: '숲 공주', file: '/img/royal/looks/forest.webp', cost: 14 },
   { id: 'snow', name: '눈 공주', file: '/img/royal/looks/snow.webp', cost: 14 },
   { id: 'rainbow', name: '무지개 공주', file: '/img/royal/looks/rainbow.webp', cost: 14 },
+  { id: 'galaxy', name: '우주 공주', file: '/img/royal/looks/galaxy.webp', cost: 14 },
+  { id: 'heart', name: '하트 공주', file: '/img/royal/looks/heart.webp', cost: 14 },
+  { id: 'jewel', name: '보석 공주', file: '/img/royal/looks/jewel.webp', cost: 16 },
+  { id: 'peacock', name: '공작 공주', file: '/img/royal/looks/peacock.webp', cost: 16 },
 ]
 
 export const DEFAULT_ROYAL = 'rose' // 기본 무료 공주
