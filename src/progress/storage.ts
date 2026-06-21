@@ -3,7 +3,7 @@ import { isKnownItem, getItem, DEFAULT_OWNED_IDS, type ItemCategory, type Outfit
 import { getSticker } from '../reward/stickers'
 import { getPet } from '../reward/pets'
 import { getPlant, MAX_PLANT_STAGE } from '../reward/plants'
-import { getRoyalBase, getRoyalItem, isKnownRoyalId, DEFAULT_ROYAL, DEFAULT_ROYAL_ITEMS, ROYAL_CATEGORIES, type RoyalCategory } from '../reward/royal'
+import { getRoyalLook, DEFAULT_ROYAL } from '../reward/royal'
 import { getWord } from '../content/loader'
 
 const KEY = 'hangeul-play:progress:v1'
@@ -60,22 +60,8 @@ export function loadProgress(): Progress {
         && Number.isInteger((g as GardenPlant).stage) && (g as GardenPlant).stage >= 0 && (g as GardenPlant).stage <= MAX_PLANT_STAGE)
       .slice(0, MAX_GARDEN)
     const lastChestDate = isValidDateStr(parsed.lastChestDate) ? parsed.lastChestDate : null
-    // 실사 공주 — 카탈로그에 있는 id만, 기본 베이스+무료 악세서리는 항상 포함
-    const royalUnlocked = Array.from(new Set([DEFAULT_ROYAL, ...DEFAULT_ROYAL_ITEMS,
-      ...((parsed.royalUnlocked ?? []).filter((id) => isKnownRoyalId(id)))]))
-    // 선택한 베이스(보유한 베이스만, 아니면 기본)
-    const royalBase = typeof parsed.royalBase === 'string' && getRoyalBase(parsed.royalBase) && royalUnlocked.includes(parsed.royalBase)
-      ? parsed.royalBase : DEFAULT_ROYAL
-    // 착용 악세서리(부위별로 보유·카테고리 일치하는 아이템만)
-    const royalOutfit: Partial<Record<RoyalCategory, string>> = {}
-    // royalOutfit 키가 아예 없으면 기본 착용(무료 티아라)을 적용, 있으면(빈 객체 포함) 그대로 존중
-    const rawOutfit = (parsed.royalOutfit && typeof parsed.royalOutfit === 'object' && !Array.isArray(parsed.royalOutfit))
-      ? parsed.royalOutfit as Record<string, unknown>
-      : (parsed.royalOutfit === undefined ? initialProgress.royalOutfit as Record<string, unknown> : {})
-    for (const { key } of ROYAL_CATEGORIES) {
-      const id = rawOutfit[key]
-      if (typeof id === 'string' && getRoyalItem(id)?.category === key && royalUnlocked.includes(id)) royalOutfit[key] = id
-    }
+    // 실사 공주 룩 — 카탈로그에 있는 id만, 기본 룩은 항상 포함
+    const royalUnlocked = Array.from(new Set([DEFAULT_ROYAL, ...((parsed.royalUnlocked ?? []).filter((id) => getRoyalLook(id) !== undefined))]))
     // 레슨 마스터리 별 — 값이 1~3 정수인 항목만
     const rawStars = parsed.lessonStars
     const lessonStars: Record<string, number> = (rawStars && typeof rawStars === 'object' && !Array.isArray(rawStars))
@@ -96,7 +82,7 @@ export function loadProgress(): Progress {
         : {}
     const playSecondsLog = secondsLog(parsed.playSecondsLog)
     const timeBonusLog = secondsLog(parsed.timeBonusLog)
-    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers, lastPlayedDate, streak, learnedWords, reviewWords, playLog, dailyGoal, hatchedPets, eggCrackStep, garden, lastChestDate, royalUnlocked, royalBase, royalOutfit, lessonStars, familyWords, timeLimitMin, playSecondsLog, timeBonusLog }
+    return { ...initialProgress, ...parsed, ownedItems, outfit: outfit as Outfit, collectedStickers, lastPlayedDate, streak, learnedWords, reviewWords, playLog, dailyGoal, hatchedPets, eggCrackStep, garden, lastChestDate, royalUnlocked, lessonStars, familyWords, timeLimitMin, playSecondsLog, timeBonusLog }
   } catch {
     return initialProgress
   }

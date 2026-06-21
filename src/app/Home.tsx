@@ -81,11 +81,11 @@ export function Home() {
           borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer',
           background: 'linear-gradient(135deg,#efe0ff,#fbf3ff)', boxShadow: 'var(--shadow-card)' }}>
         <div style={{ width: 52, height: 70, flex: '0 0 auto', borderRadius: 10, overflow: 'hidden', boxShadow: 'var(--shadow-card)' }}>
-          <img src="/img/royal/base-rose.webp" alt="" aria-hidden style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          <img src="/img/royal/looks/rose.webp" alt="" aria-hidden style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         </div>
         <div style={{ flex: 1, textAlign: 'left' }}>
           <div style={{ fontFamily: 'var(--font-warm)', fontSize: 21, fontWeight: 800, color: '#9b6bff' }}>✨ 진짜 공주</div>
-          <div style={{ fontSize: 14, color: 'var(--c-ink-soft)', marginTop: 2 }}>실사 공주를 별로 모아요</div>
+          <div style={{ fontSize: 14, color: 'var(--c-ink-soft)', marginTop: 2 }}>예쁜 공주를 별로 모아요</div>
         </div>
         <div style={{ fontSize: 24 }}>▶</div>
       </button>

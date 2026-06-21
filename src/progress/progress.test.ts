@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { initialProgress, addStars, learnWords, completeLesson, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, unlockRoyal, equipRoyalBase, equipRoyalItem, masteryStars, setLessonStars, addFamilyWord, removeFamilyWord, setTimeLimit, addPlaySeconds, grantBonusMinutes, isOverTimeLimit, playSecondsToday, MAX_FAMILY_WORDS, MAX_FAMILY_WORD_LEN, MAX_TIME_LIMIT_MIN, TIME_BONUS_MIN, EGG_CRACK_TARGET, PLANT_COST, CHEST_STARS, CHEST_MILESTONE_STARS } from './progress'
+import { initialProgress, addStars, learnWords, completeLesson, setPrincessName, unlockItem, equipItem, markPlayed, addReviewWord, removeReviewWord, logPlay, setDailyGoal, crackEgg, plantSeed, waterPlant, growGarden, openChest, unlockRoyal, masteryStars, setLessonStars, addFamilyWord, removeFamilyWord, setTimeLimit, addPlaySeconds, grantBonusMinutes, isOverTimeLimit, playSecondsToday, MAX_FAMILY_WORDS, MAX_FAMILY_WORD_LEN, MAX_TIME_LIMIT_MIN, TIME_BONUS_MIN, EGG_CRACK_TARGET, PLANT_COST, CHEST_STARS, CHEST_MILESTONE_STARS } from './progress'
 import { GACHA_COST } from '../princess/economy'
 
 describe('addStars', () => {
@@ -205,39 +205,21 @@ describe('매일 선물상자(openChest)', () => {
   })
 })
 
-describe('실사 공주 잠금 해제(unlockRoyal)', () => {
-  it('기본 베이스와 무료 악세서리는 처음부터 보유', () => {
+describe('진짜 공주 컬렉션(unlockRoyal)', () => {
+  it('기본 공주는 처음부터 보유', () => {
     expect(initialProgress.royalUnlocked).toContain('rose')
-    expect(initialProgress.royalUnlocked).toContain('crown-pink')
   })
-  it('별이 충분하면 악세서리 해제하고 차감', () => {
+  it('별이 충분하면 해제하고 차감', () => {
     const rich = addStars(initialProgress, 8)
-    const p = unlockRoyal(rich, 'crown-gold') // 가격 8
-    expect(p.royalUnlocked).toContain('crown-gold')
+    const p = unlockRoyal(rich, 'winter') // 가격 8
+    expect(p.royalUnlocked).toContain('winter')
     expect(p.stars).toBe(0)
   })
   it('별 부족·이미 보유·알수없는 id는 변화 없음', () => {
-    expect(unlockRoyal(initialProgress, 'crown-gold')).toBe(initialProgress) // 별 부족
+    expect(unlockRoyal(initialProgress, 'winter')).toBe(initialProgress) // 별 부족
     const rich = addStars(initialProgress, 8)
-    expect(unlockRoyal(rich, 'crown-pink')).toBe(rich) // 이미 보유(무료)
+    expect(unlockRoyal(rich, 'rose')).toBe(rich) // 이미 보유(기본)
     expect(unlockRoyal(rich, 'no-such')).toBe(rich)
-  })
-})
-
-describe('실사 공주 착용(equipRoyalBase/equipRoyalItem)', () => {
-  it('알수없는 베이스는 변화 없음, 보유 베이스는 선택', () => {
-    expect(equipRoyalBase(initialProgress, 'no-such')).toBe(initialProgress)
-    expect(equipRoyalBase(initialProgress, 'rose').royalBase).toBe('rose')
-  })
-  it('부위별 악세서리 착용/해제', () => {
-    const a = equipRoyalItem(initialProgress, 'crown', 'crown-pink')
-    expect(a.royalOutfit.crown).toBe('crown-pink')
-    const b = equipRoyalItem(a, 'crown', null) // 벗기
-    expect(b.royalOutfit.crown).toBeUndefined()
-  })
-  it('미보유·카테고리 불일치 악세서리는 착용 안 됨', () => {
-    expect(equipRoyalItem(initialProgress, 'crown', 'crown-gold')).toBe(initialProgress) // 미보유
-    expect(equipRoyalItem(initialProgress, 'necklace', 'crown-pink')).toBe(initialProgress) // 카테고리 불일치
   })
 })
 
