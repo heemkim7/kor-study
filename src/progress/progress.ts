@@ -2,7 +2,7 @@ import { DEFAULT_OUTFIT, DEFAULT_OWNED_IDS, getItem, type Outfit } from '../prin
 import { STICKERS } from '../reward/stickers'
 import { nextUnhatchedPet } from '../reward/pets'
 import { getPlant, MAX_PLANT_STAGE } from '../reward/plants'
-import { getRoyalLook, DEFAULT_ROYAL } from '../reward/royal'
+import { getRoyalBase, getRoyalItem, royalCost, DEFAULT_ROYAL, DEFAULT_ROYAL_ITEMS, type RoyalCategory } from '../reward/royal'
 
 // 보상 경제 상수
 export const EGG_CRACK_TARGET = 5   // 알을 이만큼 두드리면 부화
@@ -31,7 +31,9 @@ export interface Progress {
   eggCrackStep: number      // 현재 알을 두드린 횟수(0~EGG_CRACK_TARGET)
   garden: GardenPlant[]     // 마법 정원에 심은 식물과 성장 단계
   lastChestDate: string | null // 마지막으로 선물상자 연 날(YYYY-MM-DD)
-  royalUnlocked: string[]   // 실사 공주 룩 잠금 해제 id(기본 1개 무료)
+  royalUnlocked: string[]   // 실사 공주 베이스+악세서리 잠금 해제 id(기본 무료 포함)
+  royalBase: string         // 현재 고른 실사 공주 베이스 id
+  royalOutfit: Partial<Record<RoyalCategory, string>> // 부위별로 착용한 악세서리 id(없으면 미착용)
   lessonStars: Record<string, number> // 레슨별 마스터리 별(1~3, 최고 기록)
   familyWords: string[]     // 부모가 넣은 우리 가족 단어(이름·엄마·아빠 등) — 개인화
   timeLimitMin: number      // 하루 놀이 시간 제한(분, 0=제한 없음) — 부모·안전
@@ -62,7 +64,9 @@ export const initialProgress: Progress = {
   eggCrackStep: 0,
   garden: [],
   lastChestDate: null,
-  royalUnlocked: [DEFAULT_ROYAL],
+  royalUnlocked: [DEFAULT_ROYAL, ...DEFAULT_ROYAL_ITEMS],
+  royalBase: DEFAULT_ROYAL,
+  royalOutfit: { crown: 'crown-pink' }, // 기본으로 무료 티아라 착용(허전하지 않게)
   lessonStars: {},
   familyWords: [],
   timeLimitMin: 0,
@@ -260,13 +264,32 @@ export function setLessonStars(p: Progress, lessonId: string, stars: number): Pr
   return { ...p, lessonStars: { ...p.lessonStars, [lessonId]: next } }
 }
 
-// ---- 보상: 실사 공주 룩 잠금 해제 ----
-/** 별로 실사 공주 룩 해제(이미 가졌거나 별 부족·알수없는 id면 변화 없음). */
+// ---- 보상: 실사 공주 베이스/악세서리 ----
+/** 별로 실사 공주 베이스·악세서리 해제(이미 가졌거나 별 부족·알수없는 id면 변화 없음). */
 export function unlockRoyal(p: Progress, id: string): Progress {
-  const look = getRoyalLook(id)
-  if (!look || p.royalUnlocked.includes(id)) return p
-  if (p.stars < look.cost) return p
-  return { ...p, stars: p.stars - look.cost, royalUnlocked: [...p.royalUnlocked, id] }
+  const cost = royalCost(id)
+  if (cost == null || p.royalUnlocked.includes(id)) return p
+  if (p.stars < cost) return p
+  return { ...p, stars: p.stars - cost, royalUnlocked: [...p.royalUnlocked, id] }
+}
+
+/** 실사 공주 베이스 선택(보유한 베이스만). */
+export function equipRoyalBase(p: Progress, id: string): Progress {
+  if (!getRoyalBase(id) || !p.royalUnlocked.includes(id) || p.royalBase === id) return p
+  return { ...p, royalBase: id }
+}
+
+/** 부위별 악세서리 착용/해제(id=null이면 벗기). 보유·카테고리 일치할 때만. */
+export function equipRoyalItem(p: Progress, category: RoyalCategory, id: string | null): Progress {
+  if (id === null) {
+    if (p.royalOutfit[category] === undefined) return p
+    const next = { ...p.royalOutfit }
+    delete next[category]
+    return { ...p, royalOutfit: next }
+  }
+  const it = getRoyalItem(id)
+  if (!it || it.category !== category || !p.royalUnlocked.includes(id) || p.royalOutfit[category] === id) return p
+  return { ...p, royalOutfit: { ...p.royalOutfit, [category]: id } }
 }
 
 // ---- 부모·안전: 하루 놀이 시간 제한(스크린타임) ----
