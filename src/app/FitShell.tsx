@@ -11,7 +11,7 @@ const MAX_SCALE = 2.6
 const LANDSCAPE_RATIO = 1.2
 // 가로일 때 넓은 캔버스로 펼치는 화면(좌우 2단·다열 레이아웃을 가진 화면).
 // 게임처럼 한 가지에 집중하는 화면은 제외(좁은 컬럼을 가운데에 두는 편이 보기 좋음).
-const WIDE_SCREENS = new Set(['home', 'subject', 'dressup', 'royal', 'stickers', 'wordbook', 'badges', 'parent', 'family'])
+const WIDE_SCREENS = new Set(['home', 'subject', 'dressup', 'royal', 'stickers', 'wordbook', 'badges', 'parent', 'family', 'egg', 'garden'])
 
 const computeLandscape = () => window.innerWidth / window.innerHeight >= LANDSCAPE_RATIO
 
@@ -45,6 +45,7 @@ export function FitShell({ children }: { children: ReactNode }) {
 
   const wide = landscape && WIDE_SCREENS.has(screen.name)
   const designW = wide ? LANDSCAPE_W : PORTRAIT_W
+  const measureRef = useRef<() => void>(() => {})
 
   useLayoutEffect(() => {
     const el = innerRef.current
@@ -57,6 +58,7 @@ export function FitShell({ children }: { children: ReactNode }) {
       if (!h) return
       setScale(Math.min(vw / w, vh / h, MAX_SCALE))
     }
+    measureRef.current = fit
     fit()
     const ro = new ResizeObserver(fit)
     ro.observe(el) // 화면 전환·방향 전환으로 콘텐츠 크기가 바뀌면 다시 맞춤
@@ -72,6 +74,10 @@ export function FitShell({ children }: { children: ReactNode }) {
       cancelAnimationFrame(raf)
     }
   }, [])
+
+  // 디자인 캔버스 폭이 바뀌는 순간(세로↔가로 캔버스 전환·허브 진입)에는
+  // 새 너비가 커밋된 같은 레이아웃 단계에서 즉시 재측정해, 한 프레임 잘못된 스케일로 깜빡이는 것을 막는다.
+  useLayoutEffect(() => { measureRef.current() }, [designW])
 
   return (
     <ViewportCtx.Provider value={{ landscape }}>

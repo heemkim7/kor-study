@@ -14,7 +14,10 @@ export function FindLetter({ glyphs, onCorrect, onWrong, onDone }: {
   const [solved, setSolved] = useState(false)
   const [wrong, setWrong] = useState<string | null>(null)
   const answer = glyphs[round]
-  const choices = useMemo(() => shuffle(glyphs), [glyphs])
+  // 라운드마다 타일 배치를 다시 섞어 '자리만 외워 통과'를 막는다(소리로 변별하게).
+  // round를 의존성에 둬 라운드 전환 시 재셔플(콜백이 round를 직접 안 써 lint가 불필요하다고 보지만 의도된 것).
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const choices = useMemo(() => shuffle(glyphs), [glyphs, round])
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const shakeRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)

@@ -68,12 +68,11 @@ export function SubjectScreen({ subject }: { subject: Subject }) {
           </div>
         )}
 
-        {/* 진행 점(완료=색, 지금=링, 잠김=빈칸) */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, justifyContent: 'center', marginTop: 10 }}>
+        {/* 진행 막대(완료=색, 지금=진한 색, 잠김=옅음) — '버튼'으로 오해하지 않게 납작한 세그먼트로 */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center', marginTop: 10 }}>
           {nodes.map((n) => (
-            <span key={n.lesson.id} aria-hidden style={{ width: 12, height: 12, borderRadius: 999,
-              background: n.completed ? color : '#e7dcc9',
-              boxShadow: n.current ? `0 0 0 2px ${color}` : 'none' }} />
+            <span key={n.lesson.id} aria-hidden style={{ width: 18, height: 6, borderRadius: 3,
+              background: n.current ? color : n.completed ? `${color}99` : '#e7dcc9' }} />
           ))}
         </div>
       </div>
@@ -137,7 +136,7 @@ export function SubjectScreen({ subject }: { subject: Subject }) {
       {/* 트랙 — 가로면 좌우로 펼침, 세로면 위아래로 */}
       <div style={{ display: 'flex', flexDirection: landscape ? 'row' : 'column', flexWrap: 'wrap',
         alignItems: landscape ? 'flex-start' : 'center', justifyContent: 'center',
-        gap: landscape ? 20 : 0, width: '100%', maxWidth: landscape ? 860 : 410, marginTop: 8 }}>
+        gap: landscape ? 20 : 0, width: '100%', maxWidth: landscape ? 820 : 410, marginTop: 8 }}>
         {tracks}
       </div>
     </div>

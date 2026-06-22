@@ -40,7 +40,9 @@ export function DressUp() {
   const [buyItem, setBuyItem] = useState<DressUpItem | null>(null)
   const [gachaState, setGachaState] = useState<'confirm' | 'spinning' | null>(null)
   const [reveal, setReveal] = useState<DressUpItem | null>(null)
+  const [undoOutfit, setUndoOutfit] = useState<Outfit | null>(null) // '기본' 되돌리기용
   const gachaTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  const undoTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const resolving = useRef(false) // 뽑기 연타 이중 차감 방지
 
   // 별 변화 피드백(-N 떠오름 + 카운터 강조)
@@ -59,7 +61,7 @@ export function DressUp() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { speak('공주님을 예쁘게 꾸며요') }, [])
-  useEffect(() => () => clearTimeout(gachaTimer.current), [])
+  useEffect(() => () => { clearTimeout(gachaTimer.current); clearTimeout(undoTimer.current) }, [])
 
   const outfit = progress.outfit
   const items = itemsByCategory(tab)
@@ -112,8 +114,16 @@ export function DressUp() {
     speak('짠! 새로운 공주님')
   }
   function resetOutfit() {
+    setUndoOutfit(outfit) // 되돌리기용으로 현재 옷 저장(실수로 눌러도 복구)
     CATEGORY_ORDER.forEach((cat) => dispatch({ type: 'equipItem', itemId: DEFAULT_OUTFIT[cat] }))
     speak('기본 공주님')
+    clearTimeout(undoTimer.current)
+    undoTimer.current = setTimeout(() => setUndoOutfit(null), 6000)
+  }
+  function undoReset() {
+    if (!undoOutfit) return
+    CATEGORY_ORDER.forEach((cat) => dispatch({ type: 'equipItem', itemId: undoOutfit[cat] }))
+    setUndoOutfit(null); speak('되돌렸어요')
   }
 
   return (
@@ -169,18 +179,27 @@ export function DressUp() {
         🎁 뽑기 (별 {GACHA_COST}개){remaining === 0 ? ' · 다 모았어요!' : ''}
       </button>
 
-      {/* 가진 옷으로 무료 변신 */}
-      <div style={{ display: 'flex', gap: 8 }}>
+      {/* 가진 옷으로 무료 변신 — '기본(리셋)'은 오터치 방지를 위해 멀리 떼고 약하게 */}
+      <div style={{ display: 'flex', gap: 22, alignItems: 'center' }}>
         <button onClick={randomize}
-          style={{ border: 'none', borderRadius: 999, padding: '9px 18px', minHeight: 44, fontFamily: 'var(--font-warm)',
-            fontSize: 15, fontWeight: 800, color: 'var(--c-pink)', background: 'var(--c-card)', boxShadow: 'var(--shadow-card)' }}>
+          style={{ border: 'none', borderRadius: 999, padding: '11px 22px', minHeight: 46, fontFamily: 'var(--font-warm)',
+            fontSize: 16, fontWeight: 800, color: '#fff', background: 'linear-gradient(135deg, var(--c-pink), var(--c-accent))',
+            boxShadow: '0 4px 0 #c4578f' }}>
           🎲 랜덤 변신 · 무료
         </button>
-        <button onClick={resetOutfit}
-          style={{ border: 'none', borderRadius: 999, padding: '9px 18px', minHeight: 44, fontFamily: 'var(--font-warm)',
-            fontSize: 15, fontWeight: 800, color: 'var(--c-ink-soft)', background: 'var(--c-card)', boxShadow: 'var(--shadow-card)' }}>
-          ↺ 기본
-        </button>
+        {undoOutfit ? (
+          <button onClick={undoReset}
+            style={{ border: 'none', borderRadius: 999, padding: '9px 16px', minHeight: 44, fontFamily: 'var(--font-warm)',
+              fontSize: 14, fontWeight: 800, color: 'var(--c-ink)', background: 'var(--c-card)', boxShadow: '0 4px 0 #e3cba8' }}>
+            ↩️ 되돌리기
+          </button>
+        ) : (
+          <button onClick={resetOutfit} aria-label="기본 공주로"
+            style={{ border: '2px solid #e3cba8', borderRadius: 999, padding: '8px 14px', minHeight: 44, fontFamily: 'var(--font-warm)',
+              fontSize: 13, fontWeight: 800, color: 'var(--c-ink-soft)', background: 'transparent' }}>
+            ↺ 기본
+          </button>
+        )}
       </div>
 
       </div>{/* 왼쪽 끝 */}
@@ -214,11 +233,17 @@ export function DressUp() {
           const previewOutfit: Outfit = { ...outfit, [item.category]: item.id }
           return (
             <button key={item.id} onClick={() => tapItem(item)}
-              style={{ border: equipped ? '3px solid var(--c-accent)' : '2px solid #f0e2d0',
+              style={{ position: 'relative', border: equipped ? '3px solid var(--c-accent)' : '2px solid #f0e2d0',
                 borderRadius: 'var(--radius-md)', background: 'var(--c-card)', padding: '8px 6px 6px',
                 display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 opacity: owned || affordable ? 1 : 0.55,
                 boxShadow: equipped ? '0 0 0 2px #fff, var(--shadow-card)' : 'var(--shadow-card)' }}>
+              {/* 글자 못 읽는 아이도 '이미 내 옷'을 한눈에: 보유 타일 우상단 초록 체크 */}
+              {owned && (
+                <span aria-hidden style={{ position: 'absolute', top: 4, right: 4, width: 20, height: 20, borderRadius: 999,
+                  background: 'var(--c-correct)', color: '#fff', fontSize: 13, fontWeight: 800, zIndex: 1,
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 'var(--shadow-card)' }}>✓</span>
+              )}
               <div style={{ width: 64, height: 101, overflow: 'hidden', borderRadius: 10,
                 background: 'linear-gradient(170deg,#fff6fb,#ffeaf4)' }}>
                 <PrincessFigure outfit={previewOutfit} size={64} background={tab === 'background'} />

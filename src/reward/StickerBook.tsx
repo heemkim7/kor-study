@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigation } from '../app/Navigation'
 import { useProgress } from '../progress/useProgress'
 import { useViewport } from '../app/FitShell'
@@ -12,6 +12,15 @@ export function StickerBook() {
   const { landscape } = useViewport()
   const { speak } = useTts()
   const collected = new Set(progress.collectedStickers)
+  // 누르면 '톡' 튀는 시각 피드백(무음·저음량에서도 눌린 걸 알 수 있게)
+  const [popId, setPopId] = useState<string | null>(null)
+  const popTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  useEffect(() => () => clearTimeout(popTimer.current), [])
+  function tap(id: string, name: string, have: boolean) {
+    setPopId(id); clearTimeout(popTimer.current)
+    popTimer.current = setTimeout(() => setPopId(null), 450)
+    if (have) { speak(name); playSticker() } else speak('이 스티커는 놀이에서 모아요')
+  }
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => { speak('스티커 책이에요. 모은 스티커를 눌러 보세요') }, [])
@@ -39,13 +48,14 @@ export function StickerBook() {
         {STICKERS.map((s) => {
           const have = collected.has(s.id)
           return (
-            <button key={s.id} disabled={!have}
-              onClick={() => { speak(s.name); playSticker() }}
+            <button key={s.id} className={popId === s.id ? 'kp-pop' : undefined}
+              aria-label={have ? s.name : '아직 못 모은 스티커'}
+              onClick={() => tap(s.id, s.name, have)}
               style={{ aspectRatio: '1', display: 'flex', flexDirection: 'column', alignItems: 'center',
                 justifyContent: 'center', gap: 2, borderRadius: 'var(--radius-md)', border: 'none',
                 background: have ? 'var(--c-card)' : '#efe7da',
                 boxShadow: have ? 'var(--shadow-card)' : 'none',
-                cursor: have ? 'pointer' : 'default' }}>
+                cursor: 'pointer' }}>
               <span style={{ fontSize: 30, filter: have ? 'none' : 'grayscale(1)', opacity: have ? 1 : 0.35 }}>
                 {have ? s.emoji : '❓'}
               </span>

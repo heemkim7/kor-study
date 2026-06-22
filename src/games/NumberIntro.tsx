@@ -29,7 +29,8 @@ export function NumberIntro({ numbers, onDone }: { numbers: number[]; onDone: ()
             style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '12px 14px',
               background: 'var(--c-card)', border: 'none', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-card)' }}>
             <span style={{ fontFamily: 'var(--font-warm)', fontSize: 52, fontWeight: 800, color: 'var(--c-pink)' }}>{n}</span>
-            <span style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', maxWidth: 120, fontSize: 18, lineHeight: 1.2 }}>
+            <span style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignContent: 'center',
+              maxWidth: 120, minHeight: 44, overflow: 'hidden', fontSize: 18, lineHeight: 1.2 }}>
               {Array.from({ length: n }, (_, k) => <span key={k}>{COUNT_EMOJI[idx % COUNT_EMOJI.length]}</span>)}
             </span>
             <span style={{ fontFamily: 'var(--font-warm)', fontSize: 18, fontWeight: 800, color: 'var(--c-ink)' }}>{numberName(n)}</span>

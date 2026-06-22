@@ -19,6 +19,7 @@ export function AbcPhonics({ letters, onCorrect, onWrong, onDone }: {
   const [round, setRound] = useState(0)
   const [solved, setSolved] = useState(false)
   const [wrong, setWrong] = useState<string | null>(null)
+  const [hint, setHint] = useState(true) // 라운드 시작 시 정답 그림을 잠깐 강조(소리 못 들어도 단서)
   const answer = letters[round]
   const pool = useMemo(() => Object.keys(ABC_WORD), [])
   const choiceLetters = useMemo(() => buildPhonicsChoices(answer, pool), [answer, pool])
@@ -26,10 +27,11 @@ export function AbcPhonics({ letters, onCorrect, onWrong, onDone }: {
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
   const shakeRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
-  useEffect(() => () => { clearTimeout(timerRef.current); clearTimeout(shakeRef.current) }, [])
+  const hintRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  useEffect(() => () => { clearTimeout(timerRef.current); clearTimeout(shakeRef.current); clearTimeout(hintRef.current) }, [])
 
   const [prevRound, setPrevRound] = useState(round)
-  if (round !== prevRound) { setPrevRound(round); setSolved(false); setWrong(null) }
+  if (round !== prevRound) { setPrevRound(round); setSolved(false); setWrong(null); setHint(true) }
 
   // 글자 → 단어를 영어 음성으로 들려준다(A … Apple).
   const sayPhonics = (l: string) => {
@@ -37,8 +39,13 @@ export function AbcPhonics({ letters, onCorrect, onWrong, onDone }: {
     speak(l, { lang: 'en-US', onEnd: () => speak(w.word, { lang: 'en-US' }) })
   }
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { sayPhonics(answer) }, [round])
+  // 라운드 진입: 첫소리 음성 + 정답 그림 강조(hint는 라운드 변경 시 위 렌더 단계에서 true로 켜짐).
+  useEffect(() => {
+    sayPhonics(answer)
+    clearTimeout(hintRef.current)
+    hintRef.current = setTimeout(() => setHint(false), 1400) // 잠깐 강조 후 스스로 풀게
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [round])
 
   function pick(l: string) {
     if (solved) return
@@ -71,13 +78,17 @@ export function AbcPhonics({ letters, onCorrect, onWrong, onDone }: {
       </div>
       <div style={{ fontSize: 16, color: 'var(--c-ink-soft)', fontWeight: 800 }}>{answer} … {answerWord.word}?</div>
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', justifyContent: 'center' }}>
-        {choiceLetters.map((l) => (
-          <button key={l} onClick={() => pick(l)} className={wrong === l ? 'kp-shake' : undefined}
-            style={{ width: 116, height: 116, display: 'flex', alignItems: 'center', justifyContent: 'center',
-              background: 'var(--c-card)', border: 'none', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>
-            <span style={{ fontSize: 56 }}>{ABC_WORD[l].emoji}</span>
-          </button>
-        ))}
+        {choiceLetters.map((l) => {
+          const isHinted = hint && !solved && l === answer
+          return (
+            <button key={l} onClick={() => pick(l)} className={wrong === l ? 'kp-shake' : isHinted ? 'kp-pop' : undefined}
+              style={{ width: 104, height: 104, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'var(--c-card)', border: 'none', borderRadius: 'var(--radius-lg)', cursor: 'pointer',
+                boxShadow: isHinted ? '0 0 0 4px var(--c-accent), var(--shadow-card)' : 'var(--shadow-card)' }}>
+              <span style={{ fontSize: 52 }}>{ABC_WORD[l].emoji}</span>
+            </button>
+          )
+        })}
       </div>
     </div>
   )

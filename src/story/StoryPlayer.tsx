@@ -38,12 +38,12 @@ export function StoryPlayer({ lesson, onDone }: { lesson: Lesson; onDone: () => 
 
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '14px 0 18px' }}>
-      {/* 그림을 탭하면(어른이) 바로 다음 장면. 평소엔 자동으로 넘어감. */}
-      <div onClick={next} role="presentation" style={{ position: 'relative', margin: '0 14px', borderRadius: 'var(--radius-lg)',
-        overflow: 'hidden', boxShadow: 'var(--shadow-card)', aspectRatio: '4 / 3', cursor: 'pointer' }}>
+      {/* 그림은 보는 것 — 아이가 만져도 스토리가 넘어가지 않게 탭-스킵을 없앴다(평소엔 자동 진행). */}
+      <div style={{ position: 'relative', margin: '0 14px', borderRadius: 'var(--radius-lg)',
+        overflow: 'hidden', boxShadow: 'var(--shadow-card)', aspectRatio: '4 / 3' }}>
         <img src={`/img/scene/${scene.sceneImage}.svg`} alt=""
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
-        <div onClick={(e) => e.stopPropagation()} style={{ position: 'absolute', top: 12, right: 14 }}>
+        <div style={{ position: 'absolute', top: 12, right: 14 }}>
           <SpeakerButton onClick={() => speak(scene.text)} />
         </div>
       </div>
@@ -65,6 +65,15 @@ export function StoryPlayer({ lesson, onDone }: { lesson: Lesson; onDone: () => 
           <span key={idx} aria-hidden style={{ width: idx === i ? 13 : 8, height: idx === i ? 13 : 8,
             borderRadius: 999, background: idx === i ? 'var(--c-accent)' : '#e3cba8', transition: 'all .2s' }} />
         ))}
+      </div>
+      {/* 명시적 '다음' — 자동 진행을 기다리지 않고 넘기고 싶을 때(작아서 우발 탭 위험 낮음) */}
+      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 12 }}>
+        <button onClick={next} aria-label={isLast ? '다 봤어요' : '다음 장면'}
+          style={{ border: 'none', borderRadius: 999, padding: '12px 26px', minHeight: 48,
+            fontFamily: 'var(--font-warm)', fontSize: 18, fontWeight: 800, color: '#fff',
+            background: 'var(--c-accent)', boxShadow: '0 4px 0 #d98a3a', cursor: 'pointer' }}>
+          {isLast ? '다 봤어요 ▶' : '다음 ▶'}
+        </button>
       </div>
     </div>
   )

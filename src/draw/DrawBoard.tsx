@@ -13,7 +13,11 @@ const TEMPLATES: { id: TemplateId; label: string }[] = [
   { id: 'flower', label: '🌷' },
 ]
 
-const COLORS = ['#e3342f', '#ff8a3d', '#ffd23f', '#3ec46d', '#3aa0ff', '#9b6bff', '#ff7ac0', '#8b5a2b', '#3a3a44']
+const COLORS: { hex: string; name: string }[] = [
+  { hex: '#e3342f', name: '빨강' }, { hex: '#ff8a3d', name: '주황' }, { hex: '#ffd23f', name: '노랑' },
+  { hex: '#3ec46d', name: '초록' }, { hex: '#3aa0ff', name: '파랑' }, { hex: '#9b6bff', name: '보라' },
+  { hex: '#ff7ac0', name: '분홍' }, { hex: '#8b5a2b', name: '갈색' }, { hex: '#3a3a44', name: '검정' },
+]
 const SIZES: { key: 's' | 'm' | 'l'; r: number; dot: number }[] = [
   { key: 's', r: 0.012, dot: 12 }, { key: 'm', r: 0.025, dot: 18 }, { key: 'l', r: 0.045, dot: 26 },
 ]
@@ -67,10 +71,31 @@ export function DrawBoard() {
   const last = useRef({ x: 0, y: 0 })
   const templateRef = useRef<TemplateId>('free') // 리사이즈 콜백에서 현재 템플릿을 읽기 위함
 
-  const [color, setColor] = useState(COLORS[0])
+  const [color, setColor] = useState(COLORS[0].hex)
   const [erasing, setErasing] = useState(false)
   const [sizeKey, setSizeKey] = useState<'s' | 'm' | 'l'>('m')
   const [template, setTemplate] = useState<TemplateId>('free')
+
+  // 한 번 되돌리기: 지우기·템플릿 전환 직전 그림을 스냅샷해, 실수로 날려도 ↩️로 복구.
+  const undoRef = useRef<ImageData | null>(null)
+  const [canUndo, setCanUndo] = useState(false)
+  const undoTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
+  useEffect(() => () => clearTimeout(undoTimer.current), [])
+
+  function snapshot() {
+    const cv = canvasRef.current, ctx = ctxRef.current
+    if (!cv || !ctx) return
+    try { undoRef.current = ctx.getImageData(0, 0, cv.width, cv.height) } catch { undoRef.current = null }
+    setCanUndo(true)
+    clearTimeout(undoTimer.current)
+    undoTimer.current = setTimeout(() => setCanUndo(false), 8000)
+  }
+  function undo() {
+    const ctx = ctxRef.current
+    if (!ctx || !undoRef.current) return
+    ctx.putImageData(undoRef.current, 0, 0)
+    setCanUndo(false)
+  }
 
   // 포인터 핸들러는 매 렌더마다 새로 바인딩되어 color/erasing/sizeKey 최신값을 클로저로 캡처한다.
 
@@ -149,40 +174,52 @@ export function DrawBoard() {
   function onUp() { drawing.current = false }
 
   const swatch = (bg: string, active: boolean, onClick: () => void, label?: string) => (
-    <button onClick={onClick} aria-label={label} style={{
-      width: 42, height: 42, borderRadius: 999, border: active ? '3px solid var(--c-ink)' : '3px solid #fff',
-      background: bg, boxShadow: 'var(--shadow-card)', cursor: 'pointer', flex: '0 0 auto',
+    <button onClick={onClick} aria-label={label ?? '색'} style={{
+      width: 44, height: 44, borderRadius: 999, border: active ? '4px solid var(--c-ink)' : '3px solid #fff',
+      background: bg, boxShadow: active ? '0 0 0 2px var(--c-accent), var(--shadow-card)' : 'var(--shadow-card)',
+      transform: active ? 'scale(1.1)' : 'none', transition: 'transform .12s', cursor: 'pointer', flex: '0 0 auto',
       display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18 }}>{label && bg === '#fff' ? '🧽' : ''}</button>
   )
 
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column',
       padding: 'max(10px, env(safe-area-inset-top)) 10px 10px', gap: 8, position: 'relative' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <button onClick={() => go({ name: 'home' })} aria-label="집으로"
-          style={{ width: 50, height: 50, borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)',
-            fontSize: 24, boxShadow: 'var(--shadow-card)', cursor: 'pointer', flex: '0 0 auto' }}>🏠</button>
-        {/* 템플릿(여러 버전) */}
-        <div style={{ display: 'flex', gap: 10, overflowX: 'auto', flex: 1 }}>
+          style={{ width: 48, height: 48, borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)',
+            fontSize: 23, boxShadow: 'var(--shadow-card)', cursor: 'pointer', flex: '0 0 auto' }}>🏠</button>
+        {/* 템플릿(여러 버전) — 6개가 한 줄에 다 보이도록 칸·간격 축소 */}
+        <div style={{ display: 'flex', gap: 6, overflowX: 'auto', flex: 1,
+          WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}>
           {TEMPLATES.map((t) => (
-            <button key={t.id} onClick={() => setTemplate(t.id)} style={{
-              width: 50, height: 50, borderRadius: 'var(--radius-md)', border: 'none', flex: '0 0 auto',
+            <button key={t.id} onClick={() => { if (template !== t.id) snapshot(); setTemplate(t.id) }} style={{
+              width: 44, height: 44, borderRadius: 'var(--radius-md)', border: 'none', flex: '0 0 auto',
               background: template === t.id ? 'var(--c-accent)' : 'var(--c-card)',
-              fontSize: 24, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>{t.label}</button>
+              fontSize: 22, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>{t.label}</button>
           ))}
         </div>
-        <button onClick={() => reset(template)} aria-label="다 지우기" style={{
-          width: 50, height: 50, borderRadius: 'var(--radius-md)', border: 'none', flex: '0 0 auto',
-          background: 'var(--c-card)', fontSize: 24, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>🗑️</button>
+        <button onClick={() => { snapshot(); reset(template) }} aria-label="다 지우기" style={{
+          width: 48, height: 48, borderRadius: 'var(--radius-md)', border: 'none', flex: '0 0 auto',
+          background: 'var(--c-card)', fontSize: 23, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>🗑️</button>
       </div>
 
-      <canvas ref={canvasRef} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}
-        style={{ width: '100%', flex: 1, minHeight: 0, borderRadius: 'var(--radius-lg)',
-          background: '#fff', boxShadow: 'var(--shadow-card)', touchAction: 'none', display: 'block' }} />
+      <div style={{ position: 'relative', flex: 1, minHeight: 0, display: 'flex' }}>
+        <canvas ref={canvasRef} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}
+          style={{ width: '100%', flex: 1, minHeight: 0, borderRadius: 'var(--radius-lg)',
+            background: '#fff', boxShadow: 'var(--shadow-card)', touchAction: 'none', display: 'block' }} />
+        {/* 지우기·템플릿 전환을 실수로 했을 때 한 번 되돌리기 */}
+        {canUndo && (
+          <button onClick={undo} aria-label="되돌리기" style={{
+            position: 'absolute', left: 12, bottom: 12, border: 'none', borderRadius: 999,
+            padding: '10px 18px', minHeight: 44, background: 'var(--c-card)', cursor: 'pointer',
+            fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800, color: 'var(--c-ink)',
+            boxShadow: '0 4px 0 #e3cba8' }}>↩️ 되돌리기</button>
+        )}
+      </div>
 
       {/* 색·붓크기·지우개 */}
       <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
-        {COLORS.map((c) => swatch(c, !erasing && color === c, () => { setColor(c); setErasing(false) }))}
+        {COLORS.map((c) => swatch(c.hex, !erasing && color === c.hex, () => { setColor(c.hex); setErasing(false) }, c.name))}
         {swatch('#fff', erasing, () => setErasing(true), '지우개')}
         <div style={{ width: 1, height: 28, background: '#e3cba8', margin: '0 2px' }} />
         {SIZES.map((s) => (

@@ -3,6 +3,7 @@ import { getWord, getWordsByIds } from '../content/loader'
 import { useTts } from '../tts/useTts'
 import { useViewport } from '../app/FitShell'
 import { WordImage } from '../ui/WordImage'
+import { SpeakerButton } from '../ui/SpeakerButton'
 import { Sparkles } from '../ui/Sparkles'
 import { buildSmartChoices } from './choices'
 
@@ -65,9 +66,13 @@ export function PickWord({ targetWords, pool, onCorrect, onDone, onWrong, choice
       gap: 18, padding: 24, position: 'relative' }}>
       {solved && <Sparkles />}
       <h2 style={{ fontFamily: 'var(--font-warm)', fontSize: 24 }}>이 그림은 무엇일까요?</h2>
-      <div style={{ background: 'var(--c-card)', borderRadius: 'var(--radius-lg)', padding: 18,
+      <div style={{ position: 'relative', background: 'var(--c-card)', borderRadius: 'var(--radius-lg)', padding: 18,
         boxShadow: 'var(--shadow-card)' }}>
         <WordImage word={answer} size={150} />
+        {/* 그림을 알아도 보기(글자)를 못 읽는 아이가 정답 단어를 다시 들을 수 있게 */}
+        <div style={{ position: 'absolute', top: 8, right: 8 }}>
+          <SpeakerButton size={48} onClick={() => speak(answer.text)} />
+        </div>
       </div>
       {/* 가로 화면에서는 보기를 한 줄로 펼쳐 좌우를 채움(세로 화면은 큰 버튼을 위아래로) */}
       <div style={{ display: 'flex', flexDirection: landscape ? 'row' : 'column', flexWrap: 'wrap',

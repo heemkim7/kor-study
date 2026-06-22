@@ -63,14 +63,19 @@ export function Compare({ numbers, onCorrect, onWrong, onDone }: {
     }
   }
 
-  const panel = (side: number, count: number, emoji: string) => (
-    <button onClick={() => pick(side)} className={wrong === side ? 'kp-shake' : undefined}
-      style={{ flex: 1, minHeight: 220, display: 'flex', flexWrap: 'wrap', gap: 10, alignContent: 'center',
-        justifyContent: 'center', padding: 14, border: solved && side === moreSide ? '4px solid var(--c-correct)' : 'none',
-        borderRadius: 'var(--radius-lg)', background: 'var(--c-card)', boxShadow: 'var(--shadow-card)' }}>
-      {Array.from({ length: count }, (_, k) => <span key={k} style={{ fontSize: 34, lineHeight: 1 }}>{emoji}</span>)}
-    </button>
-  )
+  const panel = (side: number, count: number, emoji: string) => {
+    const isAnswer = solved && side === moreSide
+    return (
+      <button onClick={() => pick(side)} className={wrong === side ? 'kp-shake' : undefined}
+        style={{ flex: 1, minHeight: 220, display: 'flex', flexWrap: 'wrap', gap: 10, alignContent: 'center',
+          justifyContent: 'center', padding: 14, border: isAnswer ? '4px solid var(--c-correct)' : 'none',
+          borderRadius: 'var(--radius-lg)', background: isAnswer ? '#d8f3e1' : 'var(--c-card)',
+          transform: isAnswer ? 'scale(1.04)' : 'none', transition: 'transform .15s',
+          boxShadow: 'var(--shadow-card)' }}>
+        {Array.from({ length: count }, (_, k) => <span key={k} style={{ fontSize: 34, lineHeight: 1 }}>{emoji}</span>)}
+      </button>
+    )
+  }
 
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',

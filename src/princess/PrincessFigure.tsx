@@ -11,9 +11,13 @@ export function PrincessFigure({ outfit, size = 200, animate = false, background
 }) {
   const rawId = useId()
   const idPrefix = useMemo(() => 'p' + rawId.replace(/[^a-zA-Z0-9]/g, ''), [rawId])
+  // outfit은 그리드에서 매 렌더 새 객체 리터럴({...outfit, [cat]:id})로 와 참조가 항상 바뀐다.
+  // '내용 키'로 비교해 동일 조합이면 무거운 SVG 생성을 건너뛴다(별 애니·리렌더 시 성능).
+  const outfitKey = JSON.stringify(outfit)
   const html = useMemo(
     () => buildPrincessSvg(outfit, { idPrefix, background, animate }),
-    [outfit, idPrefix, background, animate],
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [outfitKey, idPrefix, background, animate],
   )
   const height = Math.round((size * 600) / 380)
   return (

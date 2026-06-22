@@ -673,7 +673,7 @@ export function buildPrincessSvg(outfit: Partial<Outfit> = {}, opts: FigureOpts 
 
   const acc = o.accessory
   // 머리 요소(헤어/얼굴/왕관)는 HEAD_TRANSFORM으로 키운다. 몸/소품은 그대로.
-  const headWrap = (c: string) => `<g transform="${HEAD_TRANSFORM}">${c}</g>`
+  const headWrap = (inner: string) => `<g transform="${HEAD_TRANSFORM}">${inner}</g>`
 
   // 1) 뒤쪽: 바닥 그림자 → 망토·날개(몸) → 뒷머리(머리)
   const behind: string[] = []

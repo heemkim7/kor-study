@@ -26,17 +26,21 @@ export function WordBook() {
       </div>
       <p style={{ fontSize: 13, color: 'var(--c-ink-soft)', marginTop: -4 }}>놀이에서 배운 단어가 도감에 모여요!</p>
 
-      {/* 단어가 많아(73개) 가로에선 열을 더 촘촘히 — 좌우를 채우고 세로 스크롤을 막음 */}
-      <div style={{ display: 'grid', gridTemplateColumns: landscape ? 'repeat(auto-fill, minmax(74px, 1fr))' : 'repeat(3, 1fr)',
-        gap: landscape ? 8 : 10, width: '100%', maxWidth: landscape ? 840 : 380, marginTop: 4 }}>
+      {/* 단어가 많아(73개) 전체를 한 화면에 펼치면 FitShell이 화면을 강하게 축소시킨다.
+          → 아이템 영역을 '고정 높이 + 내부 스크롤'로 둬 전체 높이를 일정하게 유지(타일 크게). */}
+      <div style={{ display: 'grid', gridTemplateColumns: landscape ? 'repeat(auto-fill, minmax(84px, 1fr))' : 'repeat(3, 1fr)',
+        gap: landscape ? 10 : 12, width: '100%', maxWidth: landscape ? 760 : 380,
+        height: landscape ? 340 : 470, overflowY: 'auto', alignContent: 'start', paddingRight: 4,
+        WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain', marginTop: 4 }}>
         {WORDS.map((w) => {
           const have = learned.has(w.id)
           return (
-            <button key={w.id} disabled={!have} onClick={() => speak(w.text)}
+            <button key={w.id} aria-label={have ? w.text : '아직 못 모은 단어'}
+              onClick={() => (have ? speak(w.text) : speak('이 단어는 놀이에서 만나요'))}
               style={{ aspectRatio: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                 gap: 4, borderRadius: 'var(--radius-md)', border: 'none',
                 background: have ? 'var(--c-card)' : '#efe7da', boxShadow: have ? 'var(--shadow-card)' : 'none',
-                cursor: have ? 'pointer' : 'default' }}>
+                cursor: 'pointer' }}>
               {have ? (
                 <>
                   <WordImage word={w} size={48} />

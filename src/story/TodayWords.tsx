@@ -18,10 +18,12 @@ export function TodayWords({ lesson, onDone }: { lesson: Lesson; onDone: () => v
       <h2 style={{ fontFamily: 'var(--font-warm)', fontSize: 26 }}>오늘 배울 단어</h2>
       <div style={{ display: 'flex', gap: 18, flexWrap: 'wrap', justifyContent: 'center', flex: 1, alignItems: 'center' }}>
         {words.map((w) => (
-          <button key={w.id} onClick={() => speak(w.text)}
-            style={{ background: 'var(--c-card)', border: 'none', borderRadius: 'var(--radius-lg)',
+          <button key={w.id} onClick={() => speak(w.text)} aria-label={`${w.text} 듣기`}
+            style={{ position: 'relative', background: 'var(--c-card)', border: 'none', borderRadius: 'var(--radius-lg)',
               padding: 18, boxShadow: 'var(--shadow-card)', display: 'flex', flexDirection: 'column',
               alignItems: 'center', gap: 8 }}>
+            {/* 눌러서 들을 수 있다는 표시(아직 글 못 읽는 아이용) */}
+            <span aria-hidden style={{ position: 'absolute', top: 8, right: 8, fontSize: 18 }}>🔊</span>
             <WordImage word={w} />
             <span style={{ fontFamily: 'var(--font-warm)', fontSize: 28, fontWeight: 800,
               letterSpacing: 3, color: 'var(--c-ink)' }}>{w.text}</span>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useNavigation } from '../app/Navigation'
 import { useProgress } from '../progress/useProgress'
+import { useViewport } from '../app/FitShell'
 import { useTts } from '../tts/useTts'
 import { playSticker } from '../audio/sound'
 import { PLANT_COST, MAX_GARDEN } from '../progress/progress'
@@ -10,12 +11,20 @@ import { PLANTS, getPlant, MAX_PLANT_STAGE } from './plants'
 export function Garden() {
   const { go } = useNavigation()
   const { progress, dispatch } = useProgress()
+  const { landscape } = useViewport()
   const { speak } = useTts()
   const [picking, setPicking] = useState(false)
   const [popIdx, setPopIdx] = useState<number | null>(null)
+  const [denyAdd, setDenyAdd] = useState(false) // 심기 안 될 때 흔들림
 
   const full = progress.garden.length >= MAX_GARDEN
   const canPlant = !full && progress.stars >= PLANT_COST
+
+  function tapAdd() {
+    if (canPlant) { setPicking(true); return }
+    speak(full ? '정원이 가득 찼어요' : '별이 조금 더 필요해요')
+    setDenyAdd(true); window.setTimeout(() => setDenyAdd(false), 450)
+  }
 
   function tapPlant(i: number) {
     const g = progress.garden[i]
@@ -50,13 +59,14 @@ export function Garden() {
       </div>
       <p style={{ fontSize: 13, color: 'var(--c-ink-soft)', marginTop: -2 }}>놀이를 하면 꽃이 무럭무럭 자라요 · 꽃을 누르면 물을 줘요</p>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, width: '100%', maxWidth: 460,
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${landscape ? 6 : 4}, 1fr)`, gap: 14,
+        width: '100%', maxWidth: landscape ? 720 : 460,
         marginTop: 4, background: 'linear-gradient(180deg,#eafaf0,#f4fff8)', borderRadius: 'var(--radius-lg)', padding: 12,
         boxShadow: 'var(--shadow-card)' }}>
         {slots.map((s) => {
           if (s.kind === 'add') {
             return (
-              <button key="add" onClick={() => (canPlant ? setPicking(true) : speak(full ? '정원이 가득 찼어요' : '별이 조금 더 필요해요'))}
+              <button key="add" onClick={tapAdd} className={denyAdd ? 'kp-shake' : undefined}
                 style={{ aspectRatio: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                   gap: 2, borderRadius: 'var(--radius-md)', border: '3px dashed #b8e0c4', background: 'rgba(255,255,255,0.6)',
                   cursor: 'pointer', opacity: canPlant ? 1 : 0.55 }}>

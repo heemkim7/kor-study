@@ -15,14 +15,27 @@ export function RoyalDressUp() {
   const { speak } = useTts()
   const [selected, setSelected] = useState(progress.royalUnlocked[0] ?? 'rose')
   const [celebrate, setCelebrate] = useState(false)
+  const [buyId, setBuyId] = useState<string | null>(null)   // 데려오기 확인 대기
+  const [denyId, setDenyId] = useState<string | null>(null) // 별 부족 흔들림
 
   const unlocked = new Set(progress.royalUnlocked)
   const current = getRoyalLook(selected) ?? ROYAL_LOOKS[0]
+  const buyLook = buyId ? getRoyalLook(buyId) : null
 
   function tapLook(id: string) {
     const look = getRoyalLook(id)!
     if (unlocked.has(id)) { setSelected(id); speak(look.name); return }
-    if (progress.stars < look.cost) { speak('별이 조금 더 필요해요'); return }
+    if (progress.stars < look.cost) {
+      setDenyId(id); speak('별이 조금 더 필요해요')
+      window.setTimeout(() => setDenyId((d) => (d === id ? null : d)), 450)
+      return
+    }
+    setBuyId(id); speak('이 공주를 데려올까요?') // 한 번 더 확인(실수 차감 방지)
+  }
+  function confirmBuy() {
+    const id = buyId
+    setBuyId(null)
+    if (!id) return
     dispatch({ type: 'unlockRoyal', id })
     setSelected(id)
     setCelebrate(true); playSticker(); speak('참 예뻐요!')
@@ -53,7 +66,7 @@ export function RoyalDressUp() {
           const isSel = selected === look.id
           const affordable = progress.stars >= look.cost
           return (
-            <button key={look.id} onClick={() => tapLook(look.id)}
+            <button key={look.id} onClick={() => tapLook(look.id)} className={denyId === look.id ? 'kp-shake' : undefined}
               style={{ position: 'relative', border: isSel ? '3px solid var(--c-pink)' : '2px solid #f0e2d0',
                 borderRadius: 'var(--radius-md)', overflow: 'hidden', background: 'var(--c-card)', padding: 0,
                 cursor: 'pointer', boxShadow: 'var(--shadow-card)', opacity: have || affordable ? 1 : 0.6 }}>
@@ -87,6 +100,38 @@ export function RoyalDressUp() {
         {preview}
         {picker}
       </div>
+
+      {/* 데려오기 확인 — 실수 탭으로 별이 사라지지 않게 한 번 더 확인 */}
+      {buyLook && (
+        <div onClick={() => setBuyId(null)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(70,40,60,0.5)', zIndex: 30,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 22, overflowY: 'auto' }}>
+          <div onClick={(e) => e.stopPropagation()}
+            style={{ position: 'relative', background: 'var(--c-card)', borderRadius: 'var(--radius-lg)',
+              padding: '20px 20px 18px', textAlign: 'center', maxWidth: 300, width: '100%',
+              maxHeight: 'calc(100dvh - 44px)', overflowY: 'auto', boxShadow: 'var(--shadow-card)' }}>
+            <img src={buyLook.file} alt={buyLook.name}
+              style={{ width: 150, aspectRatio: '3 / 4', objectFit: 'cover', borderRadius: 'var(--radius-md)', margin: '0 auto', display: 'block' }} />
+            <div style={{ fontFamily: 'var(--font-warm)', fontSize: 22, fontWeight: 800, marginTop: 8 }}>{buyLook.name}</div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: 'var(--c-accent-strong)', margin: '6px 0 4px' }}>
+              ⭐ {buyLook.cost} 에 데려올까요?
+            </div>
+            <div style={{ fontSize: 13, color: 'var(--c-ink-soft)', marginBottom: 12 }}>
+              내 별 ⭐ {progress.stars} → {progress.stars - buyLook.cost}
+            </div>
+            <div style={{ display: 'flex', gap: 10 }}>
+              <button onClick={confirmBuy}
+                style={{ flex: 1, border: 'none', borderRadius: 'var(--radius-md)', padding: '14px 0', minHeight: 52,
+                  fontFamily: 'var(--font-warm)', fontSize: 19, fontWeight: 800, color: '#fff',
+                  background: 'var(--c-accent)', boxShadow: '0 4px 0 #d98a3a' }}>데려와요</button>
+              <button onClick={() => setBuyId(null)}
+                style={{ flex: 1, border: 'none', borderRadius: 'var(--radius-md)', padding: '14px 0', minHeight: 52,
+                  fontFamily: 'var(--font-warm)', fontSize: 19, fontWeight: 800, color: 'var(--c-ink-soft)',
+                  background: '#f0e7da' }}>아니요</button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

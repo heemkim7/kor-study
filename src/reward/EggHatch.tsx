@@ -85,11 +85,12 @@ export function EggHatch() {
             {PETS.map((pet) => {
               const have = hatched.has(pet.id)
               return (
-                <button key={pet.id} disabled={!have} onClick={() => speak(pet.name)}
+                <button key={pet.id} aria-label={have ? pet.name : '아직 못 모은 친구'}
+                  onClick={() => (have ? speak(pet.name) : speak('알을 두드려 만나요'))}
                   style={{ aspectRatio: '1', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
                     gap: 2, borderRadius: 'var(--radius-md)', border: 'none',
                     background: have ? 'var(--c-card)' : '#efe7da', boxShadow: have ? 'var(--shadow-card)' : 'none',
-                    cursor: have ? 'pointer' : 'default' }}>
+                    cursor: 'pointer' }}>
                   <span style={{ fontSize: 30, opacity: have ? 1 : 0.3 }}>{have ? pet.emoji : '❓'}</span>
                   {have && <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--c-ink-soft)' }}>{pet.name}</span>}
                 </button>
@@ -99,12 +100,11 @@ export function EggHatch() {
         </div>
       </div>
 
-      {/* 부화 결과 */}
+      {/* 부화 결과 — 어렵게 만든 결정적 순간이라 배경 탭으로는 안 닫히고 '좋아요!'로만 닫는다 */}
       {reveal && (
-        <div onClick={() => setReveal(null)}
-          style={{ position: 'fixed', inset: 0, background: 'rgba(70,40,60,0.5)', zIndex: 30,
+        <div style={{ position: 'fixed', inset: 0, background: 'rgba(70,40,60,0.5)', zIndex: 30,
             display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 22 }}>
-          <div onClick={(e) => e.stopPropagation()}
+          <div
             style={{ position: 'relative', background: 'var(--c-card)', borderRadius: 'var(--radius-lg)',
               padding: '28px 28px 22px', textAlign: 'center', maxWidth: 340, width: '100%', boxShadow: 'var(--shadow-card)' }}>
             <Sparkles />

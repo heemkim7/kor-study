@@ -82,6 +82,14 @@ export function LetterHunt({ targetWords, pool, onCorrect, onWrong, onDone }: {
         <SpeakerButton size={52} onClick={() => speak(`${target} 글자를 찾아요`)} />
       </div>
 
+      {/* 몇 개를 찾아야 하는지 점으로 — 끝을 알 수 있게(글 못 읽어도 직관적) */}
+      <div style={{ display: 'flex', gap: 8 }} aria-label={`${found.length}/${targetTotal} 찾음`}>
+        {Array.from({ length: targetTotal }).map((_, i) => (
+          <span key={i} aria-hidden style={{ width: 16, height: 16, borderRadius: 999,
+            background: i < found.length ? 'var(--c-correct)' : '#e7dcc9', transition: 'background .2s' }} />
+        ))}
+      </div>
+
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16, marginTop: 4, width: '100%', maxWidth: 330 }}>
         {grid.map((cell, idx) => {
           const hit = found.includes(idx)

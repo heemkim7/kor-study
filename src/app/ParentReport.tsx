@@ -103,10 +103,16 @@ export function ParentReport() {
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <button onClick={() => dispatch({ type: 'setDailyGoal', n: progress.dailyGoal - 1 })} aria-label="목표 줄이기"
-          style={{ width: 38, height: 38, borderRadius: 999, border: 'none', background: '#f3e7d6', fontSize: 22, fontWeight: 800, cursor: 'pointer' }}>−</button>
+          disabled={progress.dailyGoal <= 1}
+          style={{ width: 38, height: 38, borderRadius: 999, border: 'none', fontSize: 22, fontWeight: 800,
+            background: progress.dailyGoal <= 1 ? '#ece4d6' : '#f3e7d6', color: progress.dailyGoal <= 1 ? '#bdb09a' : 'inherit',
+            opacity: progress.dailyGoal <= 1 ? 0.6 : 1, cursor: progress.dailyGoal <= 1 ? 'default' : 'pointer' }}>−</button>
         <span style={{ fontFamily: 'var(--font-warm)', fontSize: 22, fontWeight: 800, minWidth: 28, textAlign: 'center' }}>{progress.dailyGoal}</span>
         <button onClick={() => dispatch({ type: 'setDailyGoal', n: progress.dailyGoal + 1 })} aria-label="목표 늘리기"
-          style={{ width: 38, height: 38, borderRadius: 999, border: 'none', background: 'var(--c-accent)', color: '#fff', fontSize: 22, fontWeight: 800, cursor: 'pointer' }}>+</button>
+          disabled={progress.dailyGoal >= 5}
+          style={{ width: 38, height: 38, borderRadius: 999, border: 'none', color: '#fff', fontSize: 22, fontWeight: 800,
+            background: progress.dailyGoal >= 5 ? '#d8c7b3' : 'var(--c-accent)',
+            opacity: progress.dailyGoal >= 5 ? 0.6 : 1, cursor: progress.dailyGoal >= 5 ? 'default' : 'pointer' }}>+</button>
       </div>
     </div>
   )

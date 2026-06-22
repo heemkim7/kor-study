@@ -65,8 +65,16 @@ export function MakeSyllable({ glyphs, onCorrect, onWrong, onDone }: {
       speak('다시 해볼까?')
       onWrong?.()
       setShaking(true)
+      // 오답이어도 '맞게 고른 자모'는 남겨 둔다 — 틀린 칸만 비워 5살이 처음부터 다시 안 하게.
+      const dec = decomposeSyllable(target)
       clearTimeout(shakeRef.current)
-      shakeRef.current = setTimeout(() => { setShaking(false); setCho(null); setJung(null); setJong(null) }, 480)
+      shakeRef.current = setTimeout(() => {
+        setShaking(false)
+        if (!dec) { setCho(null); setJung(null); setJong(null); return }
+        if (c !== dec.cho) setCho(null)
+        if (v !== dec.jung) setJung(null)
+        if (needJong && j !== dec.jong) setJong(null)
+      }, 480)
     }
   }
 
@@ -85,20 +93,24 @@ export function MakeSyllable({ glyphs, onCorrect, onWrong, onDone }: {
 
   const preview = cho && jung && (!needJong || jong) ? (composeSyllable(cho, jung, needJong ? (jong as string) : '') ?? '') : ''
 
-  const slot = (filled: string | null, label: string) => (
+  // 칸과 타일을 역할별 색으로 묶어, 글자를 못 읽는 아이도 '같은 색끼리' 끼우게 한다.
+  const ROLE_COLOR: Record<Slot, string> = { cho: '#5aa9e6', jung: 'var(--c-pink)', jong: '#5bbf72' }
+
+  const slot = (filled: string | null, label: string, kind: Slot) => (
     <div style={{ width: 64, height: 66, display: 'flex', alignItems: 'center', justifyContent: 'center',
       borderRadius: 'var(--radius-md)', background: filled ? 'var(--c-card)' : '#fff',
-      border: filled ? 'none' : '3px dashed #e3cba8', boxShadow: filled ? 'var(--shadow-card)' : 'none',
+      border: `3px ${filled ? 'solid' : 'dashed'} ${ROLE_COLOR[kind]}`, boxShadow: filled ? 'var(--shadow-card)' : 'none',
       fontFamily: 'var(--font-warm)', fontSize: 34, fontWeight: 800, color: 'var(--c-ink)' }}>
-      {filled ?? <span style={{ fontSize: 12, color: '#c9bba8' }}>{label}</span>}
+      {filled ?? <span style={{ fontSize: 12, color: ROLE_COLOR[kind], fontWeight: 800 }}>{label}</span>}
     </div>
   )
 
   const tileBtn = (val: string, kind: Slot, active: boolean) => (
     <button key={kind + val} onClick={() => choose(kind, val)} disabled={solved}
-      style={{ width: 66, height: 66, borderRadius: 'var(--radius-md)', border: 'none',
+      style={{ width: 66, height: 66, borderRadius: 'var(--radius-md)',
+        border: active ? 'none' : `2px solid ${ROLE_COLOR[kind]}`,
         fontFamily: 'var(--font-warm)', fontSize: 34, fontWeight: 800,
-        color: active ? '#fff' : 'var(--c-ink)', background: active ? 'var(--c-accent)' : 'var(--c-card)',
+        color: active ? '#fff' : 'var(--c-ink)', background: active ? ROLE_COLOR[kind] : 'var(--c-card)',
         boxShadow: '0 4px 0 #f1ddc6' }}>
       {val}
     </button>
@@ -123,10 +135,10 @@ export function MakeSyllable({ glyphs, onCorrect, onWrong, onDone }: {
 
       {/* 조립 슬롯: 자음 + 모음 (+ 받침) = 글자 */}
       <div className={shaking ? 'kp-shake' : undefined} style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', justifyContent: 'center' }}>
-        {slot(cho, '자음')}
+        {slot(cho, '자음', 'cho')}
         {plus}
-        {slot(jung, '모음')}
-        {needJong && <>{plus}{slot(jong, '받침')}</>}
+        {slot(jung, '모음', 'jung')}
+        {needJong && <>{plus}{slot(jong, '받침', 'jong')}</>}
         <span style={{ fontSize: 22, color: 'var(--c-ink-soft)', fontWeight: 800 }}>=</span>
         <div style={{ width: 62, height: 62, display: 'flex', alignItems: 'center', justifyContent: 'center',
           borderRadius: 'var(--radius-md)', background: solved ? 'var(--c-correct)' : '#fff',

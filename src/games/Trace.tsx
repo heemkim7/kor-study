@@ -35,6 +35,7 @@ export function Trace({ glyphs, onCorrect, onDone, say = (g) => ({ text: glyphSo
   const drawing = useRef(false)
   const last = useRef({ x: 0, y: 0 })
   const solvedRef = useRef(false)
+  const awardedRef = useRef(false) // 한 라운드에서 별은 1번만(다시 그려도 중복 지급 방지)
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
 
   function fit() {
@@ -75,6 +76,7 @@ export function Trace({ glyphs, onCorrect, onDone, say = (g) => ({ text: glyphSo
     clearTimeout(timerRef.current) // 이전 완성 타이머가 남아 있으면 정리(라운드 전환 위생)
     glyphRef.current = glyph
     solvedRef.current = false
+    awardedRef.current = false
     fit()
     if (round === 0) speak('손가락으로 글자를 따라 써 보세요')
     else { const s = say(glyph); speak(s.text, { lang: s.lang }) }
@@ -148,7 +150,7 @@ export function Trace({ glyphs, onCorrect, onDone, say = (g) => ({ text: glyphSo
     solvedRef.current = true
     setSolved(true)
     { const s = say(glyphRef.current); speak(s.text, { lang: s.lang }) }
-    onCorrect()
+    if (!awardedRef.current) { awardedRef.current = true; onCorrect() } // 중복 보상 방지
     timerRef.current = setTimeout(() => {
       if (round === glyphs.length - 1) onDone()
       else setRound(round + 1)
@@ -162,18 +164,20 @@ export function Trace({ glyphs, onCorrect, onDone, say = (g) => ({ text: glyphSo
       <h2 style={{ fontFamily: 'var(--font-warm)', fontSize: 24 }}>글자를 따라 써요</h2>
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <span style={{ fontFamily: 'var(--font-warm)', fontSize: 30, fontWeight: 800, color: 'var(--c-pink)' }}>{glyph}</span>
-        <SpeakerButton size={44} onClick={() => { const s = say(glyph); speak(s.text, { lang: s.lang }) }} />
+        <SpeakerButton size={52} onClick={() => { const s = say(glyph); speak(s.text, { lang: s.lang }) }} />
       </div>
       <canvas ref={canvasRef} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}
         style={{ width: '100%', maxWidth: 340, flex: 1, minHeight: 0, aspectRatio: '1 / 1', borderRadius: 'var(--radius-lg)',
           background: '#fff', boxShadow: 'var(--shadow-card)', touchAction: 'none', display: 'block' }} />
-      <div style={{ display: 'flex', gap: 10 }}>
-        <button onClick={() => fit()} style={{ fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800,
-          color: 'var(--c-ink)', background: 'var(--c-card)', border: 'none', borderRadius: 'var(--radius-md)',
-          padding: '10px 18px', boxShadow: '0 4px 0 #f1ddc6' }}>🧽 다시</button>
-        <button onClick={finish} style={{ fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800, color: '#fff',
+      {/* '다시(지우기)'와 '다 했어요'를 양끝으로 떼어 완료하려다 지우는 오터치 방지 */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 24, width: '100%', maxWidth: 340 }}>
+        <button onClick={() => { clearTimeout(timerRef.current); solvedRef.current = false; setSolved(false); fit() }}
+          style={{ fontFamily: 'var(--font-warm)', fontSize: 15, fontWeight: 800,
+          color: 'var(--c-ink-soft)', background: 'transparent', border: '2px solid #e3cba8', borderRadius: 'var(--radius-md)',
+          padding: '12px 18px', minHeight: 48 }}>🧽 다시</button>
+        <button onClick={finish} style={{ fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800, color: '#fff',
           background: 'var(--c-accent)', border: 'none', borderRadius: 'var(--radius-md)',
-          padding: '10px 18px', boxShadow: '0 4px 0 #d98a3a' }}>✓ 다 했어요</button>
+          padding: '14px 24px', minHeight: 48, boxShadow: '0 4px 0 #d98a3a' }}>✓ 다 했어요</button>
       </div>
     </div>
   )

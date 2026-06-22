@@ -22,7 +22,8 @@ export function Home() {
 
   // 매일 선물상자 — 하루 1회 별 보너스(스트릭 마일스톤이면 더)
   function openTheChest() {
-    if (!canOpen) { setChestReward(null); setChestOpen(true); return } // 이미 받은 날
+    // 이미 받은 날 — 무음이면 '왜 별이 안 나오지' 혼란. 짧은 안내 음성으로 알려줌.
+    if (!canOpen) { setChestReward(null); setChestOpen(true); resumeAudio(); speak('오늘 선물은 받았어요. 내일 또 와요!'); return }
     const milestone = progress.streak > 0 && progress.streak % 7 === 0
     const gain = milestone ? CHEST_MILESTONE_STARS : CHEST_STARS
     dispatch({ type: 'openChest', today: todayStr() })
@@ -93,8 +94,8 @@ export function Home() {
     </div>
   )
 
-  // 반응형 폭: 세로는 430(2~3칸), 가로는 860(여러 칸). 그리드가 폭에 맞춰 칸 수 자동 조절.
-  const MAXW = landscape ? 860 : 430
+  // 반응형 폭: 세로는 430(2~3칸), 가로는 820(=FitShell 가로 캔버스). 그리드가 폭에 맞춰 칸 수 자동 조절.
+  const MAXW = landscape ? 820 : 430
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
       gap: 10, padding: 'max(16px, env(safe-area-inset-top)) 16px 24px', textAlign: 'center' }}>
@@ -104,8 +105,9 @@ export function Home() {
         <button onClick={() => { resumeAudio(); setBgmOn(toggleBgm()) }} aria-label={bgmOn ? '배경음악 끄기' : '배경음악 켜기'}
           style={{ width: 54, height: 54, borderRadius: 999, border: 'none', background: 'var(--c-card)',
             fontSize: 24, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>{bgmOn ? '🔊' : '🔇'}</button>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ fontWeight: 800, color: 'var(--c-accent-strong)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0, flex: '1 1 auto', justifyContent: 'flex-end' }}>
+          <div style={{ fontWeight: 800, color: 'var(--c-accent-strong)', minWidth: 0,
+            whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
             {progress.streak > 0 && <>🔥 {progress.streak} · </>}⭐ {progress.stars} · 🏅 {progress.stickers}
           </div>
           <button onClick={openTheChest} aria-label="오늘의 선물상자" className={canOpen ? 'kp-wiggle' : undefined}
@@ -149,7 +151,7 @@ export function Home() {
           <div onClick={(e) => e.stopPropagation()}
             style={{ background: 'var(--c-card)', borderRadius: 'var(--radius-lg)', padding: '28px 28px 22px',
               textAlign: 'center', maxWidth: 320, width: '100%', boxShadow: 'var(--shadow-card)' }}>
-            <div style={{ fontSize: 84, lineHeight: 1 }}>🎁</div>
+            <div style={{ fontSize: 84, lineHeight: 1 }}>{chestReward != null ? '🎁' : '😴'}</div>
             {chestReward != null ? (
               <>
                 <div style={{ fontFamily: 'var(--font-warm)', fontSize: 22, fontWeight: 800, marginTop: 6 }}>오늘의 선물!</div>
