@@ -63,6 +63,11 @@ export function DressUp() {
 
   const outfit = progress.outfit
   const items = itemsByCategory(tab)
+  // 탭(카테고리)마다 아이템 개수가 달라도 '아이템 영역 높이'를 고정 →
+  // 탭을 바꿔도 전체 높이가 일정 → FitShell 스케일 고정 → 타일 크기가 출렁이지 않음.
+  // 아이템이 많은 카테고리는 이 영역 안에서만 세로 스크롤(아이 손가락으로 쓸어 넘김).
+  const gridCols = landscape ? 4 : 3
+  const gridAreaH = landscape ? 330 : 470
   const remaining = useMemo(() => unownedItems(progress.ownedItems).length, [progress.ownedItems])
   const canGacha = remaining > 0 && progress.stars >= GACHA_COST
 
@@ -199,7 +204,9 @@ export function DressUp() {
       </div>
 
       {/* 아이템 그리드 */}
-      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${landscape ? 4 : 3}, 1fr)`, gap: 14, width: '100%', maxWidth: landscape ? 480 : 420 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: `repeat(${gridCols}, 1fr)`, gap: 14, width: '100%', maxWidth: landscape ? 480 : 420,
+        height: gridAreaH, overflowY: 'auto', alignContent: 'start', paddingRight: 4,
+        WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}>
         {items.map((item) => {
           const owned = progress.ownedItems.includes(item.id)
           const equipped = outfit[item.category] === item.id
@@ -216,7 +223,8 @@ export function DressUp() {
                 background: 'linear-gradient(170deg,#fff6fb,#ffeaf4)' }}>
                 <PrincessFigure outfit={previewOutfit} size={64} background={tab === 'background'} />
               </div>
-              <div style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--c-ink)', textAlign: 'center', lineHeight: 1.15 }}>
+              <div style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--c-ink)', textAlign: 'center', lineHeight: 1.15,
+                whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100%' }}>
                 {item.name}
               </div>
               <div style={{ fontSize: 12.5, fontWeight: 800,
