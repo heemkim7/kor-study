@@ -31,8 +31,8 @@ export function RoyalDressUp() {
 
   // 큰 공주 미리보기
   const preview = (
-    <div style={{ position: 'relative', borderRadius: 'var(--radius-lg)', overflow: 'hidden',
-      boxShadow: 'var(--shadow-card)', background: 'var(--c-card)', width: '100%', maxWidth: 300 }}>
+    <div style={{ position: 'relative', borderRadius: 'var(--radius-lg)', overflow: 'hidden', flex: '0 0 auto',
+      boxShadow: 'var(--shadow-card)', background: 'var(--c-card)', width: '100%', maxWidth: landscape ? 250 : 280 }}>
       {celebrate && <Sparkles />}
       <img src={current.file} alt={current.name} style={{ width: '100%', display: 'block', aspectRatio: '3 / 4', objectFit: 'cover' }} />
       <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, padding: '10px 12px',
@@ -41,13 +41,13 @@ export function RoyalDressUp() {
     </div>
   )
 
-  // 룩 썸네일 모음
+  // 룩 썸네일 모음 — 반응형 그리드(폭에 따라 칸 수 자동)
   const picker = (
-    <div style={{ width: '100%', maxWidth: 380 }}>
+    <div style={{ flex: 1, minWidth: 0, width: '100%' }}>
       <div style={{ fontFamily: 'var(--font-warm)', fontSize: 15, fontWeight: 800, color: 'var(--c-ink-soft)', margin: '0 4px 8px', textAlign: 'center' }}>
         공주를 골라요 ({unlocked.size} / {ROYAL_LOOKS.length})
       </div>
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(92px, 1fr))', gap: 10 }}>
         {ROYAL_LOOKS.map((look) => {
           const have = unlocked.has(look.id)
           const isSel = selected === look.id
@@ -82,8 +82,8 @@ export function RoyalDressUp() {
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'linear-gradient(135deg,#fff0b8,#ffd24d)',
         color: '#7a5a10', fontWeight: 800, fontSize: 18, padding: '6px 14px', borderRadius: 999, boxShadow: 'var(--shadow-card)' }}>⭐ {progress.stars}</div>
 
-      <div style={{ display: 'flex', flexDirection: landscape ? 'row' : 'column', alignItems: 'center',
-        justifyContent: 'center', gap: landscape ? 28 : 12, width: '100%', maxWidth: landscape ? 760 : 360, marginTop: 4 }}>
+      <div style={{ display: 'flex', flexDirection: landscape ? 'row' : 'column', alignItems: landscape ? 'flex-start' : 'center',
+        justifyContent: 'center', gap: landscape ? 24 : 12, width: '100%', maxWidth: landscape ? 940 : 400, marginTop: 4 }}>
         {preview}
         {picker}
       </div>
