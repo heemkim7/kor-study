@@ -6,7 +6,7 @@
 ## 🆕🆕🆕🆕🆕 AI 일러스트 교체 + 상용화 준비 (2026-10-27, **로컬·미커밋 — 푸시 승인 대기**)
 
 - 👗 **공주 꾸미기 AI 인형화**: 드레스 12종(통짜 인형) + 왕관 5종(투명 레이어) + 배경 13종. 머리·아이템 탭은 AI 레이어 준비 전까지 숨김. `public/img/princess/`, `scripts/cut-princess-dress.py`, `scripts/cut-crown.py`
-- 📖 **동화 장면 AI화 10/36**: 과일나라 6 + 동물친구 4(an-forest/dog/cat/rabbit). 나머지는 svg 폴백. 제미나이 하루 한도 소진 → **21:59 초기화 후 이어서**. 남은 26장: an-play, an-bye, nat-*, veh-*, col-*, fam-*. `scripts/process-scene.py`
+- 📖 **동화 장면 AI화 36/36 완료**: 전 레슨 장면을 수채화 일러스트(webp)로 교체. 가족 레슨은 곰 가족(엄마·아빠·아기) 신규 캐릭터. `scripts/process-scene.py`(다운로드 원본은 `clean` 인자)
 - 🔒 **구독 골격**: `src/entitlement/`(PAYWALL_ENABLED=false), 구독 안내 화면, 개인정보처리방침·이용약관 **초안**(문의처 비어 있음). 결제 연동 전이라 현재 동작 무변화.
 - 💾 **기기 이전·백업**: 학습 리포트에 '진행 코드 복사/복원'(서버 비용 0, 로그인 없이 태블릿 교체 대응). 테스트 145.
 - 🐞 lint 에러 2건·DrawBoard key 경고 수정. lint 0 / 테스트 143 / 빌드 OK.
