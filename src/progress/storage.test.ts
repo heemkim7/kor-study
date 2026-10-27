@@ -75,3 +75,21 @@ describe('storage', () => {
     expect(loaded.outfit.hair).toBe('hair-blonde') // 보유 → 유지
   })
 })
+
+describe('backup code', () => {
+  it('내보낸 코드를 다시 가져오면 같은 진행이 복원된다', async () => {
+    const { exportProgressCode, importProgressCode, saveProgress, loadProgress } = await import('./storage')
+    saveProgress({ ...initialProgress, stars: 42 })
+    const code = exportProgressCode()
+    localStorage.clear()
+    expect(importProgressCode(code)).toBe(true)
+    expect(loadProgress().stars).toBe(42)
+  })
+  it('잘못된 코드는 거부하고 기존 데이터를 건드리지 않는다', async () => {
+    const { importProgressCode, saveProgress, loadProgress } = await import('./storage')
+    saveProgress({ ...initialProgress, stars: 7 })
+    expect(importProgressCode('garbage')).toBe(false)
+    expect(importProgressCode('HP1.!!!')).toBe(false)
+    expect(loadProgress().stars).toBe(7)
+  })
+})

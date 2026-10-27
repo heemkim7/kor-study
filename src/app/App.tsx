@@ -18,6 +18,8 @@ import { WordBook } from '../reward/WordBook'
 import { Badges } from '../reward/Badges'
 import { ReviewSession } from './ReviewSession'
 import { ParentReport } from './ParentReport'
+import { Legal } from './Legal'
+import { Paywall } from './Paywall'
 import { TimeGuard } from './TimeGuard'
 import { FitShell } from './FitShell'
 import { resumeAudio, startBgm } from '../audio/sound'
@@ -40,6 +42,8 @@ function Router() {
   if (screen.name === 'badges') return <Badges />
   if (screen.name === 'review') return <ReviewSession />
   if (screen.name === 'parent') return <ParentReport />
+  if (screen.name === 'legal') return <Legal />
+  if (screen.name === 'paywall') return <Paywall />
   return <Home />
 }
 

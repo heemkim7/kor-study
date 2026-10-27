@@ -12,6 +12,11 @@ export default defineConfig({
         // 음성(mp3)은 프리캐시 대신 런타임 캐시(설치 가벼움, 재생 시 캐시, 오프라인 미캐시 시 브라우저 TTS 폴백)
         globPatterns: ['**/*.{js,css,html,png,svg,webmanifest,woff2}'],
         runtimeCaching: [{
+          // AI 일러스트(webp)는 용량이 커서 프리캐시 대신 본 뒤 캐시(재방문·오프라인 재생)
+          urlPattern: /\/img\/.*\.webp$/,
+          handler: 'CacheFirst',
+          options: { cacheName: 'img-webp-v1', expiration: { maxEntries: 400 }, cacheableResponse: { statuses: [200] } },
+        }, {
           urlPattern: /\/audio\/.*\.mp3$/,
           handler: 'CacheFirst',
           options: {

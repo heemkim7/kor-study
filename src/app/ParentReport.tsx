@@ -8,6 +8,7 @@ import { NUMBER_LESSONS } from '../content/numbers'
 import { ABC_LESSONS } from '../content/english'
 import { STICKERS } from '../reward/stickers'
 import { ParentGate } from './ParentGate'
+import { exportProgressCode, importProgressCode } from '../progress/storage'
 import { MAX_FAMILY_WORDS, MAX_FAMILY_WORD_LEN, MAX_TIME_LIMIT_MIN, playSecondsToday, todayStr } from '../progress/progress'
 
 const TIME_LIMIT_OPTIONS = [0, 10, 15, 20, 30, 45] // 분(0=제한 없음)
@@ -20,6 +21,8 @@ export function ParentReport() {
   const [familyInput, setFamilyInput] = useState('')
   const [resetArmed, setResetArmed] = useState(false)
   const [unlockedMsg, setUnlockedMsg] = useState(false)
+  const [backupText, setBackupText] = useState('')
+  const [backupMsg, setBackupMsg] = useState('')
 
   const stats = useMemo(() => {
     const done = new Set(progress.completedLessons)
@@ -258,6 +261,32 @@ export function ParentReport() {
     </div>
   )
 
+  const backupBlock = (
+    <div style={{ background: '#fff', borderRadius: 'var(--radius-lg)', padding: 16, boxShadow: 'var(--shadow-card)', display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div style={{ fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800 }}>💾 기기 옮기기 · 백업</div>
+      <p style={{ fontSize: 12, color: 'var(--c-ink-soft)', lineHeight: 1.5 }}>
+        코드를 복사해 두면 새 태블릿에서 붙여넣어 진행을 그대로 이어갈 수 있어요. (서버에 저장되지 않아요)
+      </p>
+      <button onClick={async () => {
+        const code = exportProgressCode()
+        try { await navigator.clipboard.writeText(code); setBackupMsg('코드를 복사했어요! 메모장 등에 붙여넣어 보관하세요.') }
+        catch { setBackupText(code); setBackupMsg('아래 코드를 직접 복사해 주세요.') }
+      }} style={{ height: 44, borderRadius: 'var(--radius-md)', border: '2px solid #eadfce', background: '#fff', fontFamily: 'var(--font-warm)', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}>
+        내 진행 코드 복사
+      </button>
+      <textarea value={backupText} onChange={(e) => setBackupText(e.target.value)} placeholder="여기에 백업 코드를 붙여넣기" rows={3}
+        style={{ width: '100%', borderRadius: 'var(--radius-md)', border: '2px solid #eadfce', padding: 8, fontSize: 12, resize: 'none' }} />
+      <button onClick={() => {
+        if (importProgressCode(backupText)) { setBackupMsg('복원했어요! 다시 불러옵니다…'); setTimeout(() => location.reload(), 600) }
+        else setBackupMsg('코드가 올바르지 않아요. 다시 확인해 주세요.')
+      }} disabled={!backupText.trim()}
+        style={{ height: 44, borderRadius: 'var(--radius-md)', border: 'none', background: backupText.trim() ? 'var(--c-primary)' : '#ddd', color: '#fff', fontFamily: 'var(--font-warm)', fontSize: 14, fontWeight: 800, cursor: 'pointer' }}>
+        코드로 복원하기
+      </button>
+      {backupMsg && <p role="status" style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>{backupMsg}</p>}
+    </div>
+  )
+
   // 컬럼 폭 380 고정. 가로면 [통계+목표 | 그래프+단어] 2단으로 펼침.
   const colStyle = { display: 'flex', flexDirection: 'column' as const, gap: 14, width: '100%', maxWidth: 380 }
   return (
@@ -274,7 +303,11 @@ export function ParentReport() {
       <div style={{ display: 'flex', flexDirection: landscape ? 'row' : 'column', alignItems: 'flex-start',
         justifyContent: 'center', gap: landscape ? 16 : 14, width: '100%', maxWidth: landscape ? 790 : 380 }}>
         <div style={colStyle}>{statsBlock}{goalBlock}{timeBlock}</div>
-        <div style={colStyle}>{graphBlock}{familyBlock}{wordsBlock}{testBlock}</div>
+        <div style={colStyle}>{graphBlock}{familyBlock}{wordsBlock}{backupBlock}{testBlock}
+          <button onClick={() => go({ name: 'legal' })}
+            style={{ height: 44, borderRadius: 'var(--radius-md)', border: '2px solid #eadfce', background: '#fff',
+              fontFamily: 'var(--font-warm)', fontSize: 14, fontWeight: 800, color: 'var(--c-ink-soft)', cursor: 'pointer' }}>개인정보처리방침 · 이용약관</button>
+        </div>
       </div>
     </div>
   )

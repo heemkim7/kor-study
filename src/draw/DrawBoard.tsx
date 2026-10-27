@@ -174,7 +174,7 @@ export function DrawBoard() {
   function onUp() { drawing.current = false }
 
   const swatch = (bg: string, active: boolean, onClick: () => void, label?: string) => (
-    <button onClick={onClick} aria-label={label ?? '색'} style={{
+    <button key={bg + (label ?? '')} onClick={onClick} aria-label={label ?? '색'} style={{
       width: 44, height: 44, borderRadius: 999, border: active ? '4px solid var(--c-ink)' : '3px solid #fff',
       background: bg, boxShadow: active ? '0 0 0 2px var(--c-accent), var(--shadow-card)' : 'var(--shadow-card)',
       transform: active ? 'scale(1.1)' : 'none', transition: 'transform .12s', cursor: 'pointer', flex: '0 0 auto',

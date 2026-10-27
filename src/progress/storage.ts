@@ -95,3 +95,28 @@ export function saveProgress(p: Progress): void {
     /* 저장 실패는 조용히 무시 (사용성 우선) */
   }
 }
+
+/** 기기 이전·백업용 코드(진행 데이터를 base64로). 서버 없이 복사·붙여넣기로 옮긴다. */
+export function exportProgressCode(): string {
+  try {
+    const json = localStorage.getItem(KEY) ?? JSON.stringify(initialProgress)
+    return 'HP1.' + btoa(unescape(encodeURIComponent(json)))
+  } catch {
+    return ''
+  }
+}
+
+/** 백업 코드를 검증해 저장. 성공하면 true(호출 측이 새로고침해 반영). */
+export function importProgressCode(code: string): boolean {
+  try {
+    const t = code.trim()
+    if (!t.startsWith('HP1.')) return false
+    const json = decodeURIComponent(escape(atob(t.slice(4))))
+    const parsed = JSON.parse(json) as Partial<Progress>
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed) || typeof parsed.stars !== 'number') return false
+    localStorage.setItem(KEY, json)
+    return true
+  } catch {
+    return false
+  }
+}

@@ -41,7 +41,9 @@ export function StoryPlayer({ lesson, onDone }: { lesson: Lesson; onDone: () => 
       {/* 그림은 보는 것 — 아이가 만져도 스토리가 넘어가지 않게 탭-스킵을 없앴다(평소엔 자동 진행). */}
       <div style={{ position: 'relative', margin: '0 14px', borderRadius: 'var(--radius-lg)',
         overflow: 'hidden', boxShadow: 'var(--shadow-card)', aspectRatio: '4 / 3' }}>
-        <img src={`/img/scene/${scene.sceneImage}.svg`} alt=""
+        <img key={scene.sceneImage} src={`/img/scene/${scene.sceneImage}.webp`} alt=""
+          // AI 일러스트(webp)가 아직 없는 장면은 기존 벡터(svg)로 폴백
+          onError={(e) => { const el = e.currentTarget; if (!el.dataset.fb) { el.dataset.fb = '1'; el.src = `/img/scene/${scene.sceneImage}.svg` } }}
           style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
         <div style={{ position: 'absolute', top: 12, right: 14 }}>
           <SpeakerButton onClick={() => speak(scene.text)} />

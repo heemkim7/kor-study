@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { getLesson } from '../content/loader'
 import { WORDS } from '../content/words'
 import { choiceCountForLevel } from '../content/difficulty'
@@ -25,19 +25,19 @@ export function Adventure({ lessonId }: { lessonId: string }) {
   const [phase, setPhase] = useState<Phase>(lesson.story.length ? { kind: 'story' } : { kind: 'words' })
   const [awarded, setAwarded] = useState(true)
   const [earned, setEarned] = useState<number | undefined>(undefined)
-  const wrongRef = useRef(0) // 이번 판 오답 수(마스터리 별 산정용)
+  const [wrongCount, setWrongCount] = useState(0) // 이번 판 오답 수(마스터리 별 산정용)
 
   const pool = useMemo(() => WORDS.map((w) => w.id), [])
   // 정답: 별 +1 + 칭찬음, 맞힌 단어는 복습 큐에서 빼줌. 오답: 복습 큐 등록 + 오답 집계.
   const onCorrect = (id?: string) => { playCorrect(); dispatch({ type: 'addStars', n: 1 }); if (id) dispatch({ type: 'reviewMastered', id }) }
-  const onWrong = (id?: string) => { wrongRef.current++; if (id) dispatch({ type: 'reviewWrong', id }) }
+  const onWrong = (id?: string) => { setWrongCount((n) => n + 1); if (id) dispatch({ type: 'reviewWrong', id }) }
 
   function nextAfterGame(index: number) {
     if (index < lesson.games.length - 1) setPhase({ kind: 'game', index: index + 1 })
     else {
       // 처음 완료할 때만 스티커가 지급됨(completeLesson은 멱등) → 보상 화면 문구를 맞춤
       setAwarded(!progress.completedLessons.includes(lesson.id))
-      const m = masteryStars(wrongRef.current)
+      const m = masteryStars(wrongCount)
       setEarned(m)
       dispatch({ type: 'learnWords', ids: lesson.targetWords })
       dispatch({ type: 'completeLesson', lessonId: lesson.id })

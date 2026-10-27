@@ -102,7 +102,7 @@ describe('setPrincessName', () => {
 describe('초기 보유/옷차림', () => {
   it('기본 아이템을 보유하고 기본 옷을 입고 있음', () => {
     expect(initialProgress.ownedItems).toContain('dress-pink')
-    expect(initialProgress.ownedItems).toContain('hair-blonde')
+    expect(initialProgress.ownedItems).toContain('bg-pink')
     expect(initialProgress.outfit.dress).toBe('dress-pink')
   })
 })
@@ -133,9 +133,9 @@ describe('unlockItem', () => {
   })
   it('costOverride(뽑기 정액)를 적용', () => {
     const rich = addStars(initialProgress, GACHA_COST)
-    const p = unlockItem(rich, 'acc-wings', GACHA_COST) // 정가 10이지만 정액으로
+    const p = unlockItem(rich, 'dress-gold', GACHA_COST) // 정가 9이지만 정액으로
     expect(p.stars).toBe(0)
-    expect(p.ownedItems).toContain('acc-wings')
+    expect(p.ownedItems).toContain('dress-gold')
   })
 })
 

@@ -714,3 +714,8 @@ export function buildPrincessSvg(outfit: Partial<Outfit> = {}, opts: FigureOpts 
   const bg = showBg ? background(o.background, idPrefix) : ''
   return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:100%">${bg}${inner}</svg>`
 }
+
+/** 배경만 그린 SVG 문자열(AI 인형 이미지 뒤에 깔림). */
+export function buildBackgroundSvg(backgroundId: string, idPrefix: string): string {
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="display:block;width:100%;height:100%">${background(backgroundId, idPrefix)}</svg>`
+}

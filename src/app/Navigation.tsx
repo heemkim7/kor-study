@@ -18,6 +18,8 @@ export type Screen =
   | { name: 'badges' }
   | { name: 'review' }
   | { name: 'parent' }
+  | { name: 'legal' }
+  | { name: 'paywall' }
 
 interface Nav { screen: Screen; go: (s: Screen) => void }
 const NavContext = createContext<Nav | null>(null)

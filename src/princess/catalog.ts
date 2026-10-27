@@ -25,15 +25,29 @@ export interface DressUpItem {
   cost: number // 별(⭐) 가격. 0이면 처음부터 보유(기본).
 }
 
-export const CATEGORY_LABEL: Record<ItemCategory, string> = {
+// 꾸미기 v2: 드레스는 AI 인형 일러스트(통짜), 배경은 벡터. 머리·왕관·아이템은 AI 레이어가 준비되면 복귀.
+export const CATEGORY_LABEL: Partial<Record<ItemCategory, string>> = {
   dress: '드레스',
-  hair: '머리',
   crown: '왕관',
-  accessory: '아이템',
   background: '배경',
 }
 
-export const CATEGORY_ORDER: ItemCategory[] = ['dress', 'hair', 'crown', 'accessory', 'background']
+export const CATEGORY_ORDER: ItemCategory[] = ['dress', 'crown', 'background']
+
+/** AI 왕관 일러스트(투명 webp) → 인형 머리 위 배치(인형 이미지 대비 %). 없는 id(왕관 없음)는 안 그림. */
+export const AI_CROWNS: Record<string, { src: string; w: number; top: number }> = {
+  'crown-gold': { src: '/img/princess/crowns/crown-gold.webp', w: 36, top: -7.5 },
+  'crown-flower': { src: '/img/princess/crowns/crown-flower.webp', w: 38, top: -9.5 },
+  'crown-star': { src: '/img/princess/crowns/crown-star.webp', w: 38, top: -8.5 },
+  'crown-heart': { src: '/img/princess/crowns/crown-heart.webp', w: 38, top: -9.5 },
+  'crown-bow': { src: '/img/princess/crowns/crown-bow.webp', w: 42, top: -8.5 },
+}
+
+/** AI 인형 이미지가 있는 드레스 id → 파일(public/img/princess). 없으면 벡터 인형으로 폴백. */
+export const AI_DRESS_IMAGES: Record<string, string> = Object.fromEntries(
+  ['pink', 'blue', 'purple', 'mint', 'peach', 'red', 'lemon', 'lavender', 'ivory', 'gold', 'orange', 'magenta']
+    .map((k) => [`dress-${k}`, `/img/princess/dress-${k}.webp`]),
+)
 
 // 아이템 정의. 기본 아이템(cost 0)은 처음부터 보유.
 export const CATALOG: DressUpItem[] = [
@@ -44,39 +58,16 @@ export const CATALOG: DressUpItem[] = [
   { id: 'dress-mint', name: '민트 드레스', category: 'dress', cost: 6 },
   { id: 'dress-peach', name: '복숭아 드레스', category: 'dress', cost: 6 },
   { id: 'dress-red', name: '빨강 드레스', category: 'dress', cost: 8 },
-  { id: 'dress-coral', name: '코랄 드레스', category: 'dress', cost: 5 },
   { id: 'dress-lemon', name: '레몬 드레스', category: 'dress', cost: 5 },
-  { id: 'dress-lime', name: '연두 드레스', category: 'dress', cost: 5 },
-  { id: 'dress-rose', name: '장미 드레스', category: 'dress', cost: 6 },
   { id: 'dress-lavender', name: '라벤더 드레스', category: 'dress', cost: 6 },
-  { id: 'dress-emerald', name: '에메랄드 드레스', category: 'dress', cost: 7 },
   { id: 'dress-ivory', name: '아이보리 드레스', category: 'dress', cost: 5 },
   { id: 'dress-gold', name: '황금 드레스', category: 'dress', cost: 9 },
-  { id: 'dress-beige', name: '베이지 드레스', category: 'dress', cost: 5 },
   { id: 'dress-orange', name: '주황 드레스', category: 'dress', cost: 5 },
   { id: 'dress-magenta', name: '자홍 드레스', category: 'dress', cost: 6 },
-  { id: 'dress-aqua', name: '아쿠아 드레스', category: 'dress', cost: 6 },
-  { id: 'dress-navy', name: '남색 드레스', category: 'dress', cost: 7 },
-  { id: 'dress-cocoa', name: '코코아 드레스', category: 'dress', cost: 5 },
   // 머리 — 색(긴 웨이브)
-  { id: 'hair-blonde', name: '금발 머리', category: 'hair', cost: 0 },
-  { id: 'hair-brown', name: '갈색 머리', category: 'hair', cost: 5 },
-  { id: 'hair-pink', name: '분홍 머리', category: 'hair', cost: 6 },
-  { id: 'hair-black', name: '검정 머리', category: 'hair', cost: 5 },
-  { id: 'hair-blue', name: '하늘 머리', category: 'hair', cost: 8 },
   // 머리 — 스타일
-  { id: 'hair-twin', name: '양갈래 머리', category: 'hair', cost: 8 },
-  { id: 'hair-bun', name: '올림 머리', category: 'hair', cost: 8 },
-  { id: 'hair-bob', name: '단발 머리', category: 'hair', cost: 7 },
-  { id: 'hair-red', name: '빨강 머리', category: 'hair', cost: 6 },
-  { id: 'hair-orange', name: '주황 머리', category: 'hair', cost: 6 },
-  { id: 'hair-white', name: '백금발 머리', category: 'hair', cost: 8 },
-  { id: 'hair-lavender', name: '라벤더 머리', category: 'hair', cost: 7 },
-  { id: 'hair-mint', name: '민트 머리', category: 'hair', cost: 7 },
-  { id: 'hair-purple', name: '보라 머리', category: 'hair', cost: 7 },
-  { id: 'hair-teal', name: '청록 머리', category: 'hair', cost: 7 },
-  { id: 'hair-gray', name: '회색 머리', category: 'hair', cost: 6 },
-  { id: 'hair-rose', name: '장미 머리', category: 'hair', cost: 7 },
+  // 왕관
+  // 아이템(액세서리)
   // 왕관
   { id: 'crown-gold', name: '황금 왕관', category: 'crown', cost: 0 },
   { id: 'crown-none', name: '왕관 없음', category: 'crown', cost: 0 },
@@ -84,29 +75,6 @@ export const CATALOG: DressUpItem[] = [
   { id: 'crown-star', name: '별 왕관', category: 'crown', cost: 8 },
   { id: 'crown-heart', name: '하트 왕관', category: 'crown', cost: 8 },
   { id: 'crown-bow', name: '리본 머리띠', category: 'crown', cost: 6 },
-  { id: 'crown-catears', name: '고양이 귀', category: 'crown', cost: 7 },
-  { id: 'crown-bunnyears', name: '토끼 귀', category: 'crown', cost: 7 },
-  { id: 'crown-halo', name: '천사 고리', category: 'crown', cost: 8 },
-  { id: 'crown-pearl', name: '진주 티아라', category: 'crown', cost: 9 },
-  { id: 'crown-party', name: '고깔 모자', category: 'crown', cost: 6 },
-  { id: 'crown-snow', name: '눈꽃 왕관', category: 'crown', cost: 9 },
-  { id: 'crown-moon', name: '달 왕관', category: 'crown', cost: 9 },
-  // 아이템(액세서리)
-  { id: 'acc-none', name: '없음', category: 'accessory', cost: 0 },
-  { id: 'acc-necklace', name: '보석 목걸이', category: 'accessory', cost: 6 },
-  { id: 'acc-glasses', name: '동그란 안경', category: 'accessory', cost: 6 },
-  { id: 'acc-wand', name: '요술봉', category: 'accessory', cost: 8 },
-  { id: 'acc-parasol', name: '레이스 양산', category: 'accessory', cost: 9 },
-  { id: 'acc-pet', name: '아기 고양이', category: 'accessory', cost: 10 },
-  { id: 'acc-wings', name: '요정 날개', category: 'accessory', cost: 10 },
-  { id: 'acc-earrings', name: '반짝 귀걸이', category: 'accessory', cost: 5 },
-  { id: 'acc-bowtie', name: '나비 넥타이', category: 'accessory', cost: 5 },
-  { id: 'acc-sunglasses', name: '선글라스', category: 'accessory', cost: 6 },
-  { id: 'acc-cape', name: '공주 망토', category: 'accessory', cost: 9 },
-  { id: 'acc-balloon', name: '풍선', category: 'accessory', cost: 6 },
-  { id: 'acc-bouquet', name: '꽃다발', category: 'accessory', cost: 7 },
-  { id: 'acc-teddy', name: '곰 인형', category: 'accessory', cost: 8 },
-  { id: 'acc-starstaff', name: '별 지팡이', category: 'accessory', cost: 9 },
   // 배경
   { id: 'bg-pink', name: '분홍 방', category: 'background', cost: 0 },
   { id: 'bg-garden', name: '꽃 정원', category: 'background', cost: 6 },

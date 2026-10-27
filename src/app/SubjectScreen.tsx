@@ -9,6 +9,7 @@ import { difficultyStars } from '../content/difficulty'
 import { buildLetterJourney } from '../content/letters'
 import { buildNumberJourney } from '../content/numbers'
 import { buildAbcJourney } from '../content/english'
+import { canPlayLesson, FREE_ENTITLEMENT } from '../entitlement/entitlement'
 
 export type Subject = 'hangul' | 'number' | 'english'
 
@@ -48,7 +49,7 @@ export function SubjectScreen({ subject }: { subject: Subject }) {
         </div>
 
         {cur ? (
-          <button onClick={() => go(nav(cur.lesson.id))}
+          <button onClick={() => go(canPlayLesson(nodes.indexOf(cur), FREE_ENTITLEMENT) ? nav(cur.lesson.id) : { name: 'paywall' })}
             style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '18px 18px',
               borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer', background: 'var(--c-card)',
               boxShadow: `0 0 0 3px ${color}, var(--shadow-card)` }}>
