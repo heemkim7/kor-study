@@ -8,9 +8,13 @@
   --c-pink: #ef6aa6;
   --c-ink: #5b4632;
   --c-ink-soft: #8a6c4d; /* 흰 카드 위 대비 4.5:1↑ (보조 텍스트 가독성) */
-  --radius-lg: 22px;
-  --radius-md: 16px;
-  --shadow-card: 0 8px 22px rgba(180,120,60,.14);
+  --radius-lg: 28px;
+  --radius-md: 18px;
+  /* 종이 타일 느낌: 아랫 턱 + 부드러운 그림자 + 윗면 하이라이트 */
+  --shadow-card: 0 6px 0 #e8d6b8, 0 14px 22px rgba(90,60,30,.15), inset 0 3px 0 #fff;
   --font-base: 'Pretendard', system-ui, sans-serif;
-  --font-warm: 'Gowun Dodum', 'Pretendard', sans-serif;
+  --font-warm: 'Jua', 'Gowun Dodum', 'Pretendard', sans-serif;
+  /* 캔디 타일(입체 버튼) — 윗면 그라디언트 + 아랫 턱(lip) + 안쪽 하이라이트 */
+  --lip-purple: #b79be8; --lip-green: #8fd1a8; --lip-blue: #92bff0; --lip-pink: #f4a3c6;
+  --lip-yellow: #f0cb6a; --lip-orange: #f0ad74; --lip-sky: #86cbea; --lip-mint: #92d8b8;
 }

@@ -71,7 +71,7 @@ export function MemoryGame({ targetWords, onCorrect, onWrong, onDone }: {
           const revealed = flipped.includes(idx) || matched.includes(card.wordId)
           const word = getWord(card.wordId)!
           return (
-            <button key={card.cardId} onClick={() => tap(idx)} disabled={revealed}
+            <button className="kp-primary" key={card.cardId} onClick={() => tap(idx)} disabled={revealed}
               style={{ width: '100%', aspectRatio: '1', borderRadius: 'var(--radius-md)', border: 'none',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: revealed ? 'var(--c-card)' : 'var(--c-accent)',

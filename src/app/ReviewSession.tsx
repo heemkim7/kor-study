@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Icon } from '../ui/Icon'
 import { useNavigation } from './Navigation'
 import { useProgress } from '../progress/useProgress'
 import { WORDS } from '../content/words'
@@ -28,7 +29,7 @@ export function ReviewSession() {
     <button onClick={() => go({ name: 'home' })} aria-label="집으로"
       style={{ position: 'absolute', top: 'max(10px, env(safe-area-inset-top))', left: 10, zIndex: 10,
         width: 44, height: 44, borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)',
-        fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>🏠</button>
+        fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}><Icon n="home" size={30} /></button>
   )
 
   if (sample.length === 0 || done) {

@@ -45,7 +45,7 @@ export function RewardScreen({ onHome, awarded = true, stars }: { onHome: () => 
       {awarded && !latest && (
         <div style={{ fontSize: 22, color: 'var(--c-accent-strong)', fontWeight: 800 }}>🏅 스티커 1장 획득!</div>
       )}
-      <button onClick={onHome}
+      <button className="kp-primary" onClick={onHome}
         style={{ fontFamily: 'var(--font-warm)', fontSize: 22, fontWeight: 800, color: '#fff',
           background: 'var(--c-accent)', border: 'none', borderRadius: 'var(--radius-md)',
           padding: '14px 30px', boxShadow: '0 5px 0 #d98a3a' }}>

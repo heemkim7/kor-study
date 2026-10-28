@@ -3,6 +3,13 @@
 > 자리 비우신 동안 자동으로 진행하고, **결정/확인이 필요한 것만** 여기 모아둡니다.
 > 전부 검증·커밋·푸시되어 **Vercel 자동배포**됩니다(라이브: https://kor-study-rihee.vercel.app).
 
+## 🎨 전면 디자인 개편 진행 중 (2026-10-28, **로컬·미커밋**)
+
+- 입체 캔디 타일/버튼·종이 타일 그림자(`--shadow-card`)·Jua 글꼴·흰 윤곽 제목 → 앱 전체 카드/버튼이 한꺼번에 입체로. `src/styles/`, `src/ui/CandyTile.tsx`
+- 홈 메뉴 아이콘 12종 `public/img/icons/`, 버튼 아이콘 12종(집·스피커·재생 등), 콩콩이 표정 11종 `public/img/kong/`, 정답/오답 시 콩콩이 리액션(`KongReaction`)
+- 단어 그림 73장 AI 일러스트 `public/img/word/` (없으면 기존 이모지 폴백). 스크립트 `scripts/cut-icons.py`(시트 자동 분리)
+- 남은 일: 숫자·영어·그림·보상 등 개별 화면 다듬기, 게임 화면 구성 개선, 정답 연출
+
 ## 🆕🆕🆕🆕🆕 AI 일러스트 교체 + 상용화 준비 (2026-10-27, **로컬·미커밋 — 푸시 승인 대기**)
 
 - 👗 **공주 꾸미기 AI 인형화**: 드레스 12종(통짜 인형) + 왕관 5종(투명 레이어) + 배경 13종. 머리·아이템 탭은 AI 레이어 준비 전까지 숨김. `public/img/princess/`, `scripts/cut-princess-dress.py`, `scripts/cut-crown.py`

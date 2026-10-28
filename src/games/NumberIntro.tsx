@@ -37,7 +37,7 @@ export function NumberIntro({ numbers, onDone }: { numbers: number[]; onDone: ()
           </button>
         ))}
       </div>
-      <button onClick={onDone}
+      <button className="kp-primary" onClick={onDone}
         style={{ fontFamily: 'var(--font-warm)', fontSize: 22, fontWeight: 800, color: '#fff',
           background: 'var(--c-accent)', border: 'none', borderRadius: 'var(--radius-md)',
           padding: '14px 30px', boxShadow: '0 5px 0 #d98a3a' }}>

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useTts } from '../tts/useTts'
 import { glyphSound } from '../content/letters'
+import { Icon } from '../ui/Icon'
 
 /** 오늘의 글자 — 글자를 크게 보여주고 소리를 하나씩 들려준다. 탭하면 다시 들음. */
 export function LetterIntro({ glyphs, onDone }: { glyphs: string[]; onDone: () => void }) {
@@ -31,11 +32,11 @@ export function LetterIntro({ glyphs, onDone }: { glyphs: string[]; onDone: () =
               justifyContent: 'center', gap: 4, background: 'var(--c-card)', border: 'none',
               borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-card)' }}>
             <span style={{ fontFamily: 'var(--font-warm)', fontSize: 64, fontWeight: 800, color: 'var(--c-ink)' }}>{g}</span>
-            <span style={{ fontSize: 22 }}>🔊</span>
+            <Icon n="speaker" size={26} />
           </button>
         ))}
       </div>
-      <button onClick={onDone}
+      <button className="kp-primary" onClick={onDone}
         style={{ fontFamily: 'var(--font-warm)', fontSize: 22, fontWeight: 800, color: '#fff',
           background: 'var(--c-accent)', border: 'none', borderRadius: 'var(--radius-md)',
           padding: '14px 30px', boxShadow: '0 5px 0 #d98a3a' }}>

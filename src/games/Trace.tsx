@@ -175,7 +175,7 @@ export function Trace({ glyphs, onCorrect, onDone, say = (g) => ({ text: glyphSo
           style={{ fontFamily: 'var(--font-warm)', fontSize: 15, fontWeight: 800,
           color: 'var(--c-ink-soft)', background: 'transparent', border: '2px solid #e3cba8', borderRadius: 'var(--radius-md)',
           padding: '12px 18px', minHeight: 48 }}>🧽 다시</button>
-        <button onClick={finish} style={{ fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800, color: '#fff',
+        <button className="kp-primary" onClick={finish} style={{ fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800, color: '#fff',
           background: 'var(--c-accent)', border: 'none', borderRadius: 'var(--radius-md)',
           padding: '14px 24px', minHeight: 48, boxShadow: '0 4px 0 #d98a3a' }}>✓ 다 했어요</button>
       </div>

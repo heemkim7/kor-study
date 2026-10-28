@@ -3,6 +3,7 @@
 @import 'pretendard/dist/web/static/Pretendard-Bold.css';
 @import 'pretendard/dist/web/static/Pretendard-ExtraBold.css';
 @import '@fontsource/gowun-dodum/400.css';
+@import '@fontsource/jua/400.css';
 @import './tokens.css';
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -12,6 +13,7 @@ body {
   background: linear-gradient(170deg, var(--c-bg-1), var(--c-bg-2));
   color: var(--c-ink);
   -webkit-font-smoothing: antialiased;
+  font-synthesis: none; /* Jua는 400 한 가지뿐 — 굵게 지정해도 가짜 볼드로 뭉개지 않게 */
   user-select: none;
   -webkit-user-select: none;
   touch-action: manipulation;
@@ -51,3 +53,53 @@ button:active:not(:disabled) { transform: scale(0.93); filter: brightness(0.92);
     transition-duration: .01ms !important;
   }
 }
+
+/* ── 캔디 타일: 눌리는 입체 버튼. --tile-a/--tile-b(윗면 그라디언트), --tile-lip(아랫 턱) ── */
+.kp-tile {
+  position: relative; border: none; border-radius: var(--radius-lg); cursor: pointer;
+  background: linear-gradient(160deg, var(--tile-a), var(--tile-b));
+  box-shadow: 0 7px 0 var(--tile-lip), 0 16px 22px rgba(70,45,25,.16), inset 0 3px 0 rgba(255,255,255,.85), inset 0 -10px 18px rgba(255,255,255,.25);
+  transition: transform .09s ease, box-shadow .09s ease;
+}
+.kp-tile::before { /* 윗면 광택 */
+  content: ''; position: absolute; left: 10%; right: 10%; top: 5px; height: 26%; border-radius: 999px;
+  background: linear-gradient(180deg, rgba(255,255,255,.65), rgba(255,255,255,0)); pointer-events: none;
+}
+.kp-tile:active:not(:disabled) {
+  transform: translateY(5px); filter: none;
+  box-shadow: 0 2px 0 var(--tile-lip), 0 6px 10px rgba(70,45,25,.14), inset 0 3px 0 rgba(255,255,255,.85);
+}
+/* 글자에 흰 윤곽을 둘러 배경 위에서도 또렷하게(동화책 제목 느낌) */
+.kp-title { font-family: var(--font-warm); color: var(--c-ink); letter-spacing: .01em;
+  text-shadow: 0 2px 0 #fff, 0 0 10px rgba(255,255,255,.95), 0 0 2px #fff; }
+/* 둥둥 떠 있는 캐릭터 */
+@keyframes kp-bob { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+.kp-bob { animation: kp-bob 3.2s ease-in-out infinite; }
+/* 알약형 정보 칩 */
+.kp-chip { display: inline-flex; align-items: center; gap: 6px; padding: 7px 14px; border-radius: 999px;
+  background: rgba(255,255,255,.92); box-shadow: 0 4px 0 rgba(0,0,0,.06), 0 8px 14px rgba(70,45,25,.1);
+  font-family: var(--font-warm); font-size: 16px; color: var(--c-ink); }
+
+/* 제목은 전부 동화책 글꼴 + 흰 윤곽 */
+h1, h2, h3 { font-family: var(--font-warm); font-weight: 400; letter-spacing: .01em;
+  text-shadow: 0 2px 0 #fff, 0 0 10px rgba(255,255,255,.95), 0 0 2px #fff; }
+
+/* 콩콩이 정답/오답 리액션: 아래에서 톡 튀어나와 잠시 머물다 사라짐 */
+@keyframes kp-kong-react {
+  0% { transform: translateY(60px) scale(.6); opacity: 0 }
+  16% { transform: translateY(-6px) scale(1.06); opacity: 1 }
+  26% { transform: translateY(0) scale(1); opacity: 1 }
+  78% { transform: translateY(0) scale(1); opacity: 1 }
+  100% { transform: translateY(24px) scale(.92); opacity: 0 }
+}
+.kp-kong-react { animation: kp-kong-react 1.5s ease forwards; transform-origin: bottom right; }
+
+/* 주요 행동 버튼(다음/시작/확인): 통통한 캔디 버튼. 기존 인라인 주황 스타일을 덮어써 한 곳에서 관리 */
+.kp-primary {
+  position: relative; font-family: var(--font-warm) !important; font-weight: 400 !important;
+  background: linear-gradient(180deg, #ffc46b, #f2994a) !important;
+  box-shadow: 0 7px 0 #cf7a2c, 0 14px 20px rgba(120,70,20,.22), inset 0 3px 0 rgba(255,255,255,.55) !important;
+  text-shadow: 0 2px 0 rgba(150,80,20,.55); letter-spacing: .02em;
+}
+.kp-primary:active:not(:disabled) { transform: translateY(5px) !important; filter: none !important;
+  box-shadow: 0 2px 0 #cf7a2c, 0 6px 10px rgba(120,70,20,.2), inset 0 3px 0 rgba(255,255,255,.55) !important; }

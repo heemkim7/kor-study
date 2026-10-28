@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Icon } from '../ui/Icon'
 import { useNavigation } from '../app/Navigation'
 import { useProgress } from '../progress/useProgress'
 import { useViewport } from '../app/FitShell'
@@ -89,7 +90,7 @@ export function RoyalDressUp() {
       gap: 10, padding: 'max(16px, env(safe-area-inset-top)) 16px 28px', position: 'relative' }}>
       <button onClick={() => go({ name: 'home' })} aria-label="홈으로"
         style={{ position: 'absolute', top: 'max(10px, env(safe-area-inset-top))', left: 10, width: 44, height: 44,
-          borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)', fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>🏠</button>
+          borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)', fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}><Icon n="home" size={30} /></button>
 
       <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 25, marginTop: 4 }}>✨ 진짜 공주</h1>
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'linear-gradient(135deg,#fff0b8,#ffd24d)',
@@ -120,7 +121,7 @@ export function RoyalDressUp() {
               내 별 ⭐ {progress.stars} → {progress.stars - buyLook.cost}
             </div>
             <div style={{ display: 'flex', gap: 10 }}>
-              <button onClick={confirmBuy}
+              <button className="kp-primary" onClick={confirmBuy}
                 style={{ flex: 1, border: 'none', borderRadius: 'var(--radius-md)', padding: '14px 0', minHeight: 52,
                   fontFamily: 'var(--font-warm)', fontSize: 19, fontWeight: 800, color: '#fff',
                   background: 'var(--c-accent)', boxShadow: '0 4px 0 #d98a3a' }}>데려와요</button>

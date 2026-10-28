@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { Icon } from '../ui/Icon'
 import { useNavigation } from './Navigation'
 import { useViewport } from './FitShell'
 import { useProgress } from '../progress/useProgress'
@@ -225,7 +226,7 @@ export function ParentReport() {
       <div style={{ fontSize: 12, color: 'var(--c-ink-soft)', marginBottom: 10 }}>
         잠금을 모두 풀어 공주·꾸미기·수집을 전부 둘러볼 수 있어요(별 999, 시간제한 해제).
       </div>
-      <button onClick={() => { dispatch({ type: 'devUnlockAll' }); setUnlockedMsg(true); window.setTimeout(() => setUnlockedMsg(false), 2500) }}
+      <button className="kp-primary" onClick={() => { dispatch({ type: 'devUnlockAll' }); setUnlockedMsg(true); window.setTimeout(() => setUnlockedMsg(false), 2500) }}
         style={{ width: '100%', height: 48, borderRadius: 'var(--radius-md)', border: 'none',
           fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800, color: '#fff',
           background: 'var(--c-accent)', boxShadow: '0 4px 0 #d98a3a', cursor: 'pointer' }}>
@@ -295,7 +296,7 @@ export function ParentReport() {
       <button onClick={() => go({ name: 'home' })} aria-label="집으로"
         style={{ position: 'absolute', top: 'max(10px, env(safe-area-inset-top))', left: 10,
           width: 44, height: 44, borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)',
-          fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>🏠</button>
+          fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}><Icon n="home" size={30} /></button>
 
       <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 26, marginTop: 4 }}>📊 학습 리포트</h1>
       <p style={{ fontSize: 13, color: 'var(--c-ink-soft)', marginTop: -6 }}>우리 아이가 지금까지 배운 내용이에요</p>

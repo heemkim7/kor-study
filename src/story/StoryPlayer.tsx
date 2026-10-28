@@ -70,7 +70,7 @@ export function StoryPlayer({ lesson, onDone }: { lesson: Lesson; onDone: () => 
       </div>
       {/* 명시적 '다음' — 자동 진행을 기다리지 않고 넘기고 싶을 때(작아서 우발 탭 위험 낮음) */}
       <div style={{ display: 'flex', justifyContent: 'center', paddingTop: 12 }}>
-        <button onClick={next} aria-label={isLast ? '다 봤어요' : '다음 장면'}
+        <button className="kp-primary" onClick={next} aria-label={isLast ? '다 봤어요' : '다음 장면'}
           style={{ border: 'none', borderRadius: 999, padding: '12px 26px', minHeight: 48,
             fontFamily: 'var(--font-warm)', fontSize: 18, fontWeight: 800, color: '#fff',
             background: 'var(--c-accent)', boxShadow: '0 4px 0 #d98a3a', cursor: 'pointer' }}>

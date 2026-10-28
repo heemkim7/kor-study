@@ -49,7 +49,7 @@ export function TimeGuard({ children }: { children: ReactNode }) {
       <p style={{ fontSize: 16, color: 'var(--c-ink-soft)', lineHeight: 1.5, maxWidth: 320 }}>
         오늘 {usedMin}분 동안 열심히 놀았어요.<br />눈을 쉬어 주고 내일 또 만나요! 👋
       </p>
-      <button onClick={() => setGateOpen(true)}
+      <button className="kp-primary" onClick={() => setGateOpen(true)}
         style={{ marginTop: 10, border: 'none', borderRadius: 'var(--radius-md)', padding: '12px 26px', minHeight: 50,
           fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800, color: '#fff',
           background: 'var(--c-accent)', boxShadow: '0 4px 0 #d98a3a', cursor: 'pointer' }}>

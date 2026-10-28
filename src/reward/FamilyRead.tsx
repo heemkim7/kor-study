@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { Icon } from '../ui/Icon'
 import { useNavigation } from '../app/Navigation'
 import { useProgress } from '../progress/useProgress'
 import { useViewport } from '../app/FitShell'
@@ -28,7 +29,7 @@ export function FamilyRead() {
       gap: 12, padding: 'max(16px, env(safe-area-inset-top)) 16px 28px', position: 'relative' }}>
       <button onClick={() => go({ name: 'home' })} aria-label="홈으로"
         style={{ position: 'absolute', top: 'max(10px, env(safe-area-inset-top))', left: 10, width: 44, height: 44,
-          borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)', fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>🏠</button>
+          borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)', fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}><Icon n="home" size={30} /></button>
 
       <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 26, marginTop: 4 }}>👨‍👩‍👧 우리 가족</h1>
 
@@ -40,7 +41,7 @@ export function FamilyRead() {
           <div style={{ fontSize: 14, color: 'var(--c-ink-soft)', marginTop: 6, lineHeight: 1.5 }}>
             보호자 화면에서 아이 이름과 가족 이름(엄마·아빠 등)을 넣어 주세요. 그러면 여기서 읽기 놀이를 할 수 있어요!
           </div>
-          <button onClick={() => go({ name: 'parent' })}
+          <button className="kp-primary" onClick={() => go({ name: 'parent' })}
             style={{ marginTop: 16, border: 'none', borderRadius: 'var(--radius-md)', padding: '10px 22px', minHeight: 46,
               fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800, color: '#fff', background: 'var(--c-accent)', boxShadow: '0 4px 0 #d98a3a' }}>
             📊 보호자 화면으로

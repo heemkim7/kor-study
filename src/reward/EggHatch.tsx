@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Icon } from '../ui/Icon'
 import { useNavigation } from '../app/Navigation'
 import { useProgress } from '../progress/useProgress'
 import { useViewport } from '../app/FitShell'
@@ -44,7 +45,7 @@ export function EggHatch() {
       gap: 10, padding: 'max(16px, env(safe-area-inset-top)) 16px 28px', position: 'relative' }}>
       <button onClick={() => go({ name: 'home' })} aria-label="홈으로"
         style={{ position: 'absolute', top: 'max(10px, env(safe-area-inset-top))', left: 10, width: 44, height: 44,
-          borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)', fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>🏠</button>
+          borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)', fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}><Icon n="home" size={30} /></button>
 
       <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 26, marginTop: 4 }}>🥚 알 키우기</h1>
       <div style={{ display: 'inline-flex', alignItems: 'center', gap: 6, background: 'linear-gradient(135deg,#fff0b8,#ffd24d)',
@@ -110,7 +111,7 @@ export function EggHatch() {
             <Sparkles />
             <div style={{ fontSize: 120, lineHeight: 1 }}>{reveal.emoji}</div>
             <div style={{ fontFamily: 'var(--font-warm)', fontSize: 24, fontWeight: 800, marginTop: 6 }}>{reveal.name} 친구 탄생! 🎉</div>
-            <button onClick={() => setReveal(null)}
+            <button className="kp-primary" onClick={() => setReveal(null)}
               style={{ marginTop: 16, border: 'none', borderRadius: 'var(--radius-md)', padding: '12px 30px', minHeight: 50,
                 fontFamily: 'var(--font-warm)', fontSize: 18, fontWeight: 800, color: '#fff', background: 'var(--c-accent)', boxShadow: '0 4px 0 #d98a3a' }}>
               좋아요!

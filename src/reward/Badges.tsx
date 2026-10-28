@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { Icon } from '../ui/Icon'
 import { useNavigation } from '../app/Navigation'
 import { useProgress } from '../progress/useProgress'
 import { useViewport } from '../app/FitShell'
@@ -28,7 +29,7 @@ export function Badges() {
       gap: 12, padding: 'max(16px, env(safe-area-inset-top)) 16px 32px', position: 'relative' }}>
       <button onClick={() => go({ name: 'home' })} aria-label="홈으로"
         style={{ position: 'absolute', top: 'max(10px, env(safe-area-inset-top))', left: 10, width: 44, height: 44,
-          borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)', fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>🏠</button>
+          borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)', fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}><Icon n="home" size={30} /></button>
 
       <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 28, marginTop: 4 }}>🏆 내 뱃지</h1>
       <div style={{ fontSize: 15, fontWeight: 800, color: 'var(--c-accent-strong)' }}>

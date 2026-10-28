@@ -344,7 +344,7 @@ export function DressUp() {
             <div style={{ fontSize: 15, color: 'var(--c-ink-soft)', marginTop: 4, fontWeight: 800 }}>
               남은 별 ⭐{progress.stars}
             </div>
-            <button onClick={() => setReveal(null)}
+            <button className="kp-primary" onClick={() => setReveal(null)}
               style={{ marginTop: 14, border: 'none', borderRadius: 'var(--radius-md)', padding: '12px 30px', minHeight: 50,
                 fontFamily: 'var(--font-warm)', fontSize: 18, fontWeight: 800, color: '#fff',
                 background: 'var(--c-accent)', boxShadow: '0 4px 0 #d98a3a' }}>

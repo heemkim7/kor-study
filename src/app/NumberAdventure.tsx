@@ -1,4 +1,7 @@
 import { useRef, useState } from 'react'
+import { Icon } from '../ui/Icon'
+import { KongReaction, type KongPose } from '../ui/Kong'
+import { useReactionPicker } from '../ui/kongReaction'
 import { getNumberLesson, numberSay } from '../content/numbers'
 import { useProgress } from '../progress/useProgress'
 import { useNavigation } from './Navigation'
@@ -16,13 +19,15 @@ export function NumberAdventure({ lessonId }: { lessonId: string }) {
   const lesson = getNumberLesson(lessonId)!
   const { progress, dispatch } = useProgress()
   const { go } = useNavigation()
+  const pickReaction = useReactionPicker()
+  const [reaction, setReaction] = useState<{ pose: KongPose; n: number } | null>(null)
   const [phase, setPhase] = useState<Phase>({ kind: 'game', index: 0 })
   const [awarded, setAwarded] = useState(true)
   const [earned, setEarned] = useState<number | undefined>(undefined)
   const wrongRef = useRef(0)
 
-  const onCorrect = () => { playCorrect(); dispatch({ type: 'addStars', n: 1 }) }
-  const onWrong = () => { wrongRef.current++ }
+  const onCorrect = () => { playCorrect(); setReaction(pickReaction(true)); dispatch({ type: 'addStars', n: 1 }) }
+  const onWrong = () => { setReaction(pickReaction(false)); wrongRef.current++ }
 
   function nextAfterGame(index: number) {
     if (index < lesson.games.length - 1) setPhase({ kind: 'game', index: index + 1 })
@@ -57,11 +62,10 @@ export function NumberAdventure({ lessonId }: { lessonId: string }) {
         <button onClick={() => go({ name: 'home' })} aria-label="집으로"
           style={{ position: 'absolute', top: 'max(10px, env(safe-area-inset-top))', left: 10, zIndex: 10,
             width: 44, height: 44, borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)',
-            fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>
-          🏠
-        </button>
+            fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}><Icon n="home" size={30} /></button>
       )}
       {content}
+      {phase.kind !== 'reward' && <KongReaction reaction={reaction} />}
     </div>
   )
 }
