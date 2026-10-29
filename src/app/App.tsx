@@ -8,6 +8,7 @@ import { LetterAdventure } from './LetterAdventure'
 import { NumberAdventure } from './NumberAdventure'
 import { AbcAdventure } from './AbcAdventure'
 import { DressUp } from './DressUp'
+import { Room } from './Room'
 import { RoyalDressUp } from '../reward/RoyalDressUp'
 import { StickerBook } from '../reward/StickerBook'
 import { EggHatch } from '../reward/EggHatch'
@@ -31,6 +32,7 @@ function Router() {
   if (screen.name === 'letter') return <LetterAdventure lessonId={screen.lessonId} />
   if (screen.name === 'number') return <NumberAdventure lessonId={screen.lessonId} />
   if (screen.name === 'abc') return <AbcAdventure lessonId={screen.lessonId} />
+  if (screen.name === 'room') return <Room />
   if (screen.name === 'dressup') return <DressUp />
   if (screen.name === 'royal') return <RoyalDressUp />
   if (screen.name === 'stickers') return <StickerBook />

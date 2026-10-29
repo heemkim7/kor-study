@@ -3,10 +3,11 @@ import { useNavigation } from './Navigation'
 import { useProgress } from '../progress/useProgress'
 import { useViewport } from './FitShell'
 import { useTts } from '../tts/useTts'
-import { STICKERS } from '../reward/stickers'
-import { PETS } from '../reward/pets'
 import { todayStr, canOpenChest, CHEST_STARS, CHEST_MILESTONE_STARS } from '../progress/progress'
 import { CandyTile } from '../ui/CandyTile'
+import { Kong } from '../ui/Kong'
+import { recommendNext } from './recommend'
+import { canPlayLesson, FREE_ENTITLEMENT } from '../entitlement/entitlement'
 import { isBgmEnabled, toggleBgm, resumeAudio, playReward } from '../audio/sound'
 
 /** 홈 메뉴 아이콘(제미나이 생성 입체 일러스트) */
@@ -43,37 +44,50 @@ export function Home() {
     <div className="kp-title" style={{ fontSize: 21, textAlign: 'left', margin: '4px 6px 0' }}>{text}</div>
   )
 
-  // 배우기 — 과목(3칸 그리드)
-  const learnBlock = (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
-      {sectionLabel('📚 배우기')}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14 }}>
-        <CandyTile big icon={<Ico n="hangul" />} label="한글" a="#f3ecff" b="#d9c8fb" lip="var(--lip-purple)" onClick={() => go({ name: 'subject', subject: 'hangul' })} />
-        <CandyTile big icon={<Ico n="number" />} label="숫자" a="#eafaf1" b="#bfe9d0" lip="var(--lip-green)" onClick={() => go({ name: 'subject', subject: 'number' })} />
-        <CandyTile big icon={<Ico n="english" />} label="영어" a="#eaf3ff" b="#bcd8f8" lip="var(--lip-blue)" onClick={() => go({ name: 'subject', subject: 'english' })} />
+  // 오늘의 놀이 — 가장 덜 진행된 트랙의 다음 수업으로 바로 안내(아이가 고르는 부담을 덜어 줌)
+  const rec = recommendNext(progress.completedLessons)
+  const startToday = () => {
+    if (!rec) { go({ name: 'subject', subject: 'hangul' }); return }
+    const idx = rec.track.nodes.indexOf(rec.node)
+    go(canPlayLesson(idx, FREE_ENTITLEMENT) ? rec.node.screen : { name: 'paywall' })
+  }
+
+  const todayBlock = (
+    <button className="kp-tile" onClick={startToday} aria-label="오늘의 놀이 시작"
+      style={{ '--tile-a': '#fff4d6', '--tile-b': '#ffd37a', '--tile-lip': '#e7a93c',
+        display: 'flex', alignItems: 'center', gap: 10, width: '100%', padding: '14px 18px 14px 12px', minHeight: 130,
+        textAlign: 'left' } as React.CSSProperties}>
+      <Kong pose={rec ? 'point' : 'cheer'} size={104} bob />
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div style={{ fontFamily: 'var(--font-warm)', fontSize: 17, color: '#a86a10' }}>{rec ? '오늘의 놀이' : '모두 배웠어요!'}</div>
+        <div style={{ fontFamily: 'var(--font-warm)', fontSize: 32, color: 'var(--c-ink)', lineHeight: 1.15 }}>
+          {rec ? rec.node.title : '복습하러 가요'}
+        </div>
+        {rec && <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--c-ink-soft)', marginTop: 2 }}>{rec.track.label}</div>}
       </div>
+      <div style={{ height: 84, flex: '0 0 auto', display: 'flex' }}><Ico n="play" /></div>
+    </button>
+  )
+
+  const subjectBlock = (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 14, width: '100%' }}>
+      <CandyTile big icon={<Ico n="hangul" />} label="한글" a="#f3ecff" b="#d9c8fb" lip="var(--lip-purple)" onClick={() => go({ name: 'subject', subject: 'hangul' })} />
+      <CandyTile big icon={<Ico n="number" />} label="숫자" a="#eafaf1" b="#bfe9d0" lip="var(--lip-green)" onClick={() => go({ name: 'subject', subject: 'number' })} />
+      <CandyTile big icon={<Ico n="english" />} label="영어" a="#eaf3ff" b="#bcd8f8" lip="var(--lip-blue)" onClick={() => go({ name: 'subject', subject: 'english' })} />
     </div>
   )
 
-  const royalThumb = <img src="/img/royal/looks/rose.webp" alt="" aria-hidden
-    style={{ height: '100%', aspectRatio: '1', borderRadius: 14, objectFit: 'cover', border: '3px solid #fff', boxShadow: '0 3px 6px rgba(60,40,20,.25)' }} />
-
-  // 놀이방 — 보상/창작(반응형 auto-fit 그리드: 폭에 따라 칸 수 자동)
-  const playBlock = (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 8, width: '100%' }}>
-      {sectionLabel('🎈 놀이방')}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(104px, 1fr))', gap: 12 }}>
-        <CandyTile icon={<Ico n="dressup" />} label="공주 꾸미기" sub={`⭐${progress.stars}`} a="#ffeaf4" b="#fbc4dc" lip="var(--lip-pink)" color="#c24a86" onClick={() => go({ name: 'dressup' })} />
-        <CandyTile icon={royalThumb} label="진짜 공주" sub="모으기" a="#f4eaff" b="#dcc6fb" lip="var(--lip-purple)" color="#7d4fd6" onClick={() => go({ name: 'royal' })} />
-        <CandyTile icon={<Ico n="family" />} label="우리 가족" sub="읽기" a="#fff3dd" b="#fbd9a0" lip="var(--lip-orange)" color="#b8691a" onClick={() => go({ name: 'family' })} />
-        <CandyTile icon={<Ico n="sticker" />} label="스티커 책" sub={`${progress.collectedStickers.length}/${STICKERS.length}`} a="#fff6d9" b="#fbe08a" lip="var(--lip-yellow)" color="#a87408" onClick={() => go({ name: 'stickers' })} />
-        <CandyTile icon={<Ico n="draw" />} label="그림 그리기" sub="색칠" a="#e4f6ff" b="#b6e2f7" lip="var(--lip-sky)" color="#2a82ad" onClick={() => go({ name: 'draw' })} />
-        <CandyTile icon={<Ico n="wordbook" />} label="낱말 도감" sub="단어" a="#fff0e2" b="#f9d2ae" lip="var(--lip-orange)" color="#b56a22" onClick={() => go({ name: 'wordbook' })} />
-        <CandyTile icon={<Ico n="badge" />} label="내 뱃지" sub="업적" a="#fff5d8" b="#fadf8c" lip="var(--lip-yellow)" color="#a87408" onClick={() => go({ name: 'badges' })} />
-        <CandyTile icon={<Ico n="egg" />} label="알 키우기" sub={`${progress.hatchedPets.length}/${PETS.length}`} a="#ffeaf1" b="#fbc6d7" lip="var(--lip-pink)" color="#c24a6a" onClick={() => go({ name: 'egg' })} />
-        <CandyTile icon={<Ico n="garden" />} label="마법 정원" sub="꽃" a="#e8f9ec" b="#bfe8c8" lip="var(--lip-mint)" color="#2f8f50" onClick={() => go({ name: 'garden' })} />
+  const roomBlock = (
+    <button className="kp-tile" onClick={() => go({ name: 'room' })}
+      style={{ '--tile-a': '#ffeaf4', '--tile-b': '#fbc4dc', '--tile-lip': 'var(--lip-pink)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 14, width: '100%', minHeight: 92, padding: '10px 18px' } as React.CSSProperties}>
+      <div style={{ height: 64, display: 'flex' }}><Ico n="dressup" /></div>
+      <div style={{ textAlign: 'left' }}>
+        <div style={{ fontFamily: 'var(--font-warm)', fontSize: 26, color: '#c24a86' }}>내 방</div>
+        <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--c-ink-soft)' }}>꾸미기 · 스티커 · 알 · 정원</div>
       </div>
-    </div>
+      <div style={{ height: 52, display: 'flex' }}><Ico n="sticker" /></div>
+    </button>
   )
 
   // 반응형 폭: 세로는 430(2~3칸), 가로는 820(=FitShell 가로 캔버스). 그리드가 폭에 맞춰 칸 수 자동 조절.
@@ -114,8 +128,10 @@ export function Home() {
 
       {/* 본문: 콤팩트 반응형 그리드(폭에 따라 칸 수 자동) */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%', maxWidth: MAXW, marginTop: 4 }}>
-        {learnBlock}
-        {playBlock}
+        {todayBlock}
+        {sectionLabel('📚 배우기')}
+        {subjectBlock}
+        {roomBlock}
       </div>
 
       {/* 보호자 입구(작게) */}

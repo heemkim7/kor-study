@@ -3,7 +3,8 @@ import { useTts } from '../tts/useTts'
 import { SpeakerButton } from '../ui/SpeakerButton'
 import { Sparkles } from '../ui/Sparkles'
 import { shuffle } from './choices'
-import { ABC_WORD } from '../content/english'
+import { ABC_WORD, ABC_PIC } from '../content/english'
+import { Pic } from '../ui/Pic'
 
 // 보기(정답 글자 + 다른 글자 2개)를 만든다(Math.random은 컴포넌트 밖 모듈 함수로 분리 — 렌더 순수성).
 function buildPhonicsChoices(answer: string, pool: string[]): string[] {
@@ -85,7 +86,7 @@ export function AbcPhonics({ letters, onCorrect, onWrong, onDone }: {
               style={{ width: 104, height: 104, display: 'flex', alignItems: 'center', justifyContent: 'center',
                 background: 'var(--c-card)', border: 'none', borderRadius: 'var(--radius-lg)', cursor: 'pointer',
                 boxShadow: isHinted ? '0 0 0 4px var(--c-accent), var(--shadow-card)' : 'var(--shadow-card)' }}>
-              <span style={{ fontSize: 52 }}>{ABC_WORD[l].emoji}</span>
+              <Pic name={ABC_PIC[l]} size={92} />
             </button>
           )
         })}

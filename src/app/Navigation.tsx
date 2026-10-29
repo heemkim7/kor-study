@@ -7,6 +7,7 @@ export type Screen =
   | { name: 'letter'; lessonId: string }
   | { name: 'number'; lessonId: string }
   | { name: 'abc'; lessonId: string }
+  | { name: 'room' }
   | { name: 'dressup' }
   | { name: 'royal' }
   | { name: 'stickers' }

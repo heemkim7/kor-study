@@ -1,16 +1,19 @@
 import { useEffect, useRef, useState } from 'react'
 import { useNavigation } from '../app/Navigation'
 import { useTts } from '../tts/useTts'
+import { Icon } from '../ui/Icon'
+import { Pic } from '../ui/Pic'
 
 // 색칠 템플릿 — 캔버스에 옅은 윤곽선을 그려 두고 그 위에 색칠한다.
 type TemplateId = 'free' | 'apple' | 'star' | 'butterfly' | 'house' | 'flower'
-const TEMPLATES: { id: TemplateId; label: string }[] = [
+// pic: 도안 버튼에 쓰는 일러스트(free는 자유 그리기라 붓 아이콘)
+const TEMPLATES: { id: TemplateId; label: string; pic?: string }[] = [
   { id: 'free', label: '✏️' },
-  { id: 'apple', label: '🍎' },
-  { id: 'star', label: '⭐' },
-  { id: 'butterfly', label: '🦋' },
-  { id: 'house', label: '🏠' },
-  { id: 'flower', label: '🌷' },
+  { id: 'apple', label: '사과', pic: 'apple' },
+  { id: 'star', label: '별', pic: 'star' },
+  { id: 'butterfly', label: '나비', pic: 'butterfly' },
+  { id: 'house', label: '집', pic: 'house' },
+  { id: 'flower', label: '꽃', pic: 'flower' },
 ]
 
 const COLORS: { hex: string; name: string }[] = [
@@ -187,15 +190,19 @@ export function DrawBoard() {
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
         <button onClick={() => go({ name: 'home' })} aria-label="집으로"
           style={{ width: 48, height: 48, borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)',
-            fontSize: 23, boxShadow: 'var(--shadow-card)', cursor: 'pointer', flex: '0 0 auto' }}>🏠</button>
+            boxShadow: 'var(--shadow-card)', cursor: 'pointer', flex: '0 0 auto' }}><Icon n="home" size={34} /></button>
         {/* 템플릿(여러 버전) — 6개가 한 줄에 다 보이도록 칸·간격 축소 */}
         <div style={{ display: 'flex', gap: 6, overflowX: 'auto', flex: 1,
           WebkitOverflowScrolling: 'touch', overscrollBehavior: 'contain' }}>
           {TEMPLATES.map((t) => (
-            <button key={t.id} onClick={() => { if (template !== t.id) snapshot(); setTemplate(t.id) }} style={{
-              width: 44, height: 44, borderRadius: 'var(--radius-md)', border: 'none', flex: '0 0 auto',
-              background: template === t.id ? 'var(--c-accent)' : 'var(--c-card)',
-              fontSize: 22, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>{t.label}</button>
+            <button key={t.id} aria-label={t.label} onClick={() => { if (template !== t.id) snapshot(); setTemplate(t.id) }} style={{
+              width: 44, height: 44, borderRadius: 'var(--radius-md)', flex: '0 0 auto', padding: 0,
+              border: template === t.id ? '3px solid var(--c-accent-strong)' : 'none',
+              background: template === t.id ? '#fff0d4' : 'var(--c-card)',
+              fontSize: 24, boxShadow: 'var(--shadow-card)', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              {t.pic ? <Pic name={t.pic} size={32} /> : t.label}
+            </button>
           ))}
         </div>
         <button onClick={() => { snapshot(); reset(template) }} aria-label="다 지우기" style={{
@@ -212,8 +219,8 @@ export function DrawBoard() {
           <button onClick={undo} aria-label="되돌리기" style={{
             position: 'absolute', left: 12, bottom: 12, border: 'none', borderRadius: 999,
             padding: '10px 18px', minHeight: 44, background: 'var(--c-card)', cursor: 'pointer',
-            fontFamily: 'var(--font-warm)', fontSize: 16, fontWeight: 800, color: 'var(--c-ink)',
-            boxShadow: '0 4px 0 #e3cba8' }}>↩️ 되돌리기</button>
+            fontFamily: 'var(--font-warm)', fontSize: 17, color: 'var(--c-ink)', display: 'flex', alignItems: 'center', gap: 6,
+            boxShadow: '0 4px 0 #e3cba8' }}><Icon n="replay" size={26} /> 되돌리기</button>
         )}
       </div>
 

@@ -2,7 +2,8 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTts } from '../tts/useTts'
 import { Sparkles } from '../ui/Sparkles'
 import { buildChoices } from './choices'
-import { numberName, COUNT_EMOJI } from '../content/numbers'
+import { numberName, COUNT_PICS } from '../content/numbers'
+import { Pic } from '../ui/Pic'
 
 const DIGIT_POOL = Array.from({ length: 10 }, (_, i) => String(i + 1))
 
@@ -16,7 +17,7 @@ export function CountTap({ numbers, onCorrect, onWrong, onDone }: {
   const [wrong, setWrong] = useState<string | null>(null)
   const [counted, setCounted] = useState<number[]>([])
   const answer = numbers[round]
-  const emoji = COUNT_EMOJI[round % COUNT_EMOJI.length]
+  const pic = COUNT_PICS[round % COUNT_PICS.length]
   const choices = useMemo(() => buildChoices(String(answer), DIGIT_POOL, 3), [answer])
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | undefined>(undefined)
@@ -70,7 +71,7 @@ export function CountTap({ numbers, onCorrect, onWrong, onDone }: {
                 border: on ? '2px solid var(--c-accent)' : '2px solid #f1ddc6',
                 background: on ? '#fff7e6' : 'rgba(255,255,255,0.7)',
                 filter: on ? 'drop-shadow(0 0 4px #ffd24d)' : 'none', cursor: 'pointer' }}>
-              {emoji}
+              <Pic name={pic} size={46} />
             </button>
           )
         })}

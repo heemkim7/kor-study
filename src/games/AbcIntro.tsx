@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useTts } from '../tts/useTts'
-import { ABC_WORD, abcSay } from '../content/english'
+import { ABC_WORD, ABC_PIC, abcSay } from '../content/english'
+import { Pic } from '../ui/Pic'
 
 /** 오늘의 알파벳 — 대/소문자 + 예시 단어(이모지)를 보여주고 영어 음성으로 읽어 준다. */
 export function AbcIntro({ letters, onDone }: { letters: string[]; onDone: () => void }) {
@@ -31,7 +32,7 @@ export function AbcIntro({ letters, onDone }: { letters: string[]; onDone: () =>
               style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, padding: '12px 16px',
                 background: 'var(--c-card)', border: 'none', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-card)' }}>
               <span style={{ fontFamily: 'var(--font-warm)', fontSize: 44, fontWeight: 800, color: '#3aa0d0' }}>{L} {L.toLowerCase()}</span>
-              <span style={{ fontSize: 30 }}>{w?.emoji}</span>
+              <Pic name={ABC_PIC[L]} size={70} />
               <span style={{ fontSize: 14, fontWeight: 800, color: 'var(--c-ink-soft)' }}>{w?.word}</span>
             </button>
           )

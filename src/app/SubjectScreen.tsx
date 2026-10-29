@@ -1,145 +1,112 @@
-import { useEffect, type ReactNode } from 'react'
-import { Icon } from '../ui/Icon'
-import { useNavigation, type Screen } from './Navigation'
+import { useEffect } from 'react'
+import { useNavigation } from './Navigation'
 import { useProgress } from '../progress/useProgress'
 import { useViewport } from './FitShell'
 import { useTts } from '../tts/useTts'
-import { allLessons } from '../content/loader'
-import { buildJourney } from '../content/journey'
-import { difficultyStars } from '../content/difficulty'
-import { buildLetterJourney } from '../content/letters'
-import { buildNumberJourney } from '../content/numbers'
-import { buildAbcJourney } from '../content/english'
+import { buildTracks, type Subject, type Track } from './recommend'
 import { canPlayLesson, FREE_ENTITLEMENT } from '../entitlement/entitlement'
+import { Icon } from '../ui/Icon'
+import { Kong } from '../ui/Kong'
 
-export type Subject = 'hangul' | 'number' | 'english'
+export type { Subject }
 
-// 트랙 노드 공통 형태(글자/단어/숫자/영어 모두 동일 구조). 부가 필드는 옵셔널.
-type Node = {
-  lesson: { id: string; title: string; level?: number; glyphs?: string[] }
-  completed: boolean; unlocked: boolean; current: boolean
+const SUBJECT_STYLE: Record<Subject, { title: string; icon: string; color: string; a: string; b: string; lip: string; say: string }> = {
+  hangul: { title: '한글', icon: 'hangul', color: '#8a5cdd', a: '#f6f0ff', b: '#e0d1fc', lip: 'var(--lip-purple)', say: '한글을 배워요' },
+  number: { title: '숫자', icon: 'number', color: '#2f9b5e', a: '#eefbf3', b: '#c7ecd7', lip: 'var(--lip-green)', say: '숫자를 배워요' },
+  english: { title: '영어', icon: 'english', color: '#3b7fd0', a: '#eef5ff', b: '#c6dcf8', lip: 'var(--lip-blue)', say: '영어를 배워요' },
 }
 
+/** 과목 화면 — 수업이 전부 열려 있는 '수업 고르기'. 추천 수업만 표시하고 잠그지 않는다. */
 export function SubjectScreen({ subject }: { subject: Subject }) {
   const { go } = useNavigation()
   const { progress } = useProgress()
   const { landscape } = useViewport()
   const { speak } = useTts()
-  const done = progress.completedLessons
+  const st = SUBJECT_STYLE[subject]
+  const tracks = buildTracks(progress.completedLessons).filter((t) => t.subject === subject)
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  useEffect(() => { speak(subject === 'hangul' ? '한글을 배워요' : subject === 'number' ? '숫자를 배워요' : '영어를 배워요') }, [])
+  useEffect(() => { speak(st.say) }, [])
 
-  // 한 트랙: '지금 배울 것'을 큰 카드로 + 나머지는 진행 점으로 압축(스크롤 없이 한 화면).
-  function track(
-    emoji: string, label: string, color: string, nodes: Node[],
-    nav: (id: string) => Screen, subtitleOf: (n: Node) => string,
-  ) {
-    const total = nodes.length
-    const doneCount = nodes.filter((n) => n.completed).length
-    const cur = nodes.find((n) => n.current)
-    // 이 트랙에서 모은 마스터리 별 합계(레슨별 1~3)
-    const trackStars = nodes.reduce((s, n) => s + (progress.lessonStars[n.lesson.id] ?? 0), 0)
+  function trackBlock(t: Track) {
+    const total = t.nodes.length
+    const doneCount = t.nodes.filter((n) => n.completed).length
     return (
-      <div key={label} style={{ flex: landscape ? '1 1 380px' : '0 0 auto', width: '100%', maxWidth: 410, marginTop: landscape ? 0 : 14 }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', margin: '0 4px 8px' }}>
-          <span style={{ fontFamily: 'var(--font-warm)', fontSize: 19, fontWeight: 800, color }}>{emoji} {label}</span>
-          <span style={{ fontSize: 13, fontWeight: 800, color: 'var(--c-ink-soft)' }}>
-            {trackStars > 0 && <span style={{ color: '#e0a020' }}>⭐{trackStars} · </span>}{doneCount} / {total} 완료
-          </span>
+      <div key={t.id} style={{ flex: landscape && tracks.length > 1 ? '1 1 380px' : '0 0 auto', width: '100%', maxWidth: 410 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', margin: '0 6px 8px' }}>
+          <span className="kp-title" style={{ fontSize: 22, color: st.color }}>{t.label}</span>
+          <span className="kp-chip" style={{ fontSize: 14, padding: '3px 12px' }}>{doneCount} / {total}</span>
         </div>
-
-        {cur ? (
-          <button onClick={() => go(canPlayLesson(nodes.indexOf(cur), FREE_ENTITLEMENT) ? nav(cur.lesson.id) : { name: 'paywall' })}
-            style={{ display: 'flex', alignItems: 'center', gap: 14, width: '100%', padding: '18px 18px',
-              borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer', background: 'var(--c-card)',
-              boxShadow: `0 0 0 3px ${color}, var(--shadow-card)` }}>
-            <div style={{ width: 56, height: 56, flex: '0 0 auto', borderRadius: '50%', display: 'flex',
-              alignItems: 'center', justifyContent: 'center', fontFamily: 'var(--font-warm)', fontSize: 26,
-              fontWeight: 800, color: '#fff', background: color }}>▶</div>
-            <div style={{ flex: 1, textAlign: 'left' }}>
-              <div style={{ fontSize: 12, fontWeight: 800, color, letterSpacing: 1 }}>지금 배워요</div>
-              <div style={{ fontFamily: 'var(--font-warm)', fontSize: 22, fontWeight: 800, color: 'var(--c-ink)' }}>{cur.lesson.title}</div>
-              <div style={{ fontSize: 13, color: 'var(--c-ink-soft)', marginTop: 1 }}>{subtitleOf(cur)}</div>
-            </div>
-          </button>
-        ) : (
-          <div style={{ padding: '18px', borderRadius: 'var(--radius-lg)', background: 'var(--c-card)',
-            boxShadow: 'var(--shadow-card)', textAlign: 'center', fontFamily: 'var(--font-warm)', fontSize: 18, fontWeight: 800 }}>
-            🎉 다 배웠어요! 정말 잘했어요
-          </div>
-        )}
-
-        {/* 진행 막대(완료=색, 지금=진한 색, 잠김=옅음) — '버튼'으로 오해하지 않게 납작한 세그먼트로 */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, justifyContent: 'center', marginTop: 10 }}>
-          {nodes.map((n) => (
-            <span key={n.lesson.id} aria-hidden style={{ width: 18, height: 6, borderRadius: 3,
-              background: n.current ? color : n.completed ? `${color}99` : '#e7dcc9' }} />
-          ))}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(112px, 1fr))', gap: 12 }}>
+          {t.nodes.map((n, i) => {
+            const stars = progress.lessonStars[n.id] ?? 0
+            const open = canPlayLesson(i, FREE_ENTITLEMENT)
+            return (
+              <button key={n.id} className="kp-tile" onClick={() => go(open ? n.screen : { name: 'paywall' })}
+                style={{ '--tile-a': n.completed ? '#fffdf5' : st.a, '--tile-b': n.completed ? '#fbe9b8' : st.b, '--tile-lip': n.completed ? 'var(--lip-yellow)' : st.lip,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 4,
+                  minHeight: 112, padding: '12px 6px 10px',
+                  outline: n.current ? `4px solid ${st.color}` : 'none', outlineOffset: 2 } as React.CSSProperties}>
+                {n.current && (
+                  <span className="kp-bob" style={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)',
+                    background: st.color, color: '#fff', fontFamily: 'var(--font-warm)', fontSize: 13, padding: '3px 12px',
+                    borderRadius: 999, whiteSpace: 'nowrap', boxShadow: '0 3px 0 rgba(0,0,0,.15)' }}>추천</span>
+                )}
+                <div style={{ position: 'relative', width: 64, height: 56, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  {n.badge.img
+                    ? <img src={n.badge.img} alt="" aria-hidden draggable={false} style={{ height: 56, width: 'auto', maxWidth: 64, objectFit: 'contain', filter: 'drop-shadow(0 3px 2px rgba(60,40,20,.25))' }} />
+                    : <span style={{ fontFamily: 'var(--font-warm)', fontSize: 46, lineHeight: 1, color: st.color, textShadow: '0 2px 0 #fff' }}>{n.badge.text}</span>}
+                  {(n.completed || !open) && (
+                    <span style={{ position: 'absolute', right: -6, top: -6, background: '#fff', borderRadius: '50%', width: 28, height: 28,
+                      display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 2px 0 rgba(0,0,0,.12)' }}>
+                      <Icon n={n.completed ? 'check' : 'lock'} size={20} />
+                    </span>
+                  )}
+                </div>
+                <div style={{ fontFamily: 'var(--font-warm)', fontSize: 17, color: 'var(--c-ink)', lineHeight: 1.15, textAlign: 'center' }}>{n.title}</div>
+                {n.completed && (
+                  <div aria-label={`별 ${stars}개`} style={{ display: 'flex', gap: 1 }}>
+                    {[1, 2, 3].map((k) => <span key={k} style={{ opacity: k <= stars ? 1 : 0.22 }}><Icon n="star" size={16} /></span>)}
+                  </div>
+                )}
+              </button>
+            )
+          })}
         </div>
       </div>
     )
-  }
-
-  // 가로 화면에서 단일 트랙(숫자·영어) 옆을 채우는 장식 패널 — 좌우 여백 대신 보기 좋은 안내.
-  function heroPanel(big: string, letters: string, tip: string, color: string) {
-    return (
-      <div key="hero" style={{ flex: '1 1 320px', maxWidth: 380, alignSelf: 'stretch', display: 'flex',
-        flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 10, padding: 24,
-        borderRadius: 'var(--radius-lg)', background: 'var(--c-card)', boxShadow: 'var(--shadow-card)' }}>
-        <div style={{ fontSize: 72 }}>{big}</div>
-        <div style={{ fontFamily: 'var(--font-warm)', fontSize: 34, fontWeight: 800, letterSpacing: 6, color }}>{letters}</div>
-        <div style={{ fontSize: 15, color: 'var(--c-ink-soft)', fontWeight: 700 }}>{tip}</div>
-      </div>
-    )
-  }
-
-  const title = subject === 'hangul' ? '📖 한글' : subject === 'number' ? '🔢 숫자' : '🔤 영어'
-
-  // 트랙 모음 — 과목별
-  const tracks: ReactNode[] = []
-  if (subject === 'hangul') {
-    tracks.push(track('📖', '글자 배우기', '#9b6bff', buildLetterJourney(done),
-      (id) => ({ name: 'letter', lessonId: id }), (n) => n.lesson.glyphs?.join(' · ') ?? ''))
-    tracks.push(track('🍓', '단어 익히기', 'var(--c-accent-strong)', buildJourney(allLessons(), done),
-      (id) => ({ name: 'adventure', lessonId: id }), (n) => `난이도 ${'★'.repeat(difficultyStars(n.lesson.level ?? 1))}`))
-  } else if (subject === 'number') {
-    tracks.push(track('🔢', '숫자 배우기', '#3ec46d', buildNumberJourney(done),
-      (id) => ({ name: 'number', lessonId: id }), () => '수를 세고 비교해요'))
-    if (landscape) tracks.push(heroPanel('🧮', '1 2 3', '하나 둘 셋, 같이 세어요', '#3ec46d'))
-  } else {
-    tracks.push(track('🔤', '알파벳', '#3aa0d0', buildAbcJourney(done),
-      (id) => ({ name: 'abc', lessonId: id }), () => '듣고·찾고·따라써요'))
-    if (landscape) tracks.push(heroPanel('🔤', 'A B C', '듣고 따라 읽어요', '#3aa0d0'))
   }
 
   return (
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
-      gap: 6, padding: 'max(16px, env(safe-area-inset-top)) 16px 28px', position: 'relative' }}>
+      gap: 10, padding: 'max(16px, env(safe-area-inset-top)) 16px 32px', position: 'relative' }}>
       <button onClick={() => go({ name: 'home' })} aria-label="홈으로"
         style={{ position: 'absolute', top: 'max(10px, env(safe-area-inset-top))', left: 10, width: 44, height: 44,
-          borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)', fontSize: 20, boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}><Icon n="home" size={30} /></button>
-      <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 28, marginTop: 4 }}>{title}</h1>
+          borderRadius: 999, border: 'none', background: 'rgba(255,255,255,0.9)', boxShadow: 'var(--shadow-card)', cursor: 'pointer' }}>
+        <Icon n="home" size={30} />
+      </button>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 4 }}>
+        <img src={`/img/icons/${st.icon}.webp`} alt="" aria-hidden style={{ height: 54, width: 'auto' }} />
+        <h1 className="kp-title" style={{ fontSize: 34 }}>{st.title}</h1>
+      </div>
 
       {subject === 'hangul' && progress.reviewWords.length > 0 && (
-        <button onClick={() => go({ name: 'review' })}
-          style={{ display: 'flex', alignItems: 'center', gap: 12, width: '100%', maxWidth: 380, padding: '12px 16px',
-            borderRadius: 'var(--radius-lg)', border: 'none', cursor: 'pointer', marginTop: 4,
-            background: 'linear-gradient(135deg,#ffe0e8,#fff2f5)', boxShadow: 'var(--shadow-card)' }}>
-          <div style={{ fontSize: 26 }}>🔁</div>
+        <button className="kp-tile" onClick={() => go({ name: 'review' })}
+          style={{ '--tile-a': '#fff0f4', '--tile-b': '#ffd0dc', '--tile-lip': 'var(--lip-pink)',
+            display: 'flex', alignItems: 'center', gap: 12, width: '100%', maxWidth: 380, padding: '10px 16px', marginTop: 4 } as React.CSSProperties}>
+          <Kong pose="think" size={58} />
           <div style={{ flex: 1, textAlign: 'left' }}>
-            <div style={{ fontFamily: 'var(--font-warm)', fontSize: 17, fontWeight: 800, color: 'var(--c-pink)' }}>복습하기</div>
-            <div style={{ fontSize: 12, color: 'var(--c-ink-soft)' }}>틀린 단어 {progress.reviewWords.length}개 다시 보기</div>
+            <div style={{ fontFamily: 'var(--font-warm)', fontSize: 20, color: '#c24a6a' }}>복습하기</div>
+            <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--c-ink-soft)' }}>틀린 단어 {progress.reviewWords.length}개 다시 보기</div>
           </div>
-          <div style={{ fontSize: 20 }}>▶</div>
+          <Icon n="play" size={34} />
         </button>
       )}
 
-      {/* 트랙 — 가로면 좌우로 펼침, 세로면 위아래로 */}
       <div style={{ display: 'flex', flexDirection: landscape ? 'row' : 'column', flexWrap: 'wrap',
-        alignItems: landscape ? 'flex-start' : 'center', justifyContent: 'center',
-        gap: landscape ? 20 : 0, width: '100%', maxWidth: landscape ? 820 : 410, marginTop: 8 }}>
-        {tracks}
+        alignItems: landscape ? 'flex-start' : 'center', justifyContent: 'center', gap: landscape ? 24 : 26,
+        width: '100%', maxWidth: landscape ? 840 : 410, marginTop: 14 }}>
+        {tracks.map(trackBlock)}
       </div>
     </div>
   )

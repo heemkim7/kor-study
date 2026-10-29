@@ -146,6 +146,9 @@ const PRACTICE_LESSONS: Lesson[] = [
   // 14주 · 알록달록 색
   practice(25, '14주 · 알록달록 색', 'colorshape', 'col-2', '초록과 보라', ['green', 'purple', 'brown'], G1),
   practice(26, '14주 · 알록달록 색', 'colorshape', 'col-3', '하양과 검정', ['white', 'black', 'red'], G3),
+  // 15주 · 모양
+  practice(27, '15주 · 모양', 'colorshape', 'shape-1', '동그라미 세모 네모', ['circle', 'triangle', 'square'], G1),
+  practice(28, '15주 · 모양', 'colorshape', 'shape-2', '하트와 별과 마름모', ['heart', 'star', 'diamond'], G4),
 ]
 
 export const LESSONS: Lesson[] = [...STORY_LESSONS, ...PRACTICE_LESSONS]

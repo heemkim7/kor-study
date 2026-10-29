@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useTts } from '../tts/useTts'
-import { numberName, COUNT_EMOJI } from '../content/numbers'
+import { numberName, COUNT_PICS } from '../content/numbers'
+import { Pic } from '../ui/Pic'
 
 /** 오늘의 숫자 — 숫자·개수·이름을 함께 보여주고 하나씩 읽어 준다. */
 export function NumberIntro({ numbers, onDone }: { numbers: number[]; onDone: () => void }) {
@@ -31,7 +32,7 @@ export function NumberIntro({ numbers, onDone }: { numbers: number[]; onDone: ()
             <span style={{ fontFamily: 'var(--font-warm)', fontSize: 52, fontWeight: 800, color: 'var(--c-pink)' }}>{n}</span>
             <span style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', alignContent: 'center',
               maxWidth: 120, minHeight: 44, overflow: 'hidden', fontSize: 18, lineHeight: 1.2 }}>
-              {Array.from({ length: n }, (_, k) => <span key={k}>{COUNT_EMOJI[idx % COUNT_EMOJI.length]}</span>)}
+              {Array.from({ length: n }, (_, k) => <Pic key={k} name={COUNT_PICS[idx % COUNT_PICS.length]} size={28} />)}
             </span>
             <span style={{ fontFamily: 'var(--font-warm)', fontSize: 18, fontWeight: 800, color: 'var(--c-ink)' }}>{numberName(n)}</span>
           </button>

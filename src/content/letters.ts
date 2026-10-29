@@ -35,20 +35,31 @@ export const BASIC_VOWELS = ['ㅏ', 'ㅓ', 'ㅗ', 'ㅜ', 'ㅡ', 'ㅣ']
 export const BASIC_JONG = ['ㄱ', 'ㄴ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅇ']
 
 const BASE_LETTER_LESSONS: LetterLesson[] = [
-  // 1주 · 모음 먼저(가장 명료한 소리)
-  { id: 'v-aoi', title: '모음 ㅏ ㅗ ㅣ', unit: '글자나라 1주 · 모음', glyphs: ['ㅏ', 'ㅗ', 'ㅣ'], games: ['letter-intro', 'find-letter'] },
-  { id: 'v-euu', title: '모음 ㅓ ㅜ ㅡ', unit: '글자나라 1주 · 모음', glyphs: ['ㅓ', 'ㅜ', 'ㅡ'], games: ['letter-intro', 'find-letter'] },
-  // 2~3주 · 자음+모음 결합(글자 만들기)
-  { id: 's-g', title: '가 고 기', unit: '글자나라 2주 · 글자 만들기', glyphs: ['가', '고', '기'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
-  { id: 's-n', title: '나 노 니', unit: '글자나라 2주 · 글자 만들기', glyphs: ['나', '노', '니'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
-  { id: 's-m', title: '마 모 미', unit: '글자나라 2주 · 글자 만들기', glyphs: ['마', '모', '미'], games: ['make-syllable', 'find-letter'] },
-  { id: 's-s', title: '사 소 시', unit: '글자나라 3주 · 글자 만들기', glyphs: ['사', '소', '시'], games: ['make-syllable', 'find-letter'] },
-  { id: 's-o', title: '아 오 이', unit: '글자나라 3주 · 글자 만들기', glyphs: ['아', '오', '이'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
-  // 4~5주 · 받침(종성) — 자음+모음+받침. composeSyllable이 종성 합성을 지원.
-  { id: 'b-ng', title: '받침 ㅇ · 강 공 방', unit: '글자나라 4주 · 받침', glyphs: ['강', '공', '방'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
-  { id: 'b-n', title: '받침 ㄴ · 산 손 문', unit: '글자나라 4주 · 받침', glyphs: ['산', '손', '문'], games: ['make-syllable', 'find-letter'] },
-  { id: 'b-m', title: '받침 ㅁ · 밤 곰 봄', unit: '글자나라 5주 · 받침', glyphs: ['밤', '곰', '봄'], games: ['make-syllable', 'find-letter'] },
-  { id: 'b-l', title: '받침 ㄹ · 물 발 달', unit: '글자나라 5주 · 받침', glyphs: ['물', '발', '달'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
+  // 모음 먼저(가장 명료한 소리)
+  { id: 'v-aoi', title: '모음 ㅏ ㅗ ㅣ', unit: '모음 1', glyphs: ['ㅏ', 'ㅗ', 'ㅣ'], games: ['letter-intro', 'find-letter'] },
+  { id: 'v-euu', title: '모음 ㅓ ㅜ ㅡ', unit: '모음 1', glyphs: ['ㅓ', 'ㅜ', 'ㅡ'], games: ['letter-intro', 'find-letter'] },
+  // 자음+모음 결합(글자 만들기) — 소리가 뚜렷한 자음부터, 수업마다 새 자음 하나
+  { id: 's-g', title: '가 고 기', unit: '글자 만들기', glyphs: ['가', '고', '기'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
+  { id: 's-n', title: '나 노 니', unit: '글자 만들기', glyphs: ['나', '노', '니'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
+  { id: 's-d', title: '다 도 디', unit: '글자 만들기', glyphs: ['다', '도', '디'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
+  { id: 's-m', title: '마 모 미', unit: '글자 만들기', glyphs: ['마', '모', '미'], games: ['make-syllable', 'find-letter'] },
+  { id: 's-b', title: '바 보 비', unit: '글자 만들기', glyphs: ['바', '보', '비'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
+  { id: 's-s', title: '사 소 시', unit: '글자 만들기', glyphs: ['사', '소', '시'], games: ['make-syllable', 'find-letter'] },
+  { id: 's-j', title: '자 조 지', unit: '글자 만들기', glyphs: ['자', '조', '지'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
+  { id: 's-r', title: '라 로 리', unit: '글자 만들기', glyphs: ['라', '로', '리'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
+  { id: 's-h', title: '하 호 히', unit: '글자 만들기', glyphs: ['하', '호', '히'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
+  { id: 's-o', title: '아 오 이', unit: '글자 만들기', glyphs: ['아', '오', '이'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
+  // 더 많은 모음 — 기본 글자를 익힌 뒤
+  { id: 'v-ya', title: '모음 ㅑ ㅕ', unit: '모음 2', glyphs: ['ㅑ', 'ㅕ'], games: ['letter-intro', 'find-letter'] },
+  { id: 'v-yo', title: '모음 ㅛ ㅠ', unit: '모음 2', glyphs: ['ㅛ', 'ㅠ'], games: ['letter-intro', 'find-letter'] },
+  { id: 'v-ae', title: '모음 ㅐ ㅔ', unit: '모음 2', glyphs: ['ㅐ', 'ㅔ'], games: ['letter-intro', 'find-letter'] },
+  // 받침(종성) — 자음+모음+받침. composeSyllable이 종성 합성을 지원.
+  { id: 'b-ng', title: '받침 ㅇ · 강 공 방', unit: '받침', glyphs: ['강', '공', '방'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
+  { id: 'b-n', title: '받침 ㄴ · 산 손 문', unit: '받침', glyphs: ['산', '손', '문'], games: ['make-syllable', 'find-letter'] },
+  { id: 'b-m', title: '받침 ㅁ · 밤 곰 봄', unit: '받침', glyphs: ['밤', '곰', '봄'], games: ['make-syllable', 'find-letter'] },
+  { id: 'b-l', title: '받침 ㄹ · 물 발 달', unit: '받침', glyphs: ['물', '발', '달'], games: ['letter-intro', 'make-syllable', 'find-letter'] },
+  { id: 'b-g', title: '받침 ㄱ · 국 책 목', unit: '받침', glyphs: ['국', '책', '목'], games: ['make-syllable', 'find-letter'] },
+  { id: 'b-b', title: '받침 ㅂ · 밥 집 입', unit: '받침', glyphs: ['밥', '집', '입'], games: ['make-syllable', 'find-letter'] },
 ]
 
 // 모든 글자 레슨 끝에 '따라쓰기'를 붙인다(보고→만들고→찾고→써보기, 학습지식 흐름).

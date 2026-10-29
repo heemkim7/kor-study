@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTts } from '../tts/useTts'
 import { Sparkles } from '../ui/Sparkles'
-import { COUNT_EMOJI } from '../content/numbers'
+import { COUNT_PICS } from '../content/numbers'
+import { Pic } from '../ui/Pic'
 
 const ROUNDS = 3
 
@@ -63,7 +64,7 @@ export function Compare({ numbers, onCorrect, onWrong, onDone }: {
     }
   }
 
-  const panel = (side: number, count: number, emoji: string) => {
+  const panel = (side: number, count: number, pic: string) => {
     const isAnswer = solved && side === moreSide
     return (
       <button onClick={() => pick(side)} className={wrong === side ? 'kp-shake' : undefined}
@@ -72,7 +73,7 @@ export function Compare({ numbers, onCorrect, onWrong, onDone }: {
           borderRadius: 'var(--radius-lg)', background: isAnswer ? '#d8f3e1' : 'var(--c-card)',
           transform: isAnswer ? 'scale(1.04)' : 'none', transition: 'transform .15s',
           boxShadow: 'var(--shadow-card)' }}>
-        {Array.from({ length: count }, (_, k) => <span key={k} style={{ fontSize: 34, lineHeight: 1 }}>{emoji}</span>)}
+        {Array.from({ length: count }, (_, k) => <Pic key={k} name={pic} size={40} />)}
       </button>
     )
   }
@@ -83,8 +84,8 @@ export function Compare({ numbers, onCorrect, onWrong, onDone }: {
       {solved && <Sparkles />}
       <h2 style={{ fontFamily: 'var(--font-warm)', fontSize: 24 }}>어느 쪽이 더 많을까요?</h2>
       <div style={{ display: 'flex', gap: 14, width: '100%', maxWidth: 380, flex: 1, alignItems: 'center' }}>
-        {panel(0, left, COUNT_EMOJI[(round * 2) % COUNT_EMOJI.length])}
-        {panel(1, right, COUNT_EMOJI[(round * 2 + 1) % COUNT_EMOJI.length])}
+        {panel(0, left, COUNT_PICS[(round * 2) % COUNT_PICS.length])}
+        {panel(1, right, COUNT_PICS[(round * 2 + 1) % COUNT_PICS.length])}
       </div>
     </div>
   )

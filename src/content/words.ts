@@ -84,4 +84,9 @@ export const WORDS: Word[] = [
   { id: 'white',  text: '하양', theme: 'colorshape', image: { type: 'fluent', name: 'white' } },
   { id: 'black',  text: '검정', theme: 'colorshape', image: { type: 'fluent', name: 'black' } },
   { id: 'brown',  text: '갈색', theme: 'colorshape', image: { type: 'fluent', name: 'brown' } },
+  { id: 'circle',   text: '동그라미', theme: 'colorshape', image: { type: 'fluent', name: 'circle' } },
+  { id: 'triangle', text: '세모',     theme: 'colorshape', image: { type: 'fluent', name: 'triangle' } },
+  { id: 'square',   text: '네모',     theme: 'colorshape', image: { type: 'fluent', name: 'square' } },
+  { id: 'heart',    text: '하트',     theme: 'colorshape', image: { type: 'fluent', name: 'heart' } },
+  { id: 'diamond',  text: '마름모',   theme: 'colorshape', image: { type: 'fluent', name: 'diamond' } },
 ]

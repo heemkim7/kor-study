@@ -3,11 +3,19 @@ import { useTts } from '../tts/useTts'
 import { useProgress } from '../progress/useProgress'
 import { getSticker } from './stickers'
 import { Sparkles } from '../ui/Sparkles'
+import { Icon } from '../ui/Icon'
+import { Kong } from '../ui/Kong'
+import { useNavigation } from '../app/Navigation'
+import { recommendNext } from '../app/recommend'
+import { canPlayLesson, FREE_ENTITLEMENT } from '../entitlement/entitlement'
 import { playReward, playSticker } from '../audio/sound'
 
 export function RewardScreen({ onHome, awarded = true, stars }: { onHome: () => void; awarded?: boolean; stars?: number }) {
   const { speak } = useTts()
   const { progress } = useProgress()
+  const { go } = useNavigation()
+  // 끝나면 홈으로 돌아가 다시 고르지 않아도 되게 '다음 놀이'를 바로 권한다
+  const next = recommendNext(progress.completedLessons)
   // 방금 모은(가장 최근) 스티커
   const latest = awarded ? getSticker(progress.collectedStickers[progress.collectedStickers.length - 1]) : undefined
 
@@ -23,13 +31,12 @@ export function RewardScreen({ onHome, awarded = true, stars }: { onHome: () => 
     <div style={{ minHeight: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center',
       justifyContent: 'center', gap: 18, padding: 24, textAlign: 'center', position: 'relative' }}>
       <Sparkles />
-      <img src="/img/mascot.webp" alt="" aria-hidden className="kp-pop"
-        style={{ width: 124, height: 124, borderRadius: '50%', objectFit: 'cover', boxShadow: 'var(--shadow-card)' }} />
-      <h1 style={{ fontFamily: 'var(--font-warm)', fontSize: 30 }}>참 잘했어요!</h1>
+      <div className="kp-pop"><Kong pose={stars === 3 ? 'star' : 'cheer'} size={150} bob /></div>
+      <h1 className="kp-title" style={{ fontSize: 36 }}>참 잘했어요!</h1>
       {stars != null && (
-        <div className="kp-pop" aria-label={`별 ${stars}개`} style={{ fontSize: 40, letterSpacing: 6 }}>
+        <div className="kp-pop" aria-label={`별 ${stars}개`} style={{ display: 'flex', gap: 8 }}>
           {[1, 2, 3].map((i) => (
-            <span key={i} style={{ opacity: i <= stars ? 1 : 0.25, filter: i <= stars ? 'none' : 'grayscale(1)' }}>⭐</span>
+            <span key={i} style={{ opacity: i <= stars ? 1 : 0.25, filter: i <= stars ? 'none' : 'grayscale(1)' }}><Icon n="star" size={56} /></span>
           ))}
         </div>
       )}
@@ -45,12 +52,20 @@ export function RewardScreen({ onHome, awarded = true, stars }: { onHome: () => 
       {awarded && !latest && (
         <div style={{ fontSize: 22, color: 'var(--c-accent-strong)', fontWeight: 800 }}>🏅 스티커 1장 획득!</div>
       )}
-      <button className="kp-primary" onClick={onHome}
-        style={{ fontFamily: 'var(--font-warm)', fontSize: 22, fontWeight: 800, color: '#fff',
-          background: 'var(--c-accent)', border: 'none', borderRadius: 'var(--radius-md)',
-          padding: '14px 30px', boxShadow: '0 5px 0 #d98a3a' }}>
-        🏠 집으로
-      </button>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12, width: '100%', maxWidth: 360 }}>
+        {next && (
+          <button className="kp-primary" onClick={() => go(canPlayLesson(next.track.nodes.indexOf(next.node), FREE_ENTITLEMENT) ? next.node.screen : { name: 'paywall' })}
+            style={{ width: '100%', fontSize: 24, color: '#fff', border: 'none', borderRadius: 'var(--radius-lg)',
+              padding: '16px 24px', boxShadow: '0 5px 0 #d98a3a' }}>
+            다음 놀이 · {next.node.title} ▶
+          </button>
+        )}
+        <button className="kp-tile" onClick={onHome}
+          style={{ '--tile-a': '#ffffff', '--tile-b': '#f3e9d6', '--tile-lip': '#dcc9a6', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', gap: 8, padding: '10px 26px', fontFamily: 'var(--font-warm)', fontSize: 20, color: 'var(--c-ink)' } as React.CSSProperties}>
+          <Icon n="home" size={30} /> 집으로
+        </button>
+      </div>
     </div>
   )
 }

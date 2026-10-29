@@ -27,6 +27,9 @@ export function numberSay(glyph: string): { text: string; lang: string } {
 }
 
 // 세기용 이모지(귀여운 사물). 라운드마다 하나를 골라 n개 보여준다.
+// 세기용 그림 이름(public/img/word/<이름>.webp)
+export const COUNT_PICS = ['apple', 'dog', 'star', 'strawberry', 'cat', 'balloon', 'flower', 'fish', 'car', 'butterfly']
+
 export const COUNT_EMOJI = ['🍎', '🐶', '⭐', '🍓', '🐱', '🎈', '🌸', '🐠', '🚗', '🦋']
 
 export const NUMBER_LESSONS: NumLesson[] = [
@@ -34,6 +37,9 @@ export const NUMBER_LESSONS: NumLesson[] = [
   { id: 'n-45', title: '4 5', unit: '숫자나라 1', numbers: [4, 5], games: ['num-intro', 'count-tap', 'num-trace', 'compare'] },
   { id: 'n-678', title: '6 7 8', unit: '숫자나라 2', numbers: [6, 7, 8], games: ['num-intro', 'count-tap', 'num-trace'] },
   { id: 'n-910', title: '9 10', unit: '숫자나라 2', numbers: [9, 10], games: ['num-intro', 'count-tap', 'num-trace', 'compare'] },
+  // 배운 수를 섞어서 — 세기와 크기 비교만(소개·쓰기는 앞에서 했으므로 생략)
+  { id: 'n-mix5', title: '1부터 5까지', unit: '숫자나라 3', numbers: [1, 2, 3, 4, 5], games: ['count-tap', 'compare'] },
+  { id: 'n-mix10', title: '1부터 10까지', unit: '숫자나라 3', numbers: [3, 6, 9, 7, 10, 8], games: ['count-tap', 'compare'] },
 ]
 
 export function getNumberLesson(id: string): NumLesson | undefined {
